@@ -5,16 +5,6 @@
   "compilerOptions": {
     "outDir": "./out-tsc/spec",
     "types": [
-<<<<<<< HEAD
-      "jasmine"
-    ]
-  },
-  "include": [
-    "src/**/*.spec.ts",
-    "src/**/*.d.ts"
-  ]
-}
-=======
       "jest",
       "@angular/localize",
       ]
@@ -23,4 +13,3 @@
   "include": ["src/**/*.spec.ts", "src/**/*.d.ts"]
 }
 
->>>>>>> f0853af8a251b26be7b96e179f5db6e0b1045268
