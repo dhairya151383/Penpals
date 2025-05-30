@@ -27,17 +27,33 @@
               }
             ],
             "styles": [
+<<<<<<< HEAD
               "src/styles.css"
             ],
             "scripts": []
+=======
+              "node_modules/@fortawesome/fontawesome-free/css/all.min.css",
+              "@angular/material/prebuilt-themes/azure-blue.css",
+              "node_modules/bootstrap/dist/css/bootstrap.min.css",
+              "src/styles.css"
+            ],
+            "scripts": [
+              "node_modules/bootstrap/dist/js/bootstrap.bundle.min.js"
+            ]
+>>>>>>> f0853af8a251b26be7b96e179f5db6e0b1045268
           },
           "configurations": {
             "production": {
               "budgets": [
                 {
                   "type": "initial",
+<<<<<<< HEAD
                   "maximumWarning": "500kB",
                   "maximumError": "1MB"
+=======
+                  "maximumWarning": "2mb",
+                  "maximumError": "2.5mb"
+>>>>>>> f0853af8a251b26be7b96e179f5db6e0b1045268
                 },
                 {
                   "type": "anyComponentStyle",
@@ -69,6 +85,7 @@
         },
         "extract-i18n": {
           "builder": "@angular-devkit/build-angular:extract-i18n"
+<<<<<<< HEAD
         },
         "test": {
           "builder": "@angular-devkit/build-angular:karma",
@@ -89,6 +106,8 @@
             ],
             "scripts": []
           }
+=======
+>>>>>>> f0853af8a251b26be7b96e179f5db6e0b1045268
         }
       }
     }

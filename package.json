@@ -6,17 +6,31 @@
     "start": "ng serve",
     "build": "ng build",
     "watch": "ng build --watch --configuration development",
+<<<<<<< HEAD
     "test": "ng test"
+=======
+    "test": "jest",
+    "test:watch": "jest --watch",
+    "test:coverage": "jest --coverage"
+>>>>>>> f0853af8a251b26be7b96e179f5db6e0b1045268
   },
   "private": true,
   "dependencies": {
     "@angular/common": "^19.2.0",
     "@angular/compiler": "^19.2.0",
     "@angular/core": "^19.2.0",
+<<<<<<< HEAD
+=======
+    "@angular/fire": "^19.2.0",
+>>>>>>> f0853af8a251b26be7b96e179f5db6e0b1045268
     "@angular/forms": "^19.2.0",
     "@angular/platform-browser": "^19.2.0",
     "@angular/platform-browser-dynamic": "^19.2.0",
     "@angular/router": "^19.2.0",
+<<<<<<< HEAD
+=======
+    "firebase": "^11.8.1",
+>>>>>>> f0853af8a251b26be7b96e179f5db6e0b1045268
     "rxjs": "~7.8.0",
     "tslib": "^2.3.0",
     "zone.js": "~0.15.0"
@@ -25,6 +39,7 @@
     "@angular-devkit/build-angular": "^19.2.11",
     "@angular/cli": "^19.2.11",
     "@angular/compiler-cli": "^19.2.0",
+<<<<<<< HEAD
     "@types/jasmine": "~5.1.0",
     "jasmine-core": "~5.6.0",
     "karma": "~6.4.0",
@@ -32,6 +47,15 @@
     "karma-coverage": "~2.2.0",
     "karma-jasmine": "~5.1.0",
     "karma-jasmine-html-reporter": "~2.1.0",
+=======
+    "@angular/localize": "^19.2.0",
+    "@testing-library/angular": "^17.3.7",
+    "@testing-library/jest-dom": "^6.6.3",
+    "@types/jest": "^29.5.14",
+    "jest": "^29.7.0",
+    "jest-extended": "^5.0.3",
+    "jest-preset-angular": "^14.5.5",
+>>>>>>> f0853af8a251b26be7b96e179f5db6e0b1045268
     "typescript": "~5.7.2"
   }
 }

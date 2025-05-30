@@ -5,6 +5,7 @@
   "compilerOptions": {
     "outDir": "./out-tsc/spec",
     "types": [
+<<<<<<< HEAD
       "jasmine"
     ]
   },
@@ -13,3 +14,13 @@
     "src/**/*.d.ts"
   ]
 }
+=======
+      "jest",
+      "@angular/localize",
+      ]
+  },
+  "files": ["setup-jest.ts"],
+  "include": ["src/**/*.spec.ts", "src/**/*.d.ts"]
+}
+
+>>>>>>> f0853af8a251b26be7b96e179f5db6e0b1045268

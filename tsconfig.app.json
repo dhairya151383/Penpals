@@ -4,7 +4,13 @@
   "extends": "./tsconfig.json",
   "compilerOptions": {
     "outDir": "./out-tsc/app",
+<<<<<<< HEAD
     "types": []
+=======
+    "types": [
+      "@angular/localize"
+    ]
+>>>>>>> f0853af8a251b26be7b96e179f5db6e0b1045268
   },
   "files": [
     "src/main.ts"
