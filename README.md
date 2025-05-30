@@ -43,7 +43,6 @@ ng build
 
 This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
 
-<<<<<<< HEAD
 ## Running unit tests
 
 To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
@@ -51,9 +50,6 @@ To execute unit tests with the [Karma](https://karma-runner.github.io) test runn
 ```bash
 ng test
 ```
-=======
-
->>>>>>> f0853af8a251b26be7b96e179f5db6e0b1045268
 
 ## Running end-to-end tests
 
