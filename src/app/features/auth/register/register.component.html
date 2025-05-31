@@ -20,50 +20,106 @@
                 <!-- First Name and Last Name side by side -->
                 <div class="input-row">
                     <input type="text" placeholder="First Name" formControlName="firstName" [class.input-error]="
-        registerForm.get('firstName')?.invalid && registerForm.get('firstName')?.touched
-      " />
+              registerForm.get('firstName')?.invalid &&
+              registerForm.get('firstName')?.touched
+            " />
+                </div>
+                <div *ngIf="
+          registerForm.get('firstName')?.errors &&
+          registerForm.get('firstName')?.touched
+        " class="error-text">
+                    <small *ngIf="registerForm.get('firstName')?.errors?.['required']">
+                        First name is required.
+                    </small>
+                </div>
+
+                <div class="input-row">
                     <input type="text" placeholder="Last Name (optional)" formControlName="lastName"
                         [class.input-error]="
-        registerForm.get('lastName')?.invalid && registerForm.get('lastName')?.touched
-      " />
+              registerForm.get('lastName')?.invalid &&
+              registerForm.get('lastName')?.touched
+            " />
                 </div>
+                <!-- No required validation message for lastName as it's optional -->
 
                 <div>
                     <input type="email" placeholder="Email" formControlName="email" [class.input-error]="
-        registerForm.get('email')?.invalid && registerForm.get('email')?.touched
-      " />
+              registerForm.get('email')?.invalid &&
+              registerForm.get('email')?.touched
+            " />
+                </div>
+                <div *ngIf="
+          registerForm.get('email')?.errors &&
+          registerForm.get('email')?.touched
+        " class="error-text">
+                    <small *ngIf="registerForm.get('email')?.errors?.['required']">
+                        Email is required.
+                    </small>
+                    <small *ngIf="registerForm.get('email')?.errors?.['email']">
+                        Please enter a valid email.
+                    </small>
                 </div>
 
                 <div>
                     <input type="password" placeholder="Enter your password" formControlName="password"
                         [class.input-error]="
-        registerForm.get('password')?.invalid && registerForm.get('password')?.touched
-      " />
+              registerForm.get('password')?.invalid &&
+              registerForm.get('password')?.touched
+            " />
+                </div>
+                <div *ngIf="
+          registerForm.get('password')?.errors &&
+          registerForm.get('password')?.touched
+        " class="error-text">
+                    <small *ngIf="registerForm.get('password')?.errors?.['required']">
+                        Password is required.
+                    </small>
+                    <small *ngIf="registerForm.get('password')?.errors?.['minlength']">
+                        Password must be at least 6 characters.
+                    </small>
                 </div>
 
                 <div>
                     <input type="password" placeholder="Confirm password" formControlName="confirmPassword"
                         [class.input-error]="
-        (registerForm.get('confirmPassword')?.invalid && registerForm.get('confirmPassword')?.touched) ||
-        registerForm.errors?.['passwordMismatch']
-      " />
-                    <div *ngIf="
-        registerForm.errors?.['passwordMismatch'] &&
-        registerForm.get('confirmPassword')?.touched
-      " class="error-text">
+              (registerForm.get('confirmPassword')?.invalid &&
+                registerForm.get('confirmPassword')?.touched) ||
+              registerForm.errors?.['passwordMismatch']
+            " />
+                </div>
+                <div *ngIf="
+          (registerForm.get('confirmPassword')?.errors &&
+            registerForm.get('confirmPassword')?.touched) ||
+          (registerForm.errors?.['passwordMismatch'] &&
+            registerForm.get('confirmPassword')?.touched)
+        " class="error-text">
+                    <small *ngIf="registerForm.get('confirmPassword')?.errors?.['required']">
+                        Confirm password is required.
+                    </small>
+                    <small *ngIf="registerForm.errors?.['passwordMismatch']">
                         Passwords do not match.
-                    </div>
+                    </small>
                 </div>
 
-                <!-- Role selector moved after confirm password -->
+                <!-- Role selector -->
                 <div>
                     <select formControlName="role" [class.input-error]="
-        registerForm.get('role')?.invalid && registerForm.get('role')?.touched">
+              registerForm.get('role')?.invalid &&
+              registerForm.get('role')?.touched
+            ">
                         <option value="" disabled>Select Role</option>
                         <option value="user">User</option>
                         <option value="admin">Admin</option>
                         <option value="author">Author</option>
                     </select>
+                </div>
+                <div *ngIf="
+          registerForm.get('role')?.errors &&
+          registerForm.get('role')?.touched
+        " class="error-text">
+                    <small *ngIf="registerForm.get('role')?.errors?.['required']">
+                        Please select a role.
+                    </small>
                 </div>
 
                 <div *ngIf="errorMessage" class="error-box">

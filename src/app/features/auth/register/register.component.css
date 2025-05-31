@@ -3,7 +3,8 @@
   box-sizing: border-box;
 }
 
-body, html {
+body,
+html {
   margin: 0;
   padding: 0;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
@@ -15,7 +16,7 @@ body, html {
   display: flex;
   min-height: 100vh;
   background-color: #fff;
-  box-shadow: 0 0 15px rgba(0,0,0,0.1);
+  box-shadow: 0 0 15px rgba(0, 0, 0, 0.1);
   border-radius: 8px;
   overflow: hidden;
   max-width: 1100px;
@@ -126,7 +127,8 @@ select:focus {
 
 .input-row input {
   flex: 1 1 50%;
-  margin-bottom: 0; /* handled by input-row */
+  margin-bottom: 0;
+  /* handled by input-row */
 }
 
 /* --- Error Text --- */
@@ -138,7 +140,8 @@ select:focus {
 }
 
 /* --- Error and Success Boxes --- */
-.error-box, .success-box {
+.error-box,
+.success-box {
   padding: 1rem;
   border-radius: 6px;
   margin-bottom: 1rem;
@@ -246,7 +249,8 @@ select:focus {
     border-radius: 0;
   }
 
-  .left-column, .right-column {
+  .left-column,
+  .right-column {
     flex: unset;
     width: 100%;
     padding: 2rem 1.5rem;
@@ -263,4 +267,20 @@ select:focus {
   .input-row input {
     width: 100%;
   }
+}
+
+.input-error {
+  border-color: #d9534f;
+  /* red border */
+}
+
+.error-text {
+  color: #d9534f;
+  font-size: 0.875rem;
+  margin-top: 4px;
+  min-height: 18px;
+}
+
+.input-group {
+  margin-bottom: 16px;
 }

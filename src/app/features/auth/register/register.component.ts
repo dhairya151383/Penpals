@@ -1,7 +1,15 @@
-// src/app/features/auth/register/register.component.ts (UPDATED)
 import { Component, OnInit } from '@angular/core';
-import { CommonModule } from '@angular/common';
-import { ReactiveFormsModule, FormGroup, FormBuilder, Validators, AbstractControl, ValidationErrors } from '@angular/forms';
+import {
+  CommonModule
+} from '@angular/common';
+import {
+  ReactiveFormsModule,
+  FormGroup,
+  FormBuilder,
+  Validators,
+  AbstractControl,
+  ValidationErrors
+} from '@angular/forms';
 import { AuthService } from '../../../core/services/auth.service';
 import { Router, RouterLink } from '@angular/router';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
@@ -12,7 +20,9 @@ export function passwordMatchValidator(control: AbstractControl): ValidationErro
   const confirmPassword = control.get('confirmPassword');
 
   if (password && confirmPassword && password.value !== confirmPassword.value) {
-    return { passwordMismatch: true };
+    return {
+      passwordMismatch: true
+    };
   }
   return null;
 }
@@ -26,9 +36,11 @@ export function passwordMatchValidator(control: AbstractControl): ValidationErro
 })
 export class RegisterComponent implements OnInit {
   registerForm!: FormGroup;
-  isLoading: boolean = false;
+  isLoading = false;
   errorMessage: string | null = null;
   successMessage: string | null = null;
+
+  submitted = false;
 
   constructor(
     private fb: FormBuilder,
@@ -37,30 +49,39 @@ export class RegisterComponent implements OnInit {
   ) { }
 
   ngOnInit(): void {
-    this.registerForm = this.fb.group({
-      firstName: ['', Validators.required],
-      lastName: [''],
-      email: ['', [Validators.required, Validators.email]],
-      password: ['', [Validators.required, Validators.minLength(6)]],
-      confirmPassword: ['', Validators.required],
-      role: ['', Validators.required],
-      termsAccepted: [false, Validators.requiredTrue]
-    }, { validators: passwordMatchValidator });
+    this.registerForm = this.fb.group(
+      {
+        firstName: ['', Validators.required],
+        lastName: [''],
+        email: ['', [Validators.required, Validators.email]],
+        password: ['', [Validators.required, Validators.minLength(6)]],
+        confirmPassword: ['', Validators.required],
+        role: ['', Validators.required]
+      },
+      {
+        validators: passwordMatchValidator
+      }
+    );
   }
 
   async onRegister() {
+    this.submitted = true;
+    this.registerForm.markAllAsTouched();
     this.isLoading = true;
     this.errorMessage = null;
     this.successMessage = null;
 
     if (this.registerForm.valid) {
-      const { firstName, lastName, email, password, role } = this.registerForm.value;
-      // Trim and build displayName
+      const {
+        firstName,
+        lastName,
+        email,
+        password,
+        role
+      } = this.registerForm.value;
       const displayName = (firstName.trim() + (lastName ? ' ' + lastName.trim() : '')).trim();
-      // username is firstName only
       const username = firstName.trim();
       try {
-        // Pass displayName and username separately if needed by your authService
         await this.authService.registerWithEmail(email, password, username, role, displayName);
         this.successMessage = 'Registration successful! Redirecting to dashboard...';
         setTimeout(() => {
@@ -72,9 +93,8 @@ export class RegisterComponent implements OnInit {
         this.isLoading = false;
       }
     } else {
-      this.isLoading = false;
       this.errorMessage = 'Please fill in all required fields correctly.';
-      this.registerForm.markAllAsTouched();
+      this.isLoading = false;
     }
   }
 
@@ -90,22 +110,6 @@ export class RegisterComponent implements OnInit {
       }, 2000);
     } catch (error: any) {
       this.errorMessage = error.message || 'Google registration failed. Please try again.';
-    } finally {
-      this.isLoading = false;
-    }
-  }
-
-  async signInWithFacebook() {
-    this.isLoading = true;
-    this.errorMessage = null;
-    this.successMessage = null;
-    // Placeholder for Facebook registration logic
-    try {
-      // await this.authService.signInWithFacebook(); // Example
-      console.log('Facebook registration initiated (placeholder)');
-      this.errorMessage = 'Facebook registration is not yet implemented.';
-    } catch (error: any) {
-      this.errorMessage = error.message || 'Facebook registration failed. Please try again.';
     } finally {
       this.isLoading = false;
     }
