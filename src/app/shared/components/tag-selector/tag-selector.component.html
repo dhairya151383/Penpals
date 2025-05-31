@@ -1,0 +1,35 @@
+<div class="tag-selector">
+  <div class="tag-input-group">
+    <input
+      type="text"
+      [(ngModel)]="newTagName"
+      placeholder="Add a tag"
+      (keyup.enter)="addTag()"
+    />
+    <button type="button" (click)="addTag()">Add</button>
+  </div>
+
+  <div class="tag-suggestions" *ngIf="filteredTags.length > 0">
+    <span
+      *ngFor="let tag of filteredTags"
+      class="tag-suggestion"
+      (click)="selectTag(tag)"
+    >
+      {{ tag.name }}
+    </span>
+  </div>
+
+  <div class="selected-tags">
+    <span
+      class="tag"
+      *ngFor="let tag of selectedTags"
+    >
+      {{ tag.name }}
+      <button type="button" (click)="removeTag(tag)">×</button>
+    </span>
+  </div>
+
+  <div class="tag-limit-warning" *ngIf="selectedTags.length >= 10">
+    Maximum of 10 tags allowed.
+  </div>
+</div>

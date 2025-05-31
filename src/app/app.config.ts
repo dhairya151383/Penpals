@@ -7,6 +7,7 @@ import { provideFirestore, getFirestore } from '@angular/fire/firestore';
 
 import { environment } from './../environments/environment.production';
 import { routes } from './app.routes';
+import { provideQuillConfig } from 'ngx-quill';
 
 export const appConfig: ApplicationConfig = {
   providers: [
@@ -15,6 +16,7 @@ export const appConfig: ApplicationConfig = {
     provideHttpClient(),
     provideFirebaseApp(() => initializeApp(environment.firebaseConfig)),
     provideAuth(() => getAuth()),
-    provideFirestore(() => getFirestore())
+    provideFirestore(() => getFirestore()),
+    provideQuillConfig({ theme: 'snow' })
   ],
 };

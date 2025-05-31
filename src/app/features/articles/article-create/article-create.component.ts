@@ -1,43 +1,109 @@
 import { Component, OnInit } from '@angular/core';
-import { FormBuilder, FormGroup, Validators, ReactiveFormsModule } from '@angular/forms';
-import { CommonModule } from '@angular/common';
+import {
+  FormBuilder,
+  FormGroup,
+  Validators,
+  AbstractControl,
+  ValidationErrors,
+  ValidatorFn,
+  ReactiveFormsModule,
+} from '@angular/forms';
 import { Router } from '@angular/router';
+import { CommonModule } from '@angular/common';
 import { QuillModule } from 'ngx-quill';
 
 import { ArticleService } from '../../../core/services/article.service';
 import { FirebaseService } from '../../../core/services/firebase.service';
 import { Article } from '../../../shared/models/article.model';
+import { Tag } from '../../../shared/models/tag.model';
+import { TagSelectorComponent } from '../../../shared/components/tag-selector/tag-selector.component';
+
+export function quillRequired(control: AbstractControl): ValidationErrors | null {
+  const value = control.value || '';
+  const text = value.replace(/<[^>]*>/g, '').trim();
+  return text.length === 0 ? { required: true } : null;
+}
+
+// Custom validator to require at least `min` tags selected
+export function minTagsSelected(min = 1): ValidatorFn {
+  return (control: AbstractControl): ValidationErrors | null => {
+    const val = control.value;
+    if (Array.isArray(val) && val.length >= min) {
+      return null;
+    }
+    return { required: true };
+  };
+}
 
 @Component({
   selector: 'app-article-create',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, QuillModule],
+  imports: [CommonModule, ReactiveFormsModule, QuillModule, TagSelectorComponent],
   templateUrl: './article-create.component.html',
+  styleUrls: ['./article-create.component.css']
 })
 export class ArticleCreateComponent implements OnInit {
   form!: FormGroup;
   loading = false;
   error: string | null = null;
+  selectedTags: Tag[] = [];
+  formSubmitted = false;
 
   constructor(
-    private articleService: ArticleService,
-    private firebaseService: FirebaseService,
     private fb: FormBuilder,
-    private router: Router
+    private router: Router,
+    private articleService: ArticleService,
+    private firebaseService: FirebaseService
   ) {}
 
   ngOnInit() {
     this.form = this.fb.group({
       title: ['', [Validators.required, Validators.minLength(3)]],
       briefDescription: ['', [Validators.required, Validators.minLength(10)]],
-      content: ['', Validators.required],
-      tags: [''],
+      content: ['', [quillRequired]],
+      tags: [[], [minTagsSelected(1)]],
       isFeatured: [false],
     });
   }
 
+  // Getters for easier template access
+  get title() {
+    return this.form.get('title')!;
+  }
+
+  get briefDescription() {
+    return this.form.get('briefDescription')!;
+  }
+
+  get content() {
+    return this.form.get('content')!;
+  }
+
+  get tags() {
+    return this.form.get('tags')!;
+  }
+
+  onContentChanged() {
+    const control = this.content;
+    control.markAsTouched();
+    control.updateValueAndValidity();
+  }
+
+  onTagChange(tags: Tag[]) {
+    this.selectedTags = tags;
+    const tagsControl = this.tags;
+    tagsControl.setValue(tags);
+    tagsControl.markAsTouched();
+    tagsControl.updateValueAndValidity();
+  }
+
   async onSubmit() {
-    if (this.form.invalid) return;
+    this.formSubmitted = true;
+    this.form.markAllAsTouched();
+
+    if (this.form.invalid) {
+      return;
+    }
 
     this.loading = true;
     this.error = null;
@@ -58,9 +124,8 @@ export class ArticleCreateComponent implements OnInit {
         authorId: currentUser.uid,
         authorName: currentUser.displayName || 'Anonymous',
         publishDate: new Date(),
-        tags: formValue.tags ? formValue.tags.split(',').map((t: string) => t.trim()) : [],
+        tags: formValue.tags.map((tag: Tag) => tag.name),
         isFeatured: formValue.isFeatured,
-        // Add createdAt, updatedAt if your model has these
         createdAt: new Date(),
         updatedAt: new Date(),
       };

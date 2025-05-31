@@ -1,5 +1,23 @@
-<div *ngIf="article">
-  <h1>{{ article.title }}</h1>
-  <p><em>By {{ author?.name }} on {{ article.publishDate | date }}</em></p>
-  <div [innerHTML]="article.content"></div>
+<div *ngIf="article" class="article-details-container">
+  <div class="article-card">
+    <img *ngIf="article.thumbnailUrl" [src]="article.thumbnailUrl" alt="Article image" class="article-thumbnail" />
+
+    <div class="article-meta">
+      <h1 class="article-title">{{ article.title }}</h1>
+      <p class="article-author">
+        By <strong>{{ author?.name }}</strong> on {{ article.publishDate | date:'mediumDate' }}
+      </p>
+      <p class="article-info">
+        <span *ngIf="article.readingTime">🕒 {{ article.readingTime }} min read</span>
+        <span *ngIf="article.likesCount"> | 👍 {{ article.likesCount }} likes</span>
+        <span *ngIf="article.commentsCount"> | 💬 {{ article.commentsCount }} comments</span>
+      </p>
+    </div>
+
+    <div *ngIf="article.tags?.length" class="article-tags">
+      <span *ngFor="let tag of article.tags" class="tag-chip">#{{ tag }}</span>
+    </div>
+
+    <div class="article-content" [innerHTML]="article.content"></div>
+  </div>
 </div>

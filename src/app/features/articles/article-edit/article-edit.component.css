@@ -1,5 +1,161 @@
+.article-creation-page {
+  display: flex;
+  justify-content: center; /* center the big container */
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+  margin: 2rem 0;
+}
+
+.article-creation-container {
+  display: flex;
+  width: 90vw; /* 90% of viewport width */
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.15);
+  overflow: hidden;
+}
+
+/* Left card 2/5 width */
+.form-card {
+  flex: 2;
+  padding: 1.5rem 2rem;
+  display: flex;
+  flex-direction: column;
+}
+
+/* Right card 3/5 width */
+.editor-card {
+  flex: 3;
+  padding: 1.5rem 2rem;
+  display: flex;
+  flex-direction: column;
+  border-left: 1px solid #e0e0e0;
+}
+
+/* Shared card styles */
+.card-header h2, .card-header h3 {
+  margin: 0 0 0.5rem 0;
+  font-weight: 700;
+  color: #2e7d32;
+}
+
+.card-header hr {
+  border: none;
+  border-bottom: 2px solid #2e7d32;
+  margin-bottom: 1rem;
+  width: 50px;
+}
+
+.article-form .form-group,
+.editor-card .form-group {
+  margin-bottom: 1.25rem;
+  display: flex;
+  flex-direction: column;
+}
+
+label {
+  font-weight: 600;
+  margin-bottom: 0.3rem;
+  color: #2e7d32;
+}
+
+input[type="text"],
+textarea {
+  padding: 0.5rem 0.75rem;
+  font-size: 1rem;
+  border: 1.5px solid #ccc;
+  border-radius: 6px;
+  transition: border-color 0.3s ease;
+  font-family: inherit;
+}
+
+input[type="text"]:focus,
+textarea:focus,
+quill-editor:focus-within {
+  border-color: #66bb6a;
+  outline: none;
+  box-shadow: 0 0 5px #81c784;
+}
+
+.checkbox-group {
+  flex-direction: row;
+  align-items: center;
+}
+
+.checkbox-group input[type="checkbox"] {
+  margin-right: 0.5rem;
+  width: 18px;
+  height: 18px;
+}
+
+button[type="submit"] {
+  align-self: flex-start;
+  padding: 0.6rem 1.6rem;
+  background-color: #2e7d32;
+  border: none;
+  border-radius: 6px;
+  color: white;
+  font-weight: 700;
+  font-size: 1.1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+  margin-top: auto;
+}
+
+button[type="submit"]:disabled {
+  background-color: #a5d6a7;
+  cursor: not-allowed;
+}
+
+button[type="submit"]:hover:not(:disabled) {
+  background-color: #1b5e20;
+}
+
 .error {
-  color: #d9534f;
-  font-size: 0.875em;
   margin-top: 0.25rem;
+  color: #d32f2f;
+  font-size: 0.9rem;
+  font-weight: 600;
+}
+
+.global-error {
+  margin-top: 1rem;
+  color: #b71c1c;
+  font-weight: 700;
+  font-size: 1rem;
+}
+
+.loading-text {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #2e7d32;
+}
+
+pre {
+  background: #f7f7f7;
+  border: 1px solid #ccc;
+  padding: 0.8rem;
+  border-radius: 5px;
+  font-size: 0.8rem;
+  overflow-x: auto;
+  margin-top: 1rem;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .article-creation-page {
+    margin: 1rem;
+  }
+  .article-creation-container {
+    flex-direction: column;
+    width: 100vw;
+  }
+  .form-card, .editor-card {
+    flex: none;
+    width: 100%;
+    padding: 1rem;
+  }
+  button[type="submit"] {
+    width: 100%;
+  }
 }

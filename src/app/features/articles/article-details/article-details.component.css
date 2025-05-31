@@ -1,0 +1,53 @@
+.article-details-container {
+  max-width: 900px;
+  margin: 2rem auto;
+  padding: 1rem;
+}
+
+.article-card {
+  background: #fff;
+  padding: 2rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.article-thumbnail {
+  width: 100%;
+  border-radius: 12px;
+  margin-bottom: 1.5rem;
+}
+
+.article-title {
+  font-size: 2rem;
+  margin-bottom: 0.5rem;
+}
+
+.article-author {
+  font-style: italic;
+  color: #555;
+}
+
+.article-info {
+  margin-bottom: 1rem;
+  color: #777;
+  font-size: 0.95rem;
+}
+
+.article-tags {
+  margin: 1rem 0;
+}
+
+.tag-chip {
+  display: inline-block;
+  background-color: #e0f2f1;
+  color: #00796b;
+  padding: 4px 10px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  margin: 4px 4px 0 0;
+}
+
+.article-content {
+  line-height: 1.7;
+  color: #333;
+}
