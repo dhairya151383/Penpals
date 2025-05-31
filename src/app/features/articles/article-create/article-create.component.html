@@ -1,1 +1,56 @@
-<p>article-create works!</p>
+<div class="article-create-container" *ngIf="!loading; else loadingTpl">
+  <h2>Create New Article</h2>
+
+  <form [formGroup]="form" (ngSubmit)="onSubmit()" novalidate>
+
+    <label for="title">Title</label>
+    <input
+      id="title"
+      type="text"
+      formControlName="title"
+      placeholder="Enter article title"
+      [class.invalid]="form.get('title')?.invalid && form.get('title')?.touched"
+    />
+    <div class="error" *ngIf="form.get('title')?.invalid && form.get('title')?.touched">
+      Title is required and must be at least 3 characters.
+    </div>
+
+    <label for="briefDescription">Brief Description</label>
+    <textarea
+      id="briefDescription"
+      rows="3"
+      formControlName="briefDescription"
+      placeholder="Enter a short description"
+      [class.invalid]="form.get('briefDescription')?.invalid && form.get('briefDescription')?.touched"
+    ></textarea>
+    <div class="error" *ngIf="form.get('briefDescription')?.invalid && form.get('briefDescription')?.touched">
+      Brief description is required and must be at least 10 characters.
+    </div>
+
+    <label for="content">Content</label>
+    <quill-editor
+      formControlName="content"
+      [styles]="{height: '250px'}"
+      [class.invalid]="form.get('content')?.invalid && form.get('content')?.touched"
+    ></quill-editor>
+    <div class="error" *ngIf="form.get('content')?.invalid && form.get('content')?.touched">
+      Content is required.
+    </div>
+
+    <label for="tags">Tags (comma separated)</label>
+    <input id="tags" type="text" formControlName="tags" placeholder="angular, firebase, tutorial" />
+
+    <label class="checkbox-label">
+      <input type="checkbox" formControlName="isFeatured" />
+      Feature this article
+    </label>
+
+    <button type="submit" [disabled]="form.invalid">Create Article</button>
+  </form>
+
+  <div class="error" *ngIf="error">{{ error }}</div>
+</div>
+
+<ng-template #loadingTpl>
+  <p>Loading...</p>
+</ng-template>

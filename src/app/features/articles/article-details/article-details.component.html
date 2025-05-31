@@ -1,1 +1,5 @@
-<p>article-details works!</p>
+<div *ngIf="article">
+  <h1>{{ article.title }}</h1>
+  <p><em>By {{ author?.name }} on {{ article.publishDate | date }}</em></p>
+  <div [innerHTML]="article.content"></div>
+</div>

@@ -1,19 +1,18 @@
-<nav class="bg-gray-800 text-white p-4 shadow-md">
-    <div class="container mx-auto flex justify-between items-center">
-        <a routerLink="/dashboard" class="text-2xl font-bold">My Platform</a>
-        <div class="space-x-4">
-            <a routerLink="/dashboard" class="hover:text-gray-300">Dashboard</a>
-            <a routerLink="/authors" class="hover:text-gray-300">Authors</a>
-            <a routerLink="/create-article" class="hover:text-gray-300" *ngIf="(authService.user$ | async)">Create
-                Post</a>
-            <ng-container *ngIf="(authService.user$ | async) as user; else loginButton">
-                <span class="text-gray-300">Welcome, {{ user.displayName || user.email }}</span>
-                <button (click)="authService.signOut()"
-                    class="bg-red-600 px-3 py-1 rounded hover:bg-red-700">Logout</button>
-            </ng-container>
-            <ng-template #loginButton>
-                <a routerLink="/login" class="bg-blue-600 px-3 py-1 rounded hover:bg-blue-700">Login</a>
-            </ng-template>
-        </div>
+<nav class="nav-bar">
+  <div class="container">
+    <a routerLink="/dashboard" class="logo">Dashboard</a>
+    <div class="nav-links">
+      <a routerLink="/authors" class="nav-link">Authors</a>
+      <a routerLink="/create-article" class="nav-link" *ngIf="(authService.user$ | async)">Create Post</a>
+
+      <ng-container *ngIf="(authService.user$ | async) as user; else loginButton">
+        <span class="welcome-text">Welcome, {{ user.displayName || user.email }}</span>
+        <button (click)="authService.signOut()" class="btn btn-logout">Logout</button>
+      </ng-container>
+
+      <ng-template #loginButton>
+        <a routerLink="/login" class="btn btn-login">Login</a>
+      </ng-template>
     </div>
+  </div>
 </nav>

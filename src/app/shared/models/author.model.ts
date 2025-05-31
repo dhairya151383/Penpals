@@ -1,15 +1,15 @@
 export interface Author {
-  id?: string; // Firestore document ID
-  uid: string; // Firebase Auth UID
-  displayName: string;
-  email: string;
-  profilePictureUrl?: string;
-  bio?: string;
-  socialLinks?: {
+  id?: string;            // Firestore document ID
+  name: string;           // Full name
+  bio?: string;           // Short biography
+  avatarUrl?: string;     // Profile picture URL
+  website?: string;       // Personal or professional website
+  socialLinks?: {         // Optional social media links
     twitter?: string;
     linkedin?: string;
     github?: string;
+    [key: string]: string | undefined;
   };
-  roles: string[]; // e.g., ['reader', 'author', 'admin']
-  // Add other author-specific fields as needed
+  createdAt?: Date | string;
+  updatedAt?: Date | string;
 }

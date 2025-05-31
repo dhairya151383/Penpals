@@ -1,0 +1,33 @@
+<form *ngIf="!loading && !error" [formGroup]="form" (ngSubmit)="onSubmit()">
+  <label for="title">Title</label>
+  <input id="title" formControlName="title" type="text" />
+  <div *ngIf="form.get('title')?.invalid && form.get('title')?.touched" class="error">
+    Title is required (min 3 characters).
+  </div>
+
+  <label for="briefDescription">Brief Description</label>
+  <textarea id="briefDescription" formControlName="briefDescription" rows="3"></textarea>
+  <div *ngIf="form.get('briefDescription')?.invalid && form.get('briefDescription')?.touched" class="error">
+    Brief description is required (min 10 characters).
+  </div>
+
+  <label for="content">Content</label>
+  <quill-editor
+    formControlName="content"
+    [modules]="{ toolbar: [['bold', 'italic', 'underline'], [{ 'list': 'ordered' }, { 'list': 'bullet' }], ['link']] }"
+    style="height: 300px"
+  ></quill-editor>
+  <div *ngIf="form.get('content')?.invalid && form.get('content')?.touched" class="error">
+    Content is required.
+  </div>
+
+  <label for="tags">Tags (comma separated)</label>
+  <input id="tags" formControlName="tags" type="text" />
+
+  <label>
+    <input type="checkbox" formControlName="isFeatured" />
+    Featured Article
+  </label>
+
+  <button type="submit" [disabled]="form.invalid">Update Article</button>
+</form>
