@@ -2,7 +2,7 @@
     <!-- Left image/branding section -->
     <div class="left-column">
         <div class="branding-content">
-            <img src="/assets/logo.svg" alt="Logo" class="logo" />
+            <img src="/assets/logo.jpg" alt="Logo" class="logo" />
             <p class="branding-text">Capturing Moments, Creating Memories</p>
         </div>
     </div>
@@ -143,8 +143,7 @@
 
             <div class="social-buttons">
                 <button (click)="signInWithGoogle()" [disabled]="isLoading" class="google-button">
-                    <img src="https://upload.wikimedia.org/wikipedia/commons/4/4a/Logo_Google_2020_-_%28Stacked%29.png"
-                        alt="Google" class="google-icon" />
+                    <img [src]="'assets/icons/google.svg'" alt="Google Icon" />
                     Google
                 </button>
             </div>
