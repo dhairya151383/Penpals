@@ -1,20 +1,28 @@
-import { CanActivateFn, Router } from '@angular/router';
-import { inject } from '@angular/core';
+// src/app/core/guards/auth.guard.ts
+import { Injectable } from '@angular/core';
+import { CanActivate, Router } from '@angular/router';
+import { Observable, of, combineLatest } from 'rxjs';
+import { map, filter, take } from 'rxjs/operators';
 import { AuthService } from '../services/auth.service';
-import { map } from 'rxjs/operators';
 
-export const authGuard: CanActivateFn = (route, state) => {
-  const authService = inject(AuthService);
-  const router = inject(Router);
+@Injectable({
+  providedIn: 'root'
+})
+export class AuthGuard implements CanActivate {
+  constructor(private authService: AuthService, private router: Router) {}
 
-  return authService.user$.pipe(
-    map(user => {
-      if (user) {
-        return true;
-      } else {
-        router.navigate(['/login']);
+  canActivate(): Observable<boolean> {
+    return combineLatest([
+      this.authService.authReady$,
+      this.authService.user$
+    ]).pipe(
+      filter(([ready]) => ready), // wait until Firebase Auth is initialized
+      take(1),
+      map(([_, user]) => {
+        if (user) return true;
+        this.router.navigate(['/login']);
         return false;
-      }
-    })
-  );
-};
+      })
+    );
+  }
+}

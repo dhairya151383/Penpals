@@ -8,13 +8,13 @@ import { LoadingSpinnerComponent } from '../../../shared/components/loading-spin
 @Component({
   selector: 'app-login',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, RouterLink, LoadingSpinnerComponent],
+  imports: [CommonModule, ReactiveFormsModule, RouterLink,LoadingSpinnerComponent],
   templateUrl: './login.component.html',
-  styleUrl: './login.component.css'
+  styleUrls: ['./login.component.css']
 })
 export class LoginComponent implements OnInit {
   loginForm!: FormGroup;
-  isLoading: boolean = false;
+  isLoading = false;
   errorMessage: string | null = null;
 
   constructor(
@@ -30,32 +30,35 @@ export class LoginComponent implements OnInit {
     });
   }
 
-  async onLogin() {
-    this.isLoading = true;
+  async onLogin(): Promise<void> {
     this.errorMessage = null;
-    if (this.loginForm.valid) {
-      const { email, password } = this.loginForm.value;
-      try {
-        await this.authService.signInWithEmail(email, password);
-        this.router.navigate(['/dashboard']);
-      } catch (error: any) {
-        this.errorMessage = error.message || 'Login failed. Please try again.';
-      } finally {
-        this.isLoading = false;
-      }
-    } else {
-      this.isLoading = false;
+
+    if (!this.loginForm.valid) {
       this.errorMessage = 'Please fill in all required fields correctly.';
-      this.loginForm.markAllAsTouched(); // Mark all fields as touched to show validation errors
+      this.loginForm.markAllAsTouched();
+      return;
+    }
+
+    this.isLoading = true;
+    const { email, password } = this.loginForm.value;
+
+    try {
+      await this.authService.signInWithEmail(email, password);
+      await this.router.navigate(['/dashboard']);
+    } catch (error: any) {
+      this.errorMessage = error.message || 'Login failed. Please try again.';
+    } finally {
+      this.isLoading = false;
     }
   }
 
-  async signInWithGoogle() {
+  async signInWithGoogle(): Promise<void> {
     this.isLoading = true;
     this.errorMessage = null;
+
     try {
       await this.authService.signInWithGoogle();
-      this.router.navigate(['/dashboard']);
+      await this.router.navigate(['/dashboard']);
     } catch (error: any) {
       this.errorMessage = error.message || 'Google login failed. Please try again.';
     } finally {
@@ -63,19 +66,18 @@ export class LoginComponent implements OnInit {
     }
   }
 
-  async signInWithFacebook() {
-    this.isLoading = true;
-    this.errorMessage = null;
-    // Placeholder for Facebook login logic
-    // You would integrate Facebook SDK or Firebase Facebook provider here
-    try {
-      // await this.authService.signInWithFacebook(); // Example
-      console.log('Facebook login initiated (placeholder)');
-      this.errorMessage = 'Facebook login is not yet implemented.';
-    } catch (error: any) {
-      this.errorMessage = error.message || 'Facebook login failed. Please try again.';
-    } finally {
-      this.isLoading = false;
-    }
-  }
+  // async signInWithFacebook(): Promise<void> {
+  //   this.isLoading = true;
+  //   this.errorMessage = null;
+
+  //   try {
+  //     // Placeholder - implement actual Facebook login
+  //     console.warn('Facebook login initiated (placeholder)');
+  //     this.errorMessage = 'Facebook login is not yet implemented.';
+  //   } catch (error: any) {
+  //     this.errorMessage = error.message || 'Facebook login failed. Please try again.';
+  //   } finally {
+  //     this.isLoading = false;
+  //   }
+  // }
 }

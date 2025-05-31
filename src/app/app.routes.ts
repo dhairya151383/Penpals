@@ -1,6 +1,6 @@
 // src/app/app.routes.ts
 import { Routes } from '@angular/router';
-import { authGuard } from './core/guards/auth.guard';
+import { AuthGuard } from './core/guards/auth.guard';
 
 import { LayoutComponent } from './shared/components/layout/layout.component';
 import { RoleGuard } from './core/guards/role.guard';
@@ -32,7 +32,7 @@ export const routes: Routes = [
       {
         path: 'create-article',
         loadComponent: () => import('./features/articles/article-create/article-create.component').then(m => m.ArticleCreateComponent),
-        canActivate: [authGuard, RoleGuard],
+        canActivate: [AuthGuard, RoleGuard],
         data: { expectedRole: 'author' }
       },
       {

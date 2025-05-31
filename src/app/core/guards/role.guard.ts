@@ -1,37 +1,47 @@
+// src/app/core/guards/role.guard.ts
 import { Injectable } from '@angular/core';
-import { CanActivate, ActivatedRouteSnapshot, RouterStateSnapshot, UrlTree, Router } from '@angular/router';
-import { Observable } from 'rxjs';
-import { map, take } from 'rxjs/operators';
+import { CanActivate, ActivatedRouteSnapshot, Router } from '@angular/router';
+import { Observable, combineLatest, from, of } from 'rxjs';
+import { switchMap, map, take, filter } from 'rxjs/operators';
 import { AuthService } from '../services/auth.service';
+import { Firestore, doc, getDoc } from '@angular/fire/firestore';
+import { Users } from './../../shared/models/user.model';
 
 @Injectable({
   providedIn: 'root'
 })
 export class RoleGuard implements CanActivate {
-  constructor(private authService: AuthService, private router: Router) {}
+  constructor(private authService: AuthService, private firestore: Firestore, private router: Router) {}
 
-  canActivate(
-    route: ActivatedRouteSnapshot,
-    state: RouterStateSnapshot
-  ): Observable<boolean | UrlTree> | Promise<boolean | UrlTree> | boolean | UrlTree {
+  canActivate(route: ActivatedRouteSnapshot): Observable<boolean> {
     const expectedRole = route.data['expectedRole'] as string;
 
-    return this.authService.user$.pipe(
+    return combineLatest([
+      this.authService.authReady$,
+      this.authService.user$
+    ]).pipe(
+      filter(([ready]) => ready),
       take(1),
-      map(user => {
-        if (user) {
-          const userRoles = this.authService.getUserRoles(user.uid);
-          if (userRoles.includes(expectedRole)) {
-            return true;
-          } else {
-            this.router.navigate(['/dashboard']);
-            console.warn('Access Denied: User does not have the required role.');
-            return false;
-          }
-        } else {
+      switchMap(([_, user]) => {
+        if (!user) {
           this.router.navigate(['/login']);
-          return false;
+          return of(false);
         }
+
+        const userDocRef = doc(this.firestore, `users/${user.uid}`);
+        return from(getDoc(userDocRef)).pipe(
+          map(docSnap => {
+            const data = docSnap.data() as Users | undefined;
+            const roles = data?.roles;
+            if (roles && roles[expectedRole as keyof typeof roles]) {
+              return true;
+            } else {
+              this.router.navigate(['/dashboard']);
+              console.warn('Access Denied: User lacks role:', expectedRole);
+              return false;
+            }
+          })
+        );
       })
     );
   }

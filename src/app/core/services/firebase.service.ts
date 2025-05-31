@@ -5,7 +5,7 @@ import { getFirestore, Firestore } from 'firebase/firestore';
 import { environment } from '../../../environments/environment';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class FirebaseService {
   private app: FirebaseApp;

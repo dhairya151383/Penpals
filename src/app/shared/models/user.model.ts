@@ -1,16 +1,16 @@
-export interface AppUser {
+export interface Users {
   uid: string;
   email: string;
   username: string;
   roles: {
     admin: boolean;
     user: boolean;
-    author?: boolean; // Added author role as optional
+    author?: boolean;
   };
-  createdAt: string; // ISO string
+  createdAt: string;
   profile: {
     displayName: string;
     photoURL: string;
   };
-  provider: string; // 'google', 'facebook', 'email'
+  provider: string;
 }
