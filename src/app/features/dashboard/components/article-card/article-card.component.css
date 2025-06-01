@@ -1,0 +1,30 @@
+.card {
+        border: 1px solid #ddd;
+        border-radius: 6px;
+        overflow: hidden;
+        display: flex;
+        margin-bottom: 1rem;
+        box-shadow: 0 2px 6px rgb(0 0 0 / 0.1);
+      }
+      .thumbnail {
+        width: 120px;
+        height: 100%;
+        object-fit: cover;
+      }
+      .content {
+        padding: 0.75rem 1rem;
+        flex-grow: 1;
+      }
+      .brief {
+        color: #555;
+        margin: 0.5rem 0;
+      }
+      .meta {
+        font-size: 0.875rem;
+        color: #888;
+      }
+      .featured {
+        color: gold;
+        font-weight: bold;
+        margin-left: 1rem;
+      }

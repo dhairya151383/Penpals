@@ -1,0 +1,109 @@
+.author-list-wrapper {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+}
+
+.author-list-wrapper h2 {
+  font-size: 2rem;
+  margin-bottom: 1rem;
+}
+
+.author-list-card {
+  width: 90%;
+  background: #fff;
+  border-radius: 16px;
+  padding: 2rem;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  display: flex;
+  flex-direction: column;
+  gap: 2rem;
+}
+
+/* Filter section layout */
+.filter-bar-card {
+  width: 100%;
+  display: flex;
+  justify-content: flex-start;
+}
+
+.filter-bar {
+  display: flex;
+  width: 50%;
+  gap: 2%;
+}
+
+.filter-bar input {
+  width: 60%;
+  padding: 0.5rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+.filter-bar select {
+  width: 30%;
+  padding: 0.5rem;
+  border-radius: 8px;
+  border: 1px solid #ccc;
+}
+
+/* Author cards area */
+.author-cards-container {
+  width: 90%;
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1.5rem;
+  justify-content: center;
+}
+
+.author-card {
+  width: 100%;
+  background: #f9f9f9;
+  border-radius: 12px;
+  padding: 1rem;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+  flex-direction: column;
+  align-items: left;
+  transition: transform 0.2s ease;
+}
+
+.author-card:hover {
+  transform: translateY(-4px);
+}
+
+.author-card img {
+  width: 96px;
+  height: 96px;
+  border-radius: 50%;
+  object-fit: cover;
+  margin-bottom: 1rem;
+}
+
+.author-info {
+  text-align: center;
+}
+
+.author-name {
+  font-weight: bold;
+  font-size: 1.1rem;
+  color: #333;
+  text-decoration: none;
+}
+
+.author-name:hover {
+  text-decoration: underline;
+}
+
+.author-bio {
+  margin-top: 0.5rem;
+  color: #555;
+  font-size: 0.95rem;
+  line-height: 1.4;
+  overflow: hidden;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 5;
+  line-clamp: 5;
+}
+

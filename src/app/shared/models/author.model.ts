@@ -1,14 +1,14 @@
 export interface Author {
-  id?: string;            // Firestore document ID
-  name: string;           // Full name
-  bio?: string;           // Short biography
-  avatarUrl?: string;     // Profile picture URL
-  website?: string;       // Personal or professional website
-  socialLinks?: {         // Optional social media links
+  id?: string;
+  name: string;
+  bio?: string;
+  tags?: string[];
+  avatarUrl?: string;
+  website?: string;
+  socialLinks?: {
     twitter?: string;
     linkedin?: string;
-    github?: string;
-    [key: string]: string | undefined;
+    facebook?: string;
   };
   createdAt?: Date | string;
   updatedAt?: Date | string;

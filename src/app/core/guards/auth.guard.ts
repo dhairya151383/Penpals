@@ -1,14 +1,15 @@
 // src/app/core/guards/auth.guard.ts
 import { Injectable } from '@angular/core';
 import { CanActivate, Router } from '@angular/router';
-import { Observable, of, combineLatest } from 'rxjs';
-import { map, filter, take } from 'rxjs/operators';
+import { Observable, combineLatest } from 'rxjs';
+import { filter, take, map } from 'rxjs/operators';
 import { AuthService } from '../services/auth.service';
 
 @Injectable({
-  providedIn: 'root'
+  providedIn: 'root',
 })
 export class AuthGuard implements CanActivate {
+
   constructor(private authService: AuthService, private router: Router) {}
 
   canActivate(): Observable<boolean> {
@@ -16,7 +17,7 @@ export class AuthGuard implements CanActivate {
       this.authService.authReady$,
       this.authService.user$
     ]).pipe(
-      filter(([ready]) => ready), // wait until Firebase Auth is initialized
+      filter(([ready]) => ready), // Wait until Firebase Auth is initialized
       take(1),
       map(([_, user]) => {
         if (user) return true;

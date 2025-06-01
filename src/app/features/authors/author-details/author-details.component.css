@@ -1,0 +1,147 @@
+.author-card {
+  width: 100%;
+  max-width: 1000px;
+  margin: 2rem auto;
+  background: #ffffff;
+  border-radius: 16px;
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
+  padding: 2rem;
+  box-sizing: border-box;
+  overflow-x: auto;
+}
+
+
+
+.author-container {
+  display: flex;
+  flex-direction: row;
+  flex-wrap: wrap;
+  gap: 2rem;
+  align-items: flex-start;
+}
+
+.author-left {
+  flex: 1 1 250px;
+  text-align: center;
+}
+
+.avatar {
+  width: 100%;
+  max-width: 250px;
+  border-radius: 10px;
+  object-fit: cover;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.author-right {
+  flex: 2 1 0;
+  min-width: 0;
+  padding-top: 1rem;
+}
+
+.author-name {
+  font-size: 2rem;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  font-family: 'Georgia', serif;
+}
+
+.author-bio {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+}
+
+.tags {
+  margin-bottom: 1rem;
+}
+
+.tag {
+  display: inline-block;
+  background-color: #e2f3e4;
+  color: #2e7d32;
+  padding: 0.4rem 0.8rem;
+  border-radius: 12px;
+  margin: 0 0.3rem 0.3rem 0;
+  font-size: 0.9rem;
+}
+
+.website {
+  margin: 1rem 0;
+}
+
+.website a {
+  color: #007acc;
+  text-decoration: none;
+}
+
+.website a:hover {
+  text-decoration: underline;
+}
+
+.social-links {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+  margin-top: 1rem;
+}
+
+.social-links img {
+  width: 28px;
+  height: 28px;
+  transition: transform 0.2s ease;
+}
+
+.social-links img:hover {
+  transform: scale(1.1);
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .author-container {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .author-left, .author-right {
+    width: 100%;
+    text-align: center;
+  }
+  .author-name {
+    font-size: 1.6rem;
+  }
+}
+.author-bio {
+  font-size: 1.1rem;
+  line-height: 1.6;
+  margin-bottom: 1rem;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  max-width: 100%;
+}
+
+.author-bio * {
+  max-width: 100%;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  box-sizing: border-box;
+}
+.author-bio h1,
+.author-bio h2,
+.author-bio h3 {
+  font-size: 1.5rem;
+  margin-top: 1rem;
+  margin-bottom: 0.5rem;
+}
+
+.author-bio pre,
+.author-bio code {
+  font-size: 0.95rem;
+  background-color: #f8f8f8;
+  padding: 0.5rem;
+  border-radius: 6px;
+  overflow-x: auto;
+  display: block;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+}

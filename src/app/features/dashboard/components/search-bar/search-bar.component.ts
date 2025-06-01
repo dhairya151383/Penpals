@@ -7,26 +7,8 @@ import { debounceTime, distinctUntilChanged, Subject } from 'rxjs';
   selector: 'app-search-bar',
   standalone: true,
   imports: [CommonModule, FormsModule],
-  template: `
-    <input
-      type="search"
-      [(ngModel)]="query"
-      (ngModelChange)="onInputChange($event)"
-      placeholder="Search articles..."
-      class="search-input"
-    />
-  `,
-  styles: [
-    `
-      .search-input {
-        width: 100%;
-        padding: 0.5rem;
-        font-size: 1rem;
-        border-radius: 4px;
-        border: 1px solid #ccc;
-      }
-    `,
-  ],
+  templateUrl: './search-bar.component.html',
+  styleUrls: ['./search-bar.component.css'],
 })
 export class SearchBarComponent {
   @Output() search = new EventEmitter<string>();

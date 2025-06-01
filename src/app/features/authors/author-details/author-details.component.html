@@ -1,1 +1,42 @@
-<p>author-details works!</p>
+<div *ngIf="author" class="author-card">
+  <div class="author-container">
+    <div class="author-left">
+      <img *ngIf="author.avatarUrl" [src]="author.avatarUrl" alt="{{ author.name }}" class="avatar" />
+    </div>
+
+    <div class="author-right">
+      <h2 class="author-name">
+        {{ author.name }}
+      </h2>
+
+      <p *ngIf="author.bio" class="author-bio" [innerHTML]="author.bio"></p>
+
+      <div *ngIf="author.tags?.length" class="tags">
+        <span *ngFor="let tag of author.tags" class="tag">{{ tag }}</span>
+      </div>
+
+      <p *ngIf="author.website" class="website">
+        🌐 <a [href]="author.website" target="_blank">{{ author.website }}</a>
+      </p>
+
+      <div *ngIf="author.socialLinks" class="social-links">
+        <a *ngIf="author.socialLinks.twitter" [href]="author.socialLinks.twitter" target="_blank" aria-label="Twitter">
+          <img src="assets/icons/twitter.svg" alt="Twitter" />
+        </a>
+        <a *ngIf="author.socialLinks.linkedin" [href]="author.socialLinks.linkedin" target="_blank"
+          aria-label="LinkedIn">
+          <img src="assets/icons/linkedin.svg" alt="LinkedIn" />
+        </a>
+        <a *ngIf="author.socialLinks.facebook" [href]="author.socialLinks.facebook" target="_blank"
+          aria-label="Facebook">
+          <img src="assets/icons/facebook.svg" alt="Facebook" />
+        </a>
+      </div>
+    </div>
+  </div>
+  <div class="edit-button-wrapper">
+    <button *ngIf="canEdit" class="edit-button" [routerLink]="['/authors/edit', author.id]">
+      ✏️ Edit Author
+    </button>
+  </div>
+</div>

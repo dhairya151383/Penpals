@@ -1,0 +1,55 @@
+<div class="author-edit-card" [formGroup]="form">
+  <h2>Edit Author</h2>
+
+  <div class="author-edit-grid">
+    <!-- Avatar Upload -->
+    <div class="avatar-upload">
+      <img [src]="avatarUrl" alt="Avatar" class="avatar-preview" />
+      <input type="file" (change)="onImageUpload($event)" />
+    </div>
+
+    <!-- Form Content -->
+    <div class="author-form">
+      <label>Name:</label>
+      <input formControlName="name" class="input" />
+      <div *ngIf="form.get('name')?.invalid && form.get('name')?.touched" class="error">
+        Name is required.
+      </div>
+
+      <label>Tags:</label>
+      <app-tag-selector [(selectedTags)]="tags"></app-tag-selector>
+
+      <div formGroupName="socialLinks" class="social-inputs">
+        <div class="social-field" title="Twitter">
+          <i class="fab fa-twitter"></i>
+          <input formControlName="twitter" placeholder="Twitter URL" />
+        </div>
+        <div class="social-field" title="LinkedIn">
+          <i class="fab fa-linkedin"></i>
+          <input formControlName="linkedin" placeholder="LinkedIn URL" />
+        </div>
+        <div class="social-field" title="Facebook">
+          <i class="fab fa-facebook"></i>
+          <input formControlName="facebook" placeholder="Facebook URL" />
+        </div>
+      </div>
+
+      <label>Website:</label>
+      <input formControlName="website" class="input" />
+    </div>
+
+    <!-- Bio -->
+    <div class="bio-editor">
+      <label>Bio:</label>
+      <quill-editor formControlName="bio" [style]="{ height: '200px' }"></quill-editor>
+      <div *ngIf="form.get('bio')?.invalid && form.get('bio')?.touched" class="error">
+        Bio is required.
+      </div>
+    </div>
+  </div>
+
+  <!-- Save Button -->
+  <div class="save-button-container">
+    <button class="save-button" [disabled]="form.invalid" (click)="save()">Save</button>
+  </div>
+</div>

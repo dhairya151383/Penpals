@@ -1,1 +1,7 @@
-<p>search-bar works!</p>
+<input
+      type="search"
+      [(ngModel)]="query"
+      (ngModelChange)="onInputChange($event)"
+      placeholder="Search articles..."
+      class="search-input"
+    />

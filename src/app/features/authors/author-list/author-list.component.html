@@ -1,1 +1,32 @@
-<p>author-list works!</p>
+<div class="author-list-wrapper">
+  <h2>All Authors</h2>
+
+  <!-- Outer card -->
+  <div class="author-list-card">
+
+    <!-- Filter section -->
+    <div class="filter-bar-card">
+      <div class="filter-bar">
+        <input [(ngModel)]="filterTerm" (input)="applyFilters()" placeholder="Search by name..." />
+        <select [(ngModel)]="sortOption" (change)="applyFilters()">
+          <option value="name-asc">Sort by Name (A-Z)</option>
+          <option value="name-desc">Sort by Name (Z-A)</option>
+          <option value="date-newest">Newest</option>
+          <option value="date-oldest">Oldest</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Author cards container -->
+    <div class="author-cards-container">
+      <div class="author-card" *ngFor="let author of filteredAuthors">
+        <img *ngIf="author.avatarUrl" [src]="author.avatarUrl" alt="{{ author.name }}" />
+        <div class="author-info">
+          <a [routerLink]="['/authors', author.id]" class="author-name">{{ author.name }}</a>
+          <p *ngIf="author.bio" class="author-bio" [innerHTML]="author.bio | truncate:150"></p>
+        </div>
+      </div>
+    </div>
+    
+  </div>
+</div>

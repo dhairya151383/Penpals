@@ -1,0 +1,102 @@
+.author-edit-card {
+  width: 80%;
+  margin: 2rem auto;
+  padding: 2rem;
+  background-color: white;
+  border-radius: 12px;
+  box-shadow: 0 0 12px rgba(0, 0, 0, 0.1);
+  font-family: 'Segoe UI', sans-serif;
+}
+
+.author-edit-grid {
+  display: grid;
+  grid-template-columns: 1fr 2fr 2fr;
+  gap: 1.5rem;
+  align-items: start;
+}
+
+.avatar-upload {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.avatar-preview {
+  width: 120px;
+  height: 120px;
+  border-radius: 100%;
+  object-fit: cover;
+  border: 2px solid #ccc;
+}
+
+.author-form label {
+  font-weight: bold;
+  margin-top: 1rem;
+  display: block;
+}
+
+.input, input, .author-form input {
+  width: 100%;
+  padding: 0.4rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+}
+
+.social-inputs {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  margin-top: 1rem;
+}
+
+.social-field {
+  display: flex;
+  align-items: center;
+  gap: 0.6rem;
+}
+
+.social-field i {
+  font-size: 1.2rem;
+  color: #555;
+  cursor: help;
+}
+
+.bio-editor {
+  grid-column: span 3;
+}
+
+.save-button-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 2rem;
+}
+
+.save-button {
+  padding: 0.6rem 2rem;
+  background-color: #2f855a;
+  color: white;
+  border: none;
+  border-radius: 8px;
+  font-size: 1.1rem;
+  cursor: pointer;
+}
+
+.save-button:hover {
+  background-color: #276749;
+}
+
+@media (max-width: 900px) {
+  .author-edit-grid {
+    grid-template-columns: 1fr;
+  }
+  .bio-editor {
+    grid-column: span 1;
+  }
+}
+.error {
+  color: red;
+  font-size: 0.85rem;
+  margin-top: 0.2rem;
+}
+

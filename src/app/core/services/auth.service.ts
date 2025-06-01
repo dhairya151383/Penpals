@@ -1,4 +1,3 @@
-// src/app/core/services/auth.service.ts
 import { Injectable } from '@angular/core';
 import {
   signInWithPopup,
@@ -14,6 +13,8 @@ import { Observable, BehaviorSubject } from 'rxjs';
 import { Firestore, doc, setDoc } from '@angular/fire/firestore';
 import { Users } from './../../shared/models/user.model';
 import { FirebaseService } from '../services/firebase.service';
+import { AuthorService } from './author.service';
+import { Author } from '../../shared/models/author.model';
 
 @Injectable({
   providedIn: 'root',
@@ -22,19 +23,20 @@ export class AuthService {
   user$: Observable<User | null>;
   authReady$ = new BehaviorSubject<boolean>(false);
   private firestore: Firestore;
+  private readonly defaultAvatarUrl = 'assets/images/defaultAvatar.jpg'; // 👈 Set default avatar path
 
-  constructor(private firebaseService: FirebaseService) {
+  constructor(
+    private firebaseService: FirebaseService,
+    private authorService: AuthorService
+  ) {
     this.firestore = firebaseService.firestore;
 
-    // Observable for the current user
-    // Since `user` function is not imported, subscribe to onAuthStateChanged manually:
     this.user$ = new Observable((subscriber) => {
       return onAuthStateChanged(this.firebaseService.auth, (user) => {
         subscriber.next(user);
       });
     });
 
-    // Signal when auth is ready (initial auth state restored)
     onAuthStateChanged(this.firebaseService.auth, () => {
       this.authReady$.next(true);
     });
@@ -64,27 +66,37 @@ export class AuthService {
   }
 
   async registerWithEmail(
-  email: string,
-  password: string,
-  username: string,
-  role: string,
-  displayName: string
-): Promise<User | null> {
-  try {
-    const result = await createUserWithEmailAndPassword(this.firebaseService.auth, email, password);
-    
-    // Update the Firebase Auth profile displayName
-    await updateProfile(result.user, { displayName });
-    
-    // Save user info to Firestore
-    await this.saveUserData(result.user, username, 'email', role);
+    email: string,
+    password: string,
+    username: string,
+    role: string,
+    displayName: string
+  ): Promise<User | null> {
+    try {
+      const result = await createUserWithEmailAndPassword(this.firebaseService.auth, email, password);
 
-    return result.user;
-  } catch (error) {
-    console.error('Register Error:', error);
-    throw error;
+      await updateProfile(result.user, { displayName });
+
+      await this.saveUserData(result.user, username, 'email', role, displayName);
+
+      if (role === 'author') {
+        const avatarUrl = result.user.photoURL || this.defaultAvatarUrl;
+        const authorData: Author = {
+          id: result.user.uid,
+          name: displayName,
+          avatarUrl,
+          createdAt: new Date().toISOString(),
+        };
+
+        await this.authorService.create(result.user.uid, authorData);
+      }
+
+      return result.user;
+    } catch (error) {
+      console.error('Register Error:', error);
+      throw error;
+    }
   }
-}
 
   async signOut() {
     try {
@@ -122,7 +134,7 @@ export class AuthService {
       createdAt: new Date().toISOString(),
       profile: {
         displayName: displayName || user.displayName || username || 'Anonymous User',
-        photoURL: user.photoURL || 'https://placehold.co/150x150/cccccc/000000?text=User',
+        photoURL: user.photoURL || this.defaultAvatarUrl,
       },
       provider,
     };

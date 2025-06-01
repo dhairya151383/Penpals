@@ -1,4 +1,3 @@
-// src/app/core/guards/role.guard.ts
 import { Injectable } from '@angular/core';
 import { CanActivate, ActivatedRouteSnapshot, Router } from '@angular/router';
 import { Observable, combineLatest, from, of } from 'rxjs';
@@ -15,6 +14,8 @@ export class RoleGuard implements CanActivate {
 
   canActivate(route: ActivatedRouteSnapshot): Observable<boolean> {
     const expectedRole = route.data['expectedRole'] as string;
+    const allowSelfEdit = route.data['allowSelfEdit'] === true;
+    const routeId = route.paramMap.get('id');
 
     return combineLatest([
       this.authService.authReady$,
@@ -26,6 +27,11 @@ export class RoleGuard implements CanActivate {
         if (!user) {
           this.router.navigate(['/login']);
           return of(false);
+        }
+
+        // ✅ Allow self-editing if configured and route ID matches user UID
+        if (allowSelfEdit && routeId && routeId === user.uid) {
+          return of(true);
         }
 
         const userDocRef = doc(this.firestore, `users/${user.uid}`);

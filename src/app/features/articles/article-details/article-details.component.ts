@@ -6,6 +6,7 @@ import { AuthorService } from '../../../core/services/author.service';
 import { Author } from '../../../shared/models/author.model';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
+import { AuthService } from '../../../core/services/auth.service';
 
 
 @Component({
@@ -16,23 +17,28 @@ import { CommonModule } from '@angular/common';
   styleUrl: './article-details.component.css',
 })
 export class ArticleDetailsComponent implements OnInit {
-  article: Article | null = null;
   author: Author | null = null;
+  canEdit = false;
+  article: Article | null = null;
 
   constructor(
     private route: ActivatedRoute,
-    private articleService: ArticleService,
-    private authorService: AuthorService
+    private authorService: AuthorService,
+    private authService: AuthService
   ) {}
 
   async ngOnInit() {
-    
     const id = this.route.snapshot.paramMap.get('id');
     if (!id) return;
 
-    this.article = await this.articleService.getById(id);
-    if (this.article?.authorId) {
-      this.author = await this.authorService.getById(this.article.authorId);
-    }
+    this.author = await this.authorService.getById(id);
+
+    // Optionally fetch an article if needed for the template
+    // or remove usage of article if not relevant here
+
+    this.authService.user$.subscribe((user) => {
+      const uid = user?.uid ?? null;
+      this.canEdit = uid === this.author?.id;
+    });
   }
 }
