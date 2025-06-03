@@ -19,16 +19,17 @@ export class AuthorEditComponent implements OnInit {
   tags: Tag[] = [];
   avatarUrl: string = 'assets/avatar-placeholder.png';
   authorId!: string;
+  loading = true;
+  error: string | null = null;
 
   constructor(
     private fb: FormBuilder,
     private authorService: AuthorService,
     private route: ActivatedRoute,
     private router: Router
-  ) { }
+  ) {}
 
   ngOnInit() {
-    // Initialize empty form first
     this.form = this.fb.group({
       name: ['', Validators.required],
       website: [''],
@@ -45,10 +46,9 @@ export class AuthorEditComponent implements OnInit {
       this.authorService.getById(id).then(author => {
         if (author) {
           this.authorId = id;
-          this.tags = (author.tags || []).map(name => ({ name , type: 'author'}));
+          this.tags = (author.tags || []).map(name => ({ name, type: 'author' }));
           this.avatarUrl = author.avatarUrl || this.avatarUrl;
 
-          // Patch form values without replacing the form group
           this.form.patchValue({
             name: author.name || '',
             website: author.website || '',
@@ -57,10 +57,19 @@ export class AuthorEditComponent implements OnInit {
               twitter: author.socialLinks?.twitter || '',
               linkedin: author.socialLinks?.linkedin || '',
               facebook: author.socialLinks?.facebook || '',
-            }
+            },
           });
+        } else {
+          this.error = 'Author not found.';
         }
+      }).catch(err => {
+        console.error(err);
+        this.error = 'Failed to load author data.';
+      }).finally(() => {
+        this.loading = false;
       });
+    } else {
+      this.loading = false;
     }
   }
   onTagChange(tags: Tag[]) {

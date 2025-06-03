@@ -19,6 +19,7 @@ import { Tag } from '../../../shared/models/tag.model';
 @Component({
   selector: 'app-article-edit',
   templateUrl: './article-edit.component.html',
+  styleUrls: ['./article-edit.component.css'],
   standalone: true,
   imports: [CommonModule, ReactiveFormsModule, QuillModule, TagSelectorComponent],
 })
@@ -96,20 +97,6 @@ export class ArticleEditComponent implements OnInit {
 
   hasDraft(): boolean {
     return !!localStorage.getItem(this.draftStorageKey);
-  }
-
-  restoreDraft() {
-    const draft = localStorage.getItem(this.draftStorageKey);
-    if (draft) {
-      const draftData = JSON.parse(draft);
-      this.form.patchValue({
-        title: draftData.title,
-        briefDescription: draftData.briefDescription,
-        content: draftData.content,
-        isFeatured: draftData.isFeatured
-      });
-      this.selectedTags = draftData.selectedTags || [];
-    }
   }
 
   discardDraft() {

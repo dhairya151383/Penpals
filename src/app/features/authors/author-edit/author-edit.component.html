@@ -1,58 +1,75 @@
-<div class="author-edit-card" [formGroup]="form">
-  <h2>Edit Author</h2>
-
-  <div class="author-edit-grid">
-    <!-- Avatar Upload -->
-    <div class="avatar-upload">
-      <img [src]="avatarUrl" alt="Avatar" class="avatar-preview" />
-      <input type="file" (change)="onImageUpload($event)" />
-    </div>
-
-    <!-- Form Content -->
-    <div class="author-form">
-      <label>Name:</label>
-      <input formControlName="name" class="input" />
-      <div *ngIf="form.get('name')?.invalid && form.get('name')?.touched" class="error">
-        Name is required.
+<form [formGroup]="form" class="article-creation-page" (ngSubmit)="save()" *ngIf="!loading && !error; else loadingTpl">
+  <div class="article-creation-container">
+    <!-- Left Column -->
+    <div class="form-card">
+      <div class="card-header">
+        <h2>Edit Author</h2>
+        <hr />
       </div>
 
-      <label>Tags:</label>
-      <app-tag-selector [selectedTags]="tags" (selectedTagsChange)="onTagChange($event)" [tagType]="'author'"
-        [filterOnly]="false">
-      </app-tag-selector>
+      <div class="form-group avatar-upload">
+        <img [src]="avatarUrl" alt="Avatar" class="avatar-preview" />
+        <input type="file" (change)="onImageUpload($event)" />
+      </div>
 
+      <div class="form-group">
+        <label for="name">Name</label>
+        <input id="name" type="text" formControlName="name" />
+        <div class="error" *ngIf="form.get('name')?.invalid && form.get('name')?.touched">
+          Name is required.
+        </div>
+      </div>
 
-      <div formGroupName="socialLinks" class="social-inputs">
-        <div class="social-field" title="Twitter">
+      <div class="form-group">
+        <label>Tags</label>
+        <app-tag-selector [selectedTags]="tags" (selectedTagsChange)="onTagChange($event)" [tagType]="'author'"
+          [filterOnly]="false">
+        </app-tag-selector>
+      </div>
+    </div>
+
+    <!-- Right Column -->
+    <div class="editor-card">
+      <div class="card-header">
+        <h3>Author Details</h3>
+        <hr />
+      </div>
+
+      <div class="form-group">
+        <label for="website">Website</label>
+        <input id="website" type="text" formControlName="website" />
+      </div>
+
+      <div formGroupName="socialLinks" class="form-group">
+        <label>Social Links</label>
+        <div class="social-field">
           <i class="fab fa-twitter"></i>
           <input formControlName="twitter" placeholder="Twitter URL" />
         </div>
-        <div class="social-field" title="LinkedIn">
+        <div class="social-field">
           <i class="fab fa-linkedin"></i>
           <input formControlName="linkedin" placeholder="LinkedIn URL" />
         </div>
-        <div class="social-field" title="Facebook">
+        <div class="social-field">
           <i class="fab fa-facebook"></i>
           <input formControlName="facebook" placeholder="Facebook URL" />
         </div>
       </div>
 
-      <label>Website:</label>
-      <input formControlName="website" class="input" />
-    </div>
-
-    <!-- Bio -->
-    <div class="bio-editor">
-      <label>Bio:</label>
-      <quill-editor formControlName="bio" [style]="{ height: '200px' }"></quill-editor>
-      <div *ngIf="form.get('bio')?.invalid && form.get('bio')?.touched" class="error">
-        Bio is required.
+      <div class="form-group">
+        <label>Bio</label>
+        <quill-editor formControlName="bio" [style]="{ height: '200px' }"></quill-editor>
+        <div class="error" *ngIf="form.get('bio')?.invalid && form.get('bio')?.touched">
+          Bio is required.
+        </div>
       </div>
+
+      <button type="submit" class="save-button" [disabled]="form.invalid">Save</button>
     </div>
   </div>
+</form>
+<ng-template #loadingTpl>
+  <p class="loading-text">Loading author data...</p>
+</ng-template>
 
-  <!-- Save Button -->
-  <div class="save-button-container">
-    <button class="save-button" [disabled]="form.invalid" (click)="save()">Save</button>
-  </div>
-</div>
+<div *ngIf="error" class="global-error">{{ error }}</div>
