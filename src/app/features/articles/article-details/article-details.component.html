@@ -16,7 +16,6 @@
         {{ article | articleDate | date : 'mediumDate' }}
       </p>
       <p class="article-info">
-        <span *ngIf="article.readingTime">🕒 {{ article.readingTime }} min read</span>
         <span *ngIf="article.likesCount"> | 👍 {{ article.likesCount }} likes</span>
         <span *ngIf="article.commentsCount"> | 💬 {{ article.commentsCount }} comments</span>
       </p>

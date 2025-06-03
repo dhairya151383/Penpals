@@ -30,8 +30,13 @@ export class TagSelectorComponent implements OnInit {
   }
 
   async addTag() {
-    if (this.filterOnly || !this.newTagName.trim() || this.selectedTags.length >= 10) return;
-    const tag = await this.tagService.addTag(this.newTagName.trim(), this.tagType);
+    const trimmedName = this.newTagName.trim();
+    if (this.filterOnly || !trimmedName || this.selectedTags.length >= 10) return;
+    if (trimmedName.length > 15) {
+      alert('Tag name cannot exceed 15 characters.');
+      return;
+    }
+    const tag = await this.tagService.addTag(trimmedName, this.tagType);
     if (!this.selectedTags.find(t => t.id === tag.id)) {
       this.selectedTags.push(tag);
       this.selectedTagsChange.emit(this.selectedTags);

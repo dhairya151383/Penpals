@@ -7,12 +7,9 @@ export interface Article {
   authorId: string;              // Ref to Author document
   authorName?: string;           // Redundant but useful for quick UI display
   publishDate: Date | string | null;
-
   tags?: string[];               // e.g. ["AI", "Education"]
   isFeatured?: boolean;         // For homepage or highlighted display
-  isPublished?: boolean;        // Useful for draft/save modes
   likesCount?: number;          // Social engagement
   commentsCount?: number;       // Optional, to cache number of comments
-  readingTime?: number;         // In minutes (can be calculated from content)
   updatedAt?: Date | string;     // Last edit time
 }
