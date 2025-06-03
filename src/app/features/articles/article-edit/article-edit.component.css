@@ -1,14 +1,16 @@
 .article-creation-page {
   display: flex;
   justify-content: center;
+  width: 100%;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   color: #333;
   margin: 2rem 0;
 }
 
 .article-creation-container {
-  display: flex;
-  width: 90vw; /* 90% of viewport width */
+  display: flex; /* Ensure flex display */
+  flex-direction: row; /* Explicitly set to row for horizontal alignment */
+  width: 90vw;
   background: #fff;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0,0,0,0.15);
@@ -17,7 +19,7 @@
 
 /* Left card 2/5 width */
 .form-card {
-  flex: 2;
+  flex: 2; /* Takes 2 parts of the available space */
   padding: 1.5rem 2rem;
   display: flex;
   flex-direction: column;
@@ -25,7 +27,7 @@
 
 /* Right card 3/5 width */
 .editor-card {
-  flex: 3;
+  flex: 3; /* Takes 3 parts of the available space */
   padding: 1.5rem 2rem;
   display: flex;
   flex-direction: column;
@@ -46,8 +48,7 @@
   width: 50px;
 }
 
-.article-form .form-group,
-.editor-card .form-group {
+.form-group { /* Targeting form-group in both cards */
   margin-bottom: 1.25rem;
   display: flex;
   flex-direction: column;
@@ -88,7 +89,7 @@ quill-editor:focus-within {
   height: 18px;
 }
 
-button[type="submit"] {
+.save-button { /* Changed from button[type="submit"] to save-button class */
   align-self: flex-start;
   padding: 0.6rem 1.6rem;
   background-color: #2e7d32;
@@ -99,15 +100,15 @@ button[type="submit"] {
   font-size: 1.1rem;
   cursor: pointer;
   transition: background-color 0.3s ease;
-  margin-top: auto;
+  margin-top: auto; /* Pushes the button to the bottom */
 }
 
-button[type="submit"]:disabled {
+.save-button:disabled {
   background-color: #a5d6a7;
   cursor: not-allowed;
 }
 
-button[type="submit"]:hover:not(:disabled) {
+.save-button:hover:not(:disabled) {
   background-color: #1b5e20;
 }
 
@@ -118,44 +119,58 @@ button[type="submit"]:hover:not(:disabled) {
   font-weight: 600;
 }
 
-.global-error {
-  margin-top: 1rem;
-  color: #b71c1c;
-  font-weight: 700;
-  font-size: 1rem;
+/* Avatar upload specific styles */
+.avatar-upload {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin-bottom: 1rem;
 }
 
-.loading-text {
-  text-align: center;
-  font-size: 1.2rem;
-  color: #2e7d32;
+.social-field {
+  display: flex;
+  align-items: center;
+  gap: 8px; /* Consistent gap */
+  margin-bottom: 12px;
 }
 
-pre {
-  background: #f7f7f7;
-  border: 1px solid #ccc;
-  padding: 0.8rem;
-  border-radius: 5px;
-  font-size: 0.8rem;
-  overflow-x: auto;
-  margin-top: 1rem;
+.social-field svg {
+  transition: color 0.3s ease;
+  cursor: pointer;
 }
 
-/* Responsive */
+/* Social media brand colors */
+.social-field.twitter svg {
+  color: #1DA1F2;
+}
+.social-field.linkedin svg {
+  color: #0077B5;
+}
+.social-field.facebook svg {
+  color: #1877F2;
+}
+
+/* Responsive adjustments */
 @media (max-width: 768px) {
   .article-creation-page {
     margin: 1rem;
   }
   .article-creation-container {
-    flex-direction: column;
+    flex-direction: column; /* Stack vertically on small screens */
     width: 100vw;
   }
-  .form-card, .editor-card {
-    flex: none;
+  .form-card,
+  .editor-card {
+    flex: none; /* Remove flex grow */
     width: 100%;
     padding: 1rem;
   }
-  button[type="submit"] {
-    width: 100%;
+  .editor-card {
+    border-left: none; /* Remove left border */
+    border-top: 1px solid #e0e0e0; /* Add top border for separation */
+  }
+  .save-button {
+    width: 100%; /* Full width button on small screens */
+    align-self: stretch;
   }
 }

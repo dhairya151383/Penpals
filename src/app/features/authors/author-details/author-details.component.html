@@ -16,10 +16,6 @@
         <span *ngFor="let tag of author.tags" class="tag">{{ tag }}</span>
       </div>
 
-      <p *ngIf="author.website" class="website">
-        🌐 <a [href]="author.website" target="_blank">{{ author.website }}</a>
-      </p>
-
       <div *ngIf="author.socialLinks" class="social-links">
         <a *ngIf="author.socialLinks.twitter" [href]="author.socialLinks.twitter" target="_blank" aria-label="Twitter">
           <img src="assets/icons/twitter.svg" alt="Twitter" />

@@ -8,8 +8,8 @@
 }
 
 .article-creation-container {
-  display: flex !important;
-  flex-direction: row !important;
+  display: flex;
+  flex-direction: row; /* Ensure this is row for horizontal layout */
   width: 90vw;
   background: #fff;
   border-radius: 8px;
@@ -24,10 +24,6 @@
   display: flex;
   flex-direction: column;
 }
-.form-card, .editor-card {
-  width: auto !important;
-  max-width: none !important;
-}
 
 /* Right card 3/5 width */
 .editor-card {
@@ -37,10 +33,9 @@
   flex-direction: column;
   border-left: 1px solid #e0e0e0;
 }
-.form-card { border: 2px dashed red; }
-.editor-card { border: 2px dashed blue; }
-/* Shared card styles */
-.card-header h2,.card-header h3 {
+
+/* Shared card header styles */
+.card-header h2, .card-header h3 {
   margin: 0 0 0.5rem 0;
   font-weight: 700;
   color: #2e7d32;
@@ -53,7 +48,8 @@
   width: 50px;
 }
 
-.article-form .form-group,
+/* Specific form group styles, now matching ArticleCreateComponent's structure */
+.author-form .form-group, /* New selector for the wrapper */
 .editor-card .form-group {
   margin-bottom: 1.25rem;
   display: flex;
@@ -95,8 +91,8 @@ quill-editor:focus-within {
   height: 18px;
 }
 
-button[type="submit"] {
-  align-self: flex-start;
+.save-button {
+  align-self: flex-start; /* Aligns button to the left within its flex container */
   padding: 0.6rem 1.6rem;
   background-color: #2e7d32;
   border: none;
@@ -106,15 +102,15 @@ button[type="submit"] {
   font-size: 1.1rem;
   cursor: pointer;
   transition: background-color 0.3s ease;
-  margin-top: auto;
+  margin-top: auto; /* Pushes the button to the bottom of the .editor-card */
 }
 
-button[type="submit"]:disabled {
+.save-button:disabled {
   background-color: #a5d6a7;
   cursor: not-allowed;
 }
 
-button[type="submit"]:hover:not(:disabled) {
+.save-button:hover:not(:disabled) {
   background-color: #1b5e20;
 }
 
@@ -148,28 +144,32 @@ pre {
   margin-top: 1rem;
 }
 
-/* Responsive */
-/* @media (max-width: 768px) {
+/* Responsive adjustments */
+@media (max-width: 768px) {
   .article-creation-page {
     margin: 1rem;
   }
   .article-creation-container {
-    flex-direction: column;
+    flex-direction: column; /* Stack vertically on small screens */
     width: 100vw;
   }
   .form-card,
   .editor-card {
-    flex: none;
+    flex: none; /* Remove flex grow */
     width: 100%;
     padding: 1rem;
   }
-  button[type="submit"] {
-    width: 100%;
+  .editor-card {
+    border-left: none; /* Remove left border */
+    border-top: 1px solid #e0e0e0; /* Add top border for separation */
   }
-} */
+  .save-button { /* Ensure the save button goes full width on small screens */
+    width: 100%;
+    align-self: stretch;
+  }
+}
 
-/* Reuse article-creation-page & article-creation-container classes */
-
+/* Avatar upload specific styles */
 .avatar-upload {
   display: flex;
   flex-direction: column;
@@ -186,47 +186,12 @@ pre {
   margin-bottom: 0.5rem;
 }
 
+/* Social fields - keeping your existing styles for these */
 .social-field {
   display: flex;
   align-items: center;
-  gap: 0.5rem;
-  margin-bottom: 0.5rem;
-}
-
-.save-button {
-  margin-top: auto;
-  padding: 0.6rem 1.6rem;
-  background-color: #2e7d32;
-  border: none;
-  border-radius: 6px;
-  color: white;
-  font-weight: 700;
-  font-size: 1.1rem;
-  cursor: pointer;
-  transition: background-color 0.3s ease;
-}
-
-.save-button:disabled {
-  background-color: #a5d6a7;
-  cursor: not-allowed;
-}
-
-.save-button:hover:not(:disabled) {
-  background-color: #1b5e20;
-}
-
-/* Optional: If not already in base styles */
-.error {
-  margin-top: 0.25rem;
-  color: #d32f2f;
-  font-size: 0.9rem;
-  font-weight: 600;
-}
-.social-field svg {
-  margin-right: 8px; /* Add some space between the icon and the input */
-}
-.social-field:hover svg {
-  color: #007bff;
+  gap: 8px; /* Consistent gap */
+  margin-bottom: 12px;
 }
 
 .social-field svg {
@@ -234,46 +199,13 @@ pre {
   cursor: pointer;
 }
 
-/* Twitter brand blue */
+/* Social media brand colors */
 .social-field.twitter svg {
   color: #1DA1F2;
 }
-
-.social-field.twitter svg:hover,
-.social-field.twitter svg:focus {
-  color: #0d95e8;
-}
-
-/* LinkedIn brand blue */
 .social-field.linkedin svg {
   color: #0077B5;
 }
-
-.social-field.linkedin svg:hover,
-.social-field.linkedin svg:focus {
-  color: #005983;
-}
-
-/* Facebook brand blue */
 .social-field.facebook svg {
   color: #1877F2;
-}
-
-.social-field.facebook svg:hover,
-.social-field.facebook svg:focus {
-  color: #0f5ecb;
-}
-
-/* Optional: vertically center icon and input nicely */
-.social-field {
-  display: flex;
-  align-items: center;
-  gap: 8px;
-  margin-bottom: 12px;
-}
-
-.social-field input {
-  flex-grow: 1;
-  padding: 6px 8px;
-  font-size: 1rem;
 }

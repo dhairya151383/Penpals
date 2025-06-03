@@ -4,7 +4,6 @@ export interface Author {
   bio?: string;
   tags?: string[];
   avatarUrl?: string;
-  website?: string;
   socialLinks?: {
     twitter?: string;
     linkedin?: string;

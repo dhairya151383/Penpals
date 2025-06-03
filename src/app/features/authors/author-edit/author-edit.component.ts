@@ -54,7 +54,6 @@ export class AuthorEditComponent implements OnInit {
 
           this.form.patchValue({
             name: author.name || '',
-            website: author.website || '',
             bio: author.bio || '',
             socialLinks: {
               twitter: author.socialLinks?.twitter || '',
@@ -87,7 +86,6 @@ export class AuthorEditComponent implements OnInit {
 
   const updated: Partial<Author> = {
     name: this.form.value.name,
-    website: this.form.value.website,
     bio: this.form.value.bio,
     avatarUrl: this.avatarUrl,
     tags: this.tags.map(t => t.name),

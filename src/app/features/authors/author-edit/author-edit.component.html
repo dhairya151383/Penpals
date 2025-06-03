@@ -6,36 +6,33 @@
         <hr />
       </div>
 
-      <div class="form-group avatar-upload">
-        <app-upload-image [imageUrl]="avatarUrl" (imageChange)="onImageChange($event)">
-        </app-upload-image>
-      </div>
-
-      <div class="form-group">
-        <label for="name">Name</label>
-        <input id="name" type="text" formControlName="name" />
-        <div class="error" *ngIf="form.get('name')?.invalid && form.get('name')?.touched">
-          Name is required.
+      <div class="author-form">
+        <div class="form-group avatar-upload">
+          <app-upload-image [imageUrl]="avatarUrl" (imageChange)="onImageChange($event)">
+          </app-upload-image>
         </div>
-      </div>
 
-      <div class="form-group">
-        <label>Tags</label>
-        <app-tag-selector [selectedTags]="tags" (selectedTagsChange)="onTagChange($event)" [tagType]="'author'"
-          [filterOnly]="false">
-        </app-tag-selector>
-      </div>
+        <div class="form-group">
+          <label for="name">Name</label>
+          <input id="name" type="text" formControlName="name" />
+          <div class="error" *ngIf="form.get('name')?.invalid && form.get('name')?.touched">
+            Name is required.
+          </div>
+        </div>
+
+        <div class="form-group">
+          <label>Tags</label>
+          <app-tag-selector [selectedTags]="tags" (selectedTagsChange)="onTagChange($event)" [tagType]="'author'"
+            [filterOnly]="false">
+          </app-tag-selector>
+        </div>
+        </div>
     </div>
 
     <div class="editor-card">
       <div class="card-header">
         <h3>Author Details</h3>
         <hr />
-      </div>
-
-      <div class="form-group">
-        <label for="website">Website</label>
-        <input id="website" type="text" formControlName="website" />
       </div>
 
       <div formGroupName="socialLinks" class="form-group">

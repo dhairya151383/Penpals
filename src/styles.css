@@ -1,1 +1,30 @@
 /* You can add global styles to this file, and also import other style files */
+/* These styles should be in your main application stylesheet */
+.article-creation-page {
+  display: flex;
+  justify-content: center;
+  width: 100%;
+  font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  color: #333;
+  margin: 2rem 0;
+}
+
+.article-creation-container {
+  display: flex;
+  flex-direction: row; /* Explicitly set to row for horizontal alignment */
+  width: 90vw;
+  background: #fff;
+  border-radius: 8px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.15);
+  overflow: hidden;
+}
+
+/* Add the responsive media query here as well */
+@media (max-width: 768px) {
+  .article-creation-container {
+    flex-direction: column;
+    width: 100vw;
+  }
+}
+
+/* Any other global or shared utility styles */
