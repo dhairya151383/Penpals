@@ -228,3 +228,52 @@ pre {
 .social-field:hover svg {
   color: #007bff;
 }
+
+.social-field svg {
+  transition: color 0.3s ease;
+  cursor: pointer;
+}
+
+/* Twitter brand blue */
+.social-field.twitter svg {
+  color: #1DA1F2;
+}
+
+.social-field.twitter svg:hover,
+.social-field.twitter svg:focus {
+  color: #0d95e8;
+}
+
+/* LinkedIn brand blue */
+.social-field.linkedin svg {
+  color: #0077B5;
+}
+
+.social-field.linkedin svg:hover,
+.social-field.linkedin svg:focus {
+  color: #005983;
+}
+
+/* Facebook brand blue */
+.social-field.facebook svg {
+  color: #1877F2;
+}
+
+.social-field.facebook svg:hover,
+.social-field.facebook svg:focus {
+  color: #0f5ecb;
+}
+
+/* Optional: vertically center icon and input nicely */
+.social-field {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 12px;
+}
+
+.social-field input {
+  flex-grow: 1;
+  padding: 6px 8px;
+  font-size: 1rem;
+}

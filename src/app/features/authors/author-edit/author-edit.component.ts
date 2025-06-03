@@ -81,17 +81,6 @@ export class AuthorEditComponent implements OnInit {
   onImageChange(newImageUrl: string | null) {
     this.avatarUrl = newImageUrl || 'assets/avatar-placeholder.png';
   }
-  // onImageUpload(event: Event) {
-  //   const input = event.target as HTMLInputElement;
-  //   if (input.files && input.files.length > 0) {
-  //     const file = input.files[0];
-  //     const reader = new FileReader();
-  //     reader.onload = () => {
-  //       this.avatarUrl = reader.result as string;
-  //     };
-  //     reader.readAsDataURL(file);
-  //   }
-  // }
 
   async save() {
   if (this.form.invalid) return;

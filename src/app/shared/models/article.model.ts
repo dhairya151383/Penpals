@@ -14,7 +14,5 @@ export interface Article {
   likesCount?: number;          // Social engagement
   commentsCount?: number;       // Optional, to cache number of comments
   readingTime?: number;         // In minutes (can be calculated from content)
-
-  createdAt?: Date | string;     // Created timestamp (optional for auditing)
   updatedAt?: Date | string;     // Last edit time
 }

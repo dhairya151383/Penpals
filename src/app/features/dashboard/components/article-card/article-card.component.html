@@ -1,12 +1,30 @@
 <article class="card">
-    <img *ngIf="article.thumbnailUrl" [src]="article.thumbnailUrl" [alt]="article.title" class="thumbnail" />
-    <div class="content">
-        <a [routerLink]="['/articles', article.id]" [state]="{ article: article }">{{ article.title }}</a>
-        <p class="brief">{{ article.briefDescription }}</p>
-        <p class="meta">
-            By {{ article.authorName }} | {{ formattedPublishDate | date: 'mediumDate' }}
-            <span *ngIf="article.isFeatured" class="featured">★ Featured</span>
-        </p>
-
+  <div class="thumbnail-container">
+    <img
+      [src]="article.thumbnailUrl || 'assets/default-article.jpg'"
+      [alt]="article.title"
+      class="thumbnail"
+    />
+  </div>
+  <div class="content">
+    <div class="tags-container">
+      <span *ngFor="let tag of article.tags" class="tag">{{ tag }}</span>
     </div>
+    <a [routerLink]="['/articles', article.id]" [state]="{ article: article }" class="title">{{ article.title }}</a>
+    <p class="brief">{{ article.briefDescription }}</p>
+    <div class="meta-row">
+      <div class="author-info">
+        <img
+          [src]="'assets/default-author.png'"
+          alt="Author Avatar"
+          class="author-avatar"
+        />
+        <span class="author-details">
+          By {{ article.authorName }} on
+          {{ article | articleDate | date : 'mediumDate' }}
+        </span>
+      </div>
+      <span *ngIf="article.isFeatured" class="featured-icon">★</span>
+    </div>
+  </div>
 </article>

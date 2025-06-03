@@ -133,7 +133,6 @@ export class ArticleCreateComponent implements OnInit {
         publishDate: new Date(),
         tags: formValue.tags.map((tag: Tag) => tag.name),
         isFeatured: formValue.isFeatured,
-        createdAt: new Date(),
         updatedAt: new Date(),
       };
 

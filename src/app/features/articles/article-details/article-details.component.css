@@ -75,3 +75,37 @@
 .edit-btn:hover {
   background-color: #004d40;
 }
+.author-info {
+  display: flex;
+  align-items: center;
+  font-size: 0.8em; /* Original size, might need to reduce further */
+  color: #888;
+  /* Ensure no overflow issues if you have long names/dates */
+  white-space: nowrap; /* Prevent wrapping for the whole line */
+  overflow: hidden; /* Hide overflow if it still occurs */
+  text-overflow: ellipsis; /* Add ellipsis for clipped text */
+}
+
+.author-avatar {
+  width: 20px; /* Slightly reduced avatar size */
+  height: 20px; /* Slightly reduced avatar size */
+  border-radius: 50%;
+  object-fit: cover;
+  margin-right: 6px; /* Reduced margin */
+}
+
+.author-details {
+  font-size: 0.75em; /* Reduced font size for the combined text */
+  /* If you want to allow wrapping, remove white-space: nowrap; from .author-info */
+  line-height: 1.2; /* Adjust line height if it wraps to make it compact */
+}
+
+/* You might want to adjust .meta-row if items are too squished */
+.meta-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: auto;
+  /* Add some minimum height if needed to ensure visibility */
+  min-height: 25px; /* Example, adjust as necessary */
+}
