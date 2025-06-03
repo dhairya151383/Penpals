@@ -1,134 +1,196 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
+import { FormsModule } from '@angular/forms'; // For ngModel
+import { RouterModule } from '@angular/router'; // For routerLink in card
+
+
+import { debounceTime, distinctUntilChanged, Subject, Subscription, combineLatest, startWith, map } from 'rxjs'; // For search and filtering
 import { ArticleService } from '../../../core/services/article.service';
+import { AuthorService } from '../../../core/services/author.service';
+import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
 import { Article } from '../../../shared/models/article.model';
 import { ArticleCardComponent } from '../components/article-card/article-card.component';
-import { SearchBarComponent } from '../components/search-bar/search-bar.component';
-import { TagSelectorComponent } from '../../../shared/components/tag-selector/tag-selector.component';
-import { Tag } from '../../../shared/models/tag.model';
-
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, ArticleCardComponent, SearchBarComponent, TagSelectorComponent],
-  templateUrl: './dashboard.component.html',
-  styles: [
-    `
-      .dashboard {
-        max-width: 900px;
-        margin: 1rem auto;
-        padding: 0 1rem;
-      }
-      .loading,
-      .error,
-      .empty {
-        text-align: center;
-        font-size: 1.2rem;
-        color: #666;
-        margin: 1rem 0;
-      }
-      .articles-list {
-        margin-top: 1rem;
-      }
-      .pagination {
-        margin-top: 1rem;
-        text-align: center;
-      }
-      .pagination button {
-        margin: 0 0.5rem;
-        padding: 0.5rem 1rem;
-        font-size: 1rem;
-      }
-    `,
+  imports: [
+    CommonModule,
+    FormsModule,
+    RouterModule,
+    LoadingSpinnerComponent,
+    ArticleCardComponent,
   ],
+  templateUrl: './dashboard.component.html',
+  styleUrls: ['./dashboard.component.css'],
 })
-export class DashboardComponent implements OnInit {
+export class DashboardComponent implements OnInit, OnDestroy {
   articles: Article[] = [];
   filteredArticles: Article[] = [];
-  pagedArticles: Article[] = [];
+  allTags: string[] = []; // To store all unique tags from articles
+  selectedTags: string[] = []; // Tags currently selected for filtering
 
-  loading = false;
-  error: string | null = null;
+  loading = true;
+  errorMessage: string | null = null;
 
-  page = 1;
-  pageSize = 5;
-  totalPages = 1;
-  filterTags: Tag[] = [];
-  constructor(private articleService: ArticleService) { }
+  // Search properties
+  searchQuery = '';
+  private searchSubject = new Subject<string>();
+  private subscriptions = new Subscription();
 
-  ngOnInit(): void {
-    this.fetchArticles();
-  }
+  // Pagination properties
+  currentPage = 1;
+  itemsPerPage = 12; // Maximum 12 cards per page
 
-  async fetchArticles() {
-    this.loading = true;
-    this.error = null;
+  constructor(
+    private articleService: ArticleService,
+    private authorService: AuthorService // Inject author service
+  ) { }
+
+  async ngOnInit(): Promise<void> {
     try {
-      this.articles = await this.articleService.getAll();
-      this.filteredArticles = [...this.articles];
-      this.updatePagination();
-    } catch (err) {
-      this.error = 'Failed to load articles.';
+      // Fetch all articles
+      const fetchedArticles = await this.articleService.getAll();
+
+      // Fetch author names for articles
+      this.articles = await Promise.all(fetchedArticles.map(async article => {
+        if (article.authorId && !article.authorName) {
+          const author = await this.authorService.getById(article.authorId);
+          return { ...article, authorName: author?.name || 'Unknown Author' };
+        }
+        return article;
+      }));
+
+      // Extract unique tags
+      const uniqueTags = new Set<string>();
+      this.articles.forEach(article => {
+        article.tags?.forEach(tag => uniqueTags.add(tag));
+      });
+      this.allTags = Array.from(uniqueTags);
+
+      // Setup RxJS for filtering and search
+      this.setupFiltering();
+
+    } catch (error) {
+      console.error('Error fetching articles:', error);
+      this.errorMessage = 'Failed to load articles. Please try again later.';
     } finally {
       this.loading = false;
     }
   }
 
-  onSearch(query: string) {
-    query = query.trim().toLowerCase();
-    this.page = 1;
-
-    if (!query) {
-      this.filteredArticles = [...this.articles];
-    } else {
-      this.filteredArticles = this.articles.filter((a) =>
-        a.title.toLowerCase().includes(query) ||
-        a.briefDescription.toLowerCase().includes(query) ||
-        (a.tags && a.tags.some((tag) => tag.toLowerCase().includes(query)))
-      );
-    }
-    this.updatePagination();
+  ngOnDestroy(): void {
+    this.subscriptions.unsubscribe();
   }
 
-  updatePagination() {
-    this.totalPages = Math.ceil(this.filteredArticles.length / this.pageSize);
-    this.pagedArticles = this.filteredArticles.slice(
-      (this.page - 1) * this.pageSize,
-      this.page * this.pageSize
+  private setupFiltering(): void {
+    const search$ = this.searchSubject.pipe(
+      startWith(this.searchQuery), // Emit initial search query
+      debounceTime(300),
+      distinctUntilChanged()
     );
+
+    const tags$ = new Subject<string[]>(); // Subject for tag changes
+    this.subscriptions.add(tags$.subscribe(selectedTags => {
+      this.selectedTags = selectedTags;
+      this.applyFiltersAndPagination(); // Re-apply filters on tag change
+    }));
+
+
+    this.subscriptions.add(
+      combineLatest([search$]).subscribe(([searchQuery]) => {
+        this.searchQuery = searchQuery; // Update searchQuery when search input changes
+        this.applyFiltersAndPagination();
+      })
+    );
+    // Initial application of filters
+    this.applyFiltersAndPagination();
   }
 
-  nextPage() {
-    if (this.page < this.totalPages) {
-      this.page++;
-      this.updatePagination();
+
+  onSearchChange(value: string): void {
+    this.searchSubject.next(value);
+    this.currentPage = 1; // Reset to first page on new search
+  }
+
+  onTagClick(tag: string): void {
+    const index = this.selectedTags.indexOf(tag);
+    if (index > -1) {
+      this.selectedTags.splice(index, 1); // Remove tag if already selected
+    } else {
+      this.selectedTags.push(tag); // Add tag if not selected
     }
+    // Manually trigger filter application as tags$ is not used directly for this anymore
+    this.applyFiltersAndPagination();
+    this.currentPage = 1; // Reset to first page on tag change
   }
 
-  prevPage() {
-    if (this.page > 1) {
-      this.page--;
-      this.updatePagination();
-    }
-  }
-  onTagFilterChange(tags: Tag[]) {
-    this.filterTags = tags;
-    this.applyFilters();
+  isTagSelected(tag: string): boolean {
+    return this.selectedTags.includes(tag);
   }
 
-  applyFilters() {
-    let filtered = [...this.articles];
 
-    if (this.filterTags.length > 0) {
-      const tagNames = this.filterTags.map(tag => tag.name.toLowerCase());
-      filtered = filtered.filter(article =>
-        article.tags?.some(tag => tagNames.includes(tag.toLowerCase()))
+  applyFiltersAndPagination(): void {
+    let tempArticles = [...this.articles];
+
+    // Apply search filter
+    if (this.searchQuery) {
+      const lowerCaseQuery = this.searchQuery.toLowerCase();
+      tempArticles = tempArticles.filter(
+        (article) =>
+          article.title.toLowerCase().includes(lowerCaseQuery) ||
+          article.briefDescription.toLowerCase().includes(lowerCaseQuery) ||
+          article.authorName?.toLowerCase().includes(lowerCaseQuery) ||
+          article.tags?.some((tag) => tag.toLowerCase().includes(lowerCaseQuery))
       );
     }
 
-    this.filteredArticles = filtered;
-    this.page = 1;
+    // Apply tag filter
+    if (this.selectedTags.length > 0) {
+      tempArticles = tempArticles.filter((article) =>
+        this.selectedTags.every((tag) => article.tags?.includes(tag))
+      );
+    }
+
+    this.filteredArticles = tempArticles;
     this.updatePagination();
+  }
+
+  updatePagination(): void {
+    const startIndex = (this.currentPage - 1) * this.itemsPerPage;
+    const endIndex = startIndex + this.itemsPerPage;
+    // Slice based on filteredArticles, not original articles
+    this.articles = this.filteredArticles.slice(startIndex, endIndex);
+  }
+
+  // Pagination handlers
+  get totalPages(): number {
+    return Math.ceil(this.filteredArticles.length / this.itemsPerPage);
+  }
+
+  get pages(): number[] {
+    // Generate an array of page numbers for the pagination controls
+    return Array.from({ length: this.totalPages }, (_, i) => i + 1);
+  }
+
+  goToPage(page: number): void {
+    if (page >= 1 && page <= this.totalPages) {
+      this.currentPage = page;
+      this.updatePagination();
+    }
+  }
+
+  nextPage(): void {
+    if (this.currentPage < this.totalPages) {
+      this.currentPage++;
+      this.updatePagination();
+    }
+  }
+
+  prevPage(): void {
+    if (this.currentPage > 1) {
+      this.currentPage--;
+      this.updatePagination();
+    }
   }
 }

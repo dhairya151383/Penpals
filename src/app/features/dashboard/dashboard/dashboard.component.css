@@ -1,0 +1,308 @@
+/* Dashboard Container */
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #f8f8f8; /* Light background for the overall page */
+}
+
+/* Hero Section (Header with Background Image) */
+.hero-section {
+  background-image: url('./../../../../assets/images/header-bg.jpg');
+  background-size: cover;
+  background-position: center;
+  color: white; /* Text color over background */
+  padding: 80px 20px; /* Adjust padding as needed */
+  text-align: center;
+  position: relative; /* For overlay */
+  overflow: hidden; /* Hide anything overflowing */
+}
+
+.hero-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent overlay */
+  z-index: 1;
+}
+
+.hero-content {
+  position: relative;
+  z-index: 2; /* Ensure content is above overlay */
+  max-width: 900px; /* Limit width of content */
+  margin: 0 auto;
+}
+
+.hero-title {
+  font-size: 3em;
+  font-weight: bold;
+  margin-bottom: 15px;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.5);
+}
+
+.hero-description {
+  font-size: 1.1em;
+  line-height: 1.6;
+  margin-bottom: 30px;
+  max-width: 700px;
+  margin-left: auto;
+  margin-right: auto;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.4);
+}
+
+/* Search and Tags Group */
+.search-and-tags-group {
+  display: flex;
+  flex-wrap: wrap; /* Allow wrapping on smaller screens */
+  gap: 15px;
+  justify-content: center;
+  margin-bottom: 20px;
+}
+
+.search-input-wrapper {
+  flex-grow: 1; /* Allow search input to grow */
+  max-width: 400px; /* Limit max width */
+  position: relative;
+}
+
+.search-input {
+  width: 100%;
+  padding: 12px 40px 12px 15px; /* Adjust padding for icon */
+  border: none;
+  border-radius: 25px; /* Rounded corners */
+  font-size: 1em;
+  background-color: rgba(255, 255, 255, 0.9); /* Slightly transparent white */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.search-input:focus {
+  box-shadow: 0 0 0 3px rgba(100, 150, 255, 0.5); /* Focus outline */
+}
+
+.search-button {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #555;
+  cursor: pointer;
+}
+
+.search-button svg {
+  vertical-align: middle;
+}
+
+/* Clickable Tags (Alternative/Additional to Dropdown) */
+.clickable-tags {
+  margin-top: 20px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 10px;
+}
+
+.tag-pill {
+  background-color: rgba(255, 255, 255, 0.2);
+  color: white;
+  padding: 8px 15px;
+  border-radius: 20px;
+  font-size: 0.9em;
+  cursor: pointer;
+  transition: background-color 0.3s ease, border-color 0.3s ease;
+  border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.tag-pill:hover {
+  background-color: rgba(255, 255, 255, 0.4);
+}
+
+.tag-pill.selected {
+  background-color: #6495ed; /* Highlight selected tag */
+  border-color: #6495ed;
+  font-weight: bold;
+}
+
+
+/* Main Articles Card (This refers to the container for the articles) */
+.articles-main-card {
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+  /* Centered horizontally with auto margins */
+  margin: -60px auto 20px auto;
+  /* Covers approximately 80% of screen width, leaving room for a small margin at sides */
+  max-width: 1200px; /* A fixed max-width works better with `repeat(3, 1fr)` */
+  width: 80%; /* Takes 80% of parent's width, combined with max-width */
+  padding: 30px;
+  flex-grow: 1; /* Allows it to take up remaining space */
+  display: flex;
+  flex-direction: column;
+}
+
+.articles-grid {
+  display: grid;
+  /* Explicitly 3 columns, each taking an equal fraction of available space */
+  grid-template-columns: repeat(3, 1fr);
+  gap: 25px; /* Spacing between cards */
+  padding: 20px 0;
+  /* We no longer need justify-content: center here, as 1fr distribution handles centering */
+  flex-grow: 1; /* Allow grid to expand */
+}
+
+.no-articles-message {
+  text-align: center;
+  font-size: 1.2em;
+  color: #777;
+  padding: 50px;
+  grid-column: 1 / -1; /* Span across all columns */
+}
+
+/* Card Footer Pagination */
+.card-footer-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 20px;
+  border-top: 1px solid #eee; /* Separator line */
+  margin-top: 30px;
+  flex-wrap: wrap; /* Allow pagination buttons to wrap on small screens */
+}
+
+.pagination-button {
+  background-color: #007bff; /* Primary button color */
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin: 0 5px;
+  transition: background-color 0.3s ease;
+  font-size: 0.95em;
+  min-width: 100px; /* Ensure buttons have a minimum width */
+}
+
+.pagination-button:hover:not(:disabled) {
+  background-color: #0056b3;
+}
+
+.pagination-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.page-numbers {
+  display: flex;
+  flex-wrap: wrap; /* Allow page numbers to wrap */
+  justify-content: center;
+  margin: 0 10px; /* Space around page numbers */
+}
+
+.page-number {
+  background-color: #e9ecef;
+  color: #333;
+  padding: 10px 15px; /* Adjust padding for page numbers */
+  border-radius: 5px;
+  margin: 2px; /* Small margin between page numbers */
+  min-width: 40px; /* Minimum width for numbers */
+  text-align: center;
+}
+
+.page-number.active {
+  background-color: #007bff;
+  color: white;
+  font-weight: bold;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 1250px) { /* Adjust this breakpoint based on desired 3-column behavior */
+  .articles-main-card {
+    width: 90%; /* Increase width slightly when screen shrinks */
+  }
+}
+
+@media (max-width: 992px) {
+  .hero-title {
+    font-size: 2.5em;
+  }
+  .hero-description {
+    font-size: 1em;
+  }
+  .articles-main-card {
+    margin: -40px auto 15px auto;
+    width: 90%; /* Maintain 90% width */
+    max-width: 800px; /* Max width for 2 columns */
+    padding: 20px;
+  }
+  .articles-grid {
+    grid-template-columns: repeat(2, 1fr); /* 2 columns on medium screens */
+    gap: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-section {
+    padding: 60px 15px;
+  }
+  .hero-title {
+    font-size: 2em;
+  }
+  .search-and-tags-group {
+    flex-direction: column;
+    align-items: center;
+  }
+  .search-input-wrapper {
+    width: 90%;
+    max-width: 350px;
+  }
+  .clickable-tags {
+    margin-top: 15px;
+    gap: 8px;
+  }
+  .tag-pill {
+    padding: 6px 12px;
+    font-size: 0.85em;
+  }
+}
+
+@media (max-width: 576px) {
+  .hero-section {
+    padding: 40px 10px;
+  }
+  .hero-title {
+    font-size: 1.8em;
+  }
+  .articles-main-card {
+    margin: -30px auto 10px auto;
+    width: 95%; /* Almost full width on very small screens */
+    max-width: none; /* No max-width for single column */
+    padding: 15px;
+  }
+  .articles-grid {
+    grid-template-columns: 1fr; /* Single column on very small screens */
+    gap: 15px;
+  }
+  .pagination-button {
+    padding: 8px 12px;
+    font-size: 0.9em;
+    min-width: unset;
+  }
+  .page-number {
+    font-size: 0.85em;
+    padding: 8px 12px;
+    min-width: unset;
+  }
+  .card-footer-pagination {
+    flex-direction: column;
+    gap: 15px;
+  }
+  .page-numbers {
+    margin: 0;
+  }
+}

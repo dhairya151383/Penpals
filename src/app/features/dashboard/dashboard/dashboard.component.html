@@ -1,23 +1,71 @@
-<section class="dashboard">
-    <app-search-bar (search)="onSearch($event)"></app-search-bar>
-    <app-tag-selector [filterOnly]="true" [tagType]="'article'" [selectedTags]="filterTags"
-        (selectedTagsChange)="onTagFilterChange($event)">
-    </app-tag-selector>
+<app-loading-spinner *ngIf="loading" />
 
-    <div *ngIf="loading" class="loading">Loading articles...</div>
-    <div *ngIf="error" class="error">{{ error }}</div>
+<div *ngIf="!loading" class="dashboard-container">
+    <header class="hero-section">
+        <div class="hero-content">
+            <h1 class="hero-title">Our Articles</h1>
+            <p class="hero-description">
+                This is a melting pot of insights, tips, and innovative ways to use Myna
+                UI, tailored for professionals who thrive on web innovation.
+            </p>
+            <div class="search-and-tags-group">
+                <div class="search-input-wrapper">
+                    <input type="search" [(ngModel)]="searchQuery" (ngModelChange)="onSearchChange($event)"
+                        placeholder="Search..." class="search-input" />
+                    <button class="search-button">
+                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+                            class="feather feather-search">
+                            <circle cx="11" cy="11" r="8"></circle>
+                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                        </svg>
+                    </button>
+                </div>
 
-    <div *ngIf="articles.length === 0 && !loading" class="empty">
-        No articles found.
+                <!-- <div class="tags-dropdown-wrapper">
+                    <select multiple class="tags-dropdown" (change)="onTagSelectChange($event)">
+                        <option *ngFor="let tag of allTags" [value]="tag" [selected]="isTagSelected(tag)">
+                            {{ tag }}
+                        </option>
+                    </select>
+                    <div class="tags-selected-display">
+                        <span *ngIf="selectedTags.length === 0" class="placeholder-tag">Tags</span>
+                        <span *ngFor="let tag of selectedTags" class="selected-tag" (click)="onTagClick(tag)">
+                            {{ tag }} <span class="remove-tag">x</span>
+                        </span>
+                    </div>
+                </div> -->
+            </div>
+            <div class="clickable-tags">
+                <span *ngFor="let tag of allTags" class="tag-pill" [class.selected]="isTagSelected(tag)"
+                    (click)="onTagClick(tag)">
+                    {{ tag }}
+                </span>
+            </div>
+        </div>
+    </header>
+
+    <div class="articles-main-card">
+        <div class="articles-grid">
+            <app-article-card *ngFor="let article of articles" [article]="article"></app-article-card>
+            <div *ngIf="filteredArticles.length === 0 && !loading" class="no-articles-message">
+                No articles found matching your criteria.
+            </div>
+        </div>
+
+        <div *ngIf="totalPages > 1" class="card-footer-pagination">
+            <button (click)="prevPage()" [disabled]="currentPage === 1" class="pagination-button">
+                Previous
+            </button>
+            <div class="page-numbers">
+                <button *ngFor="let page of pages" (click)="goToPage(page)" [class.active]="currentPage === page"
+                    class="pagination-button page-number">
+                    {{ page }}
+                </button>
+            </div>
+            <button (click)="nextPage()" [disabled]="currentPage === totalPages" class="pagination-button">
+                Next
+            </button>
+        </div>
     </div>
-
-    <div class="articles-list">
-        <app-article-card *ngFor="let article of pagedArticles" [article]="article"></app-article-card>
-    </div>
-
-    <nav class="pagination" *ngIf="totalPages > 1">
-        <button (click)="prevPage()" [disabled]="page === 1">&laquo; Prev</button>
-        <span>Page {{ page }} of {{ totalPages }}</span>
-        <button (click)="nextPage()" [disabled]="page === totalPages">Next &raquo;</button>
-    </nav>
-</section>
+</div>
