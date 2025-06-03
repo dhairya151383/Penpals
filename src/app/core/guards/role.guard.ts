@@ -10,7 +10,11 @@ import { Users } from './../../shared/models/user.model';
   providedIn: 'root'
 })
 export class RoleGuard implements CanActivate {
-  constructor(private authService: AuthService, private firestore: Firestore, private router: Router) {}
+  constructor(
+    private authService: AuthService,
+    private firestore: Firestore,
+    private router: Router
+  ) {}
 
   canActivate(route: ActivatedRouteSnapshot): Observable<boolean> {
     const expectedRole = route.data['expectedRole'] as string;
@@ -28,24 +32,28 @@ export class RoleGuard implements CanActivate {
           this.router.navigate(['/login']);
           return of(false);
         }
-
-        // ✅ Allow self-editing if configured and route ID matches user UID
         if (allowSelfEdit && routeId && routeId === user.uid) {
           return of(true);
         }
-
         const userDocRef = doc(this.firestore, `users/${user.uid}`);
         return from(getDoc(userDocRef)).pipe(
           map(docSnap => {
             const data = docSnap.data() as Users | undefined;
             const roles = data?.roles;
-            if (roles && roles[expectedRole as keyof typeof roles]) {
-              return true;
-            } else {
+
+            if (!roles) {
               this.router.navigate(['/dashboard']);
-              console.warn('Access Denied: User lacks role:', expectedRole);
               return false;
             }
+            if (roles.admin) {
+              return true;
+            }
+            if (roles[expectedRole as keyof typeof roles]) {
+              return true;
+            }
+            this.router.navigate(['/dashboard']);
+            console.warn('Access Denied: User lacks role:', expectedRole);
+            return false;
           })
         );
       })
