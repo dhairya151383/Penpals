@@ -1,16 +1,21 @@
 import { Injectable } from '@angular/core';
-import { collection, doc, getDoc, getDocs, setDoc, updateDoc, Firestore } from 'firebase/firestore';
+import { collection, doc, getDoc, getDocs, setDoc, updateDoc } from 'firebase/firestore';
 import { Author } from '../../shared/models/author.model';
 import { FirebaseService } from './firebase.service';
+import { Users } from '../../shared/models/user.model';
 
 @Injectable({ providedIn: 'root' })
 export class AuthorService {
-
   constructor(private firebase: FirebaseService) {}
 
   private get authorCollection() {
     return collection(this.firebase.firestore, 'authors');
   }
+
+  private get userCollection() {
+    return collection(this.firebase.firestore, 'users');
+  }
+
   async getAll(): Promise<Author[]> {
     const snapshot = await getDocs(this.authorCollection);
     return snapshot.docs.map(doc => ({ id: doc.id, ...doc.data() }) as Author);
@@ -23,8 +28,16 @@ export class AuthorService {
   }
 
   async update(id: string, data: Partial<Author>) {
-    const docRef = doc(this.authorCollection, id);
-    await updateDoc(docRef, data);
+    const authorRef = doc(this.authorCollection, id);
+    await updateDoc(authorRef, data);
+
+    // Sync to user profile if avatarUrl is present
+    if (data.avatarUrl) {
+      const userRef = doc(this.userCollection, id); // Assuming authorId == userId
+      await updateDoc(userRef, {
+        'profile.photoURL': data.avatarUrl,
+      });
+    }
   }
 
   async create(id: string, author: Author) {
