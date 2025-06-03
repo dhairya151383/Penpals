@@ -1,70 +1,74 @@
-<form [formGroup]="form" (ngSubmit)="onSubmit()" class="article-creation-page"
-  *ngIf="!loading && !error; else loadingOrErrorTpl">
+<!-- Show form only if not loading and no error -->
+<form [formGroup]="form" (ngSubmit)="onSubmit()" class="article-creation-page" *ngIf="!loading && !error; else loadingOrErrorTpl">
   <div class="article-creation-container">
-    <!-- Left Column: Form -->
+    <!-- Form card (left column) -->
     <div class="form-card">
       <div class="card-header">
         <h2>Edit Article</h2>
         <hr />
       </div>
-
       <div class="article-form">
+        <!-- Title -->
         <div class="form-group">
           <label for="title">Title</label>
           <input id="title" type="text" formControlName="title" />
-          <div class="error"
-            *ngIf="form.get('title')?.invalid && (form.get('title')?.touched || form.get('title')?.dirty)">
+          <div class="error" *ngIf="title.invalid && (title.touched || title.dirty)">
             Title is required and must be at least 3 characters.
           </div>
         </div>
 
+        <!-- Brief Description -->
         <div class="form-group">
           <label for="briefDescription">Brief Description</label>
           <textarea id="briefDescription" rows="3" formControlName="briefDescription"></textarea>
-          <div class="error"
-            *ngIf="form.get('briefDescription')?.invalid && (form.get('briefDescription')?.touched || form.get('briefDescription')?.dirty)">
+          <div class="error" *ngIf="briefDescription.invalid && (briefDescription.touched || briefDescription.dirty)">
             Description is required and must be at least 10 characters.
           </div>
         </div>
 
+        <!-- Tags -->
         <div class="form-group">
           <label>Tags</label>
-          <app-tag-selector [selectedTags]="selectedTags" (selectedTagsChange)="onTagChange($event)"
-            [tagType]="'article'" [filterOnly]="false">
+          <app-tag-selector
+            [selectedTags]="selectedTags"
+            (selectedTagsChange)="onTagChange($event)"
+            [tagType]="'article'"
+            [filterOnly]="false">
           </app-tag-selector>
         </div>
 
+        <!-- Is Featured -->
         <div class="form-group checkbox-group">
           <input type="checkbox" id="isFeatured" formControlName="isFeatured" />
           <label for="isFeatured">Feature this article</label>
         </div>
 
+        <!-- Submit -->
         <button type="submit" [disabled]="form.invalid || loading" class="submit-btn">
           Update Article
         </button>
 
-        <!-- New buttons for draft management -->
+        <!-- Draft Controls -->
         <div class="draft-buttons" style="margin-top: 1rem;">
           <button type="button" class="discard-btn" (click)="discardDraft()" [disabled]="!hasDraft()">Discard Draft</button>
         </div>
       </div>
     </div>
 
-    <!-- Right Column: Editor -->
+    <!-- Editor card (right column) -->
     <div class="editor-card">
       <div class="card-header">
         <h3>Article Content</h3>
         <hr />
       </div>
-
       <div class="form-group">
         <label for="content">Content</label>
-        <quill-editor formControlName="content"
+        <quill-editor
+          formControlName="content"
           [modules]="{ toolbar: [['bold', 'italic', 'underline'], [{ list: 'ordered' }, { list: 'bullet' }], ['link']] }"
           style="height: 300px;">
         </quill-editor>
-        <div class="error"
-          *ngIf="form.get('content')?.invalid && (form.get('content')?.touched || form.get('content')?.dirty)">
+        <div class="error" *ngIf="content.invalid && (content.touched || content.dirty)">
           Content is required.
         </div>
       </div>
@@ -74,7 +78,8 @@
   </div>
 </form>
 
+<!-- Loading/Error template -->
 <ng-template #loadingOrErrorTpl>
-  <p class="loading-text" *ngIf="loading">Loading article...</p>
+  <app-loading-spinner *ngIf="loading" />
   <p class="error" *ngIf="error">{{ error }}</p>
 </ng-template>

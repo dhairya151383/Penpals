@@ -1,6 +1,6 @@
 .article-creation-page {
   display: flex;
-  justify-content: center; /* center the big container */
+  justify-content: center;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   color: #333;
   margin: 2rem 0;
@@ -8,7 +8,7 @@
 
 .article-creation-container {
   display: flex;
-  width: 90vw; /* 90% of viewport width */
+  width: 90vw;
   background: #fff;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0,0,0,0.15);

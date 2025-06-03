@@ -17,6 +17,7 @@ import { FirebaseService } from '../../../core/services/firebase.service';
 import { Article } from '../../../shared/models/article.model';
 import { Tag } from '../../../shared/models/tag.model';
 import { TagSelectorComponent } from '../../../shared/components/tag-selector/tag-selector.component';
+import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
 
 export function quillRequired(control: AbstractControl): ValidationErrors | null {
   const value = control.value || '';
@@ -38,32 +39,38 @@ export function minTagsSelected(min = 1): ValidatorFn {
 @Component({
   selector: 'app-article-create',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, QuillModule, TagSelectorComponent],
+  imports: [CommonModule, ReactiveFormsModule, QuillModule, TagSelectorComponent, LoadingSpinnerComponent],
   templateUrl: './article-create.component.html',
   styleUrls: ['./article-create.component.css']
 })
 export class ArticleCreateComponent implements OnInit {
   form!: FormGroup;
-  loading = false;
   error: string | null = null;
   selectedTags: Tag[] = [];
   formSubmitted = false;
+  loading = true;
 
   constructor(
     private fb: FormBuilder,
     private router: Router,
     private articleService: ArticleService,
     private firebaseService: FirebaseService
-  ) {}
+  ) { }
 
   ngOnInit() {
-    this.form = this.fb.group({
-      title: ['', [Validators.required, Validators.minLength(3)]],
-      briefDescription: ['', [Validators.required, Validators.minLength(10)]],
-      content: ['', [quillRequired]],
-      tags: [[], [minTagsSelected(1)]],
-      isFeatured: [false],
-    });
+    try {
+      this.form = this.fb.group({
+        title: ['', [Validators.required, Validators.minLength(3)]],
+        briefDescription: ['', [Validators.required, Validators.minLength(10)]],
+        content: ['', [quillRequired]],
+        tags: [[], [minTagsSelected(1)]],
+        isFeatured: [false],
+      });
+    } catch (err) {
+      console.error('Error loading article add:', err);
+    } finally {
+      this.loading = false;
+    }
   }
 
   // Getters for easier template access

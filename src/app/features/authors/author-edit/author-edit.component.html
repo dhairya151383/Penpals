@@ -68,8 +68,8 @@
     </div>
   </div>
 </form>
+<!-- Loading/Error template -->
 <ng-template #loadingTpl>
-  <p class="loading-text">Loading author data...</p>
+  <app-loading-spinner *ngIf="loading" />
+  <p class="error" *ngIf="error">{{ error }}</p>
 </ng-template>
-
-<div *ngIf="error" class="global-error">{{ error }}</div>

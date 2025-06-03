@@ -1,80 +1,77 @@
-<form [formGroup]="form" (ngSubmit)="onSubmit()" class="article-creation-page" *ngIf="!loading; else loadingTpl">
-  <div class="article-creation-container">
-    <!-- Left Column: Form -->
-    <div class="form-card">
-      <div class="card-header">
-        <h2>Create Article</h2>
-        <hr />
-      </div>
-
-      <div class="article-form">
-        <div class="form-group">
-          <label for="title">Title</label>
-          <input id="title" type="text" formControlName="title" />
-          <div class="error" *ngIf="(formSubmitted || title.touched || title.dirty) && title.hasError('required')">
-            Title is required.
-          </div>
-          <div class="error" *ngIf="(formSubmitted || title.touched || title.dirty) && title.hasError('minlength')">
-            Title must be at least 3 characters.
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="briefDescription">Brief Description</label>
-          <textarea id="briefDescription" rows="3" formControlName="briefDescription"></textarea>
-          <div class="error"
-            *ngIf="(formSubmitted || briefDescription.touched || briefDescription.dirty) && briefDescription.hasError('required')">
-            Description is required.
-          </div>
-          <div class="error"
-            *ngIf="(formSubmitted || briefDescription.touched || briefDescription.dirty) && briefDescription.hasError('minlength')">
-            Description must be at least 10 characters.
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label>Tags</label>
-          <app-tag-selector [selectedTags]="selectedTags" (selectedTagsChange)="onTagChange($event)"
-            [tagType]="'article'" [filterOnly]="false">
-          </app-tag-selector>
-
-          <div class="error" *ngIf="(formSubmitted || tags.touched || tags.dirty) && tags.hasError('required')">
-            Please select at least one tag.
-          </div>
-        </div>
-
-        <div class="form-group checkbox-group">
-          <input type="checkbox" id="isFeatured" formControlName="isFeatured" />
-          <label for="isFeatured">Feature this article</label>
-        </div>
-
-        <button type="submit" [disabled]="form.invalid || loading" class="submit-btn">
-          Create Article
-        </button>
-      </div>
+<app-loading-spinner *ngIf="loading" />
+<form [formGroup]="form" (ngSubmit)="onSubmit()" class="article-creation-page" *ngIf="!loading">
+  <div class=" article-creation-container">
+  <!-- Left Column: Form -->
+  <div class="form-card">
+    <div class="card-header">
+      <h2>Create Article</h2>
+      <hr />
     </div>
 
-    <!-- Right Column: Editor -->
-    <div class="editor-card">
-      <div class="card-header">
-        <h3>Article Content</h3>
-        <hr />
+    <div class="article-form">
+      <div class="form-group">
+        <label for="title">Title</label>
+        <input id="title" type="text" formControlName="title" />
+        <div class="error" *ngIf="(formSubmitted || title.touched || title.dirty) && title.hasError('required')">
+          Title is required.
+        </div>
+        <div class="error" *ngIf="(formSubmitted || title.touched || title.dirty) && title.hasError('minlength')">
+          Title must be at least 3 characters.
+        </div>
       </div>
 
       <div class="form-group">
-        <label for="content">Content</label>
-        <quill-editor formControlName="content" (onContentChanged)="onContentChanged()" [styles]="{ height: '300px' }">
-        </quill-editor>
-        <div class="error" *ngIf="(formSubmitted || content.touched || content.dirty) && content.hasError('required')">
-          Content is required.
+        <label for="briefDescription">Brief Description</label>
+        <textarea id="briefDescription" rows="3" formControlName="briefDescription"></textarea>
+        <div class="error"
+          *ngIf="(formSubmitted || briefDescription.touched || briefDescription.dirty) && briefDescription.hasError('required')">
+          Description is required.
+        </div>
+        <div class="error"
+          *ngIf="(formSubmitted || briefDescription.touched || briefDescription.dirty) && briefDescription.hasError('minlength')">
+          Description must be at least 10 characters.
         </div>
       </div>
 
-      <div class="global-error" *ngIf="error">{{ error }}</div>
+      <div class="form-group">
+        <label>Tags</label>
+        <app-tag-selector [selectedTags]="selectedTags" (selectedTagsChange)="onTagChange($event)" [tagType]="'article'"
+          [filterOnly]="false">
+        </app-tag-selector>
+
+        <div class="error" *ngIf="(formSubmitted || tags.touched || tags.dirty) && tags.hasError('required')">
+          Please select at least one tag.
+        </div>
+      </div>
+
+      <div class="form-group checkbox-group">
+        <input type="checkbox" id="isFeatured" formControlName="isFeatured" />
+        <label for="isFeatured">Feature this article</label>
+      </div>
+
+      <button type="submit" [disabled]="form.invalid || loading" class="submit-btn">
+        Create Article
+      </button>
     </div>
   </div>
-</form>
 
-<ng-template #loadingTpl>
-  <p class="loading-text">Loading...</p>
-</ng-template>
+  <!-- Right Column: Editor -->
+  <div class="editor-card">
+    <div class="card-header">
+      <h3>Article Content</h3>
+      <hr />
+    </div>
+
+    <div class="form-group">
+      <label for="content">Content</label>
+      <quill-editor formControlName="content" (onContentChanged)="onContentChanged()" [styles]="{ height: '300px' }">
+      </quill-editor>
+      <div class="error" *ngIf="(formSubmitted || content.touched || content.dirty) && content.hasError('required')">
+        Content is required.
+      </div>
+    </div>
+
+    <div class="global-error" *ngIf="error">{{ error }}</div>
+  </div>
+  </div>
+</form>

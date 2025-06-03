@@ -15,13 +15,14 @@ import { CommonModule } from '@angular/common';
 import { QuillModule } from 'ngx-quill';
 import { TagSelectorComponent } from '../../../shared/components/tag-selector/tag-selector.component';
 import { Tag } from '../../../shared/models/tag.model';
+import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
 
 @Component({
   selector: 'app-article-edit',
   templateUrl: './article-edit.component.html',
   styleUrls: ['./article-edit.component.css'],
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, QuillModule, TagSelectorComponent],
+  imports: [CommonModule, ReactiveFormsModule, QuillModule, TagSelectorComponent,LoadingSpinnerComponent],
 })
 export class ArticleEditComponent implements OnInit {
   articleId!: string;

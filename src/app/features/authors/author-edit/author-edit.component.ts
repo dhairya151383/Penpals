@@ -7,11 +7,12 @@ import { Author } from '../../../shared/models/author.model';
 import { Tag } from '../../../shared/models/tag.model';
 import { TagSelectorComponent } from '../../../shared/components/tag-selector/tag-selector.component';
 import { QuillModule } from 'ngx-quill';
+import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
 
 @Component({
   selector: 'app-author-edit',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TagSelectorComponent, QuillModule],
+  imports: [CommonModule, ReactiveFormsModule, TagSelectorComponent, QuillModule,LoadingSpinnerComponent],
   templateUrl: './author-edit.component.html',
 })
 export class AuthorEditComponent implements OnInit {

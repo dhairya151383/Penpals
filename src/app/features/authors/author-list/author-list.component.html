@@ -1,4 +1,5 @@
-<div class="author-list-wrapper">
+<app-loading-spinner *ngIf="loading" />
+<div class="author-list-wrapper" *ngIf="!loading">
   <h2>All Authors</h2>
 
   <!-- Outer card -->

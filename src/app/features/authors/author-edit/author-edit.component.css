@@ -8,6 +8,8 @@
 
 .article-creation-container {
   display: flex;
+  flex-direction: row;
+  gap: 24px;
   width: 90vw; /* 90% of viewport width */
   background: #fff;
   border-radius: 8px;
@@ -31,7 +33,8 @@
   flex-direction: column;
   border-left: 1px solid #e0e0e0;
 }
-
+.form-card { border: 2px dashed red; }
+.editor-card { border: 2px dashed blue; }
 /* Shared card styles */
 .card-header h2,
 .card-header h3 {

@@ -5,11 +5,12 @@ import { Author } from '../../../shared/models/author.model';
 import { AuthorService } from '../../../core/services/author.service';
 import { FormsModule } from '@angular/forms';
 import { TruncatePipe } from '../../../shared/pipes/truncate.pipe';
+import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
 
 @Component({
   selector: 'app-author-list',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule,TruncatePipe],
+  imports: [CommonModule, RouterModule, FormsModule,TruncatePipe,LoadingSpinnerComponent],
   templateUrl: './author-list.component.html',
   styleUrls: ['./author-list.component.css'],
 })
@@ -18,11 +19,13 @@ export class AuthorListComponent implements OnInit {
   filteredAuthors: Author[] = [];
   filterTerm = '';
   sortOption = 'name-asc';
-
+  loading = false;
   constructor(private authorService: AuthorService) { }
 
   async ngOnInit() {
+    this.loading = true;  
     this.authors = await this.authorService.getAll();
+    this.loading = false;  
     this.applyFilters();
   }
 

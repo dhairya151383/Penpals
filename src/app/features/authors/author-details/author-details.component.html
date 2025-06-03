@@ -1,4 +1,5 @@
-<div *ngIf="author" class="author-card">
+<app-loading-spinner *ngIf="loading"></app-loading-spinner>
+<div *ngIf="!loading && author" class="author-card">
   <div class="author-container">
     <div class="author-left">
       <img *ngIf="author.avatarUrl" [src]="author.avatarUrl" alt="{{ author.name }}" class="avatar" />
