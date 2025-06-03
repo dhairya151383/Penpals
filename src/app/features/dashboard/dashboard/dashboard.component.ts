@@ -1,15 +1,14 @@
-import { Component, OnInit, OnDestroy } from '@angular/core';
+import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { FormsModule } from '@angular/forms'; // For ngModel
-import { RouterModule } from '@angular/router'; // For routerLink in card
+import { FormsModule } from '@angular/forms';
+import { RouterModule } from '@angular/router';
 
-
-import { debounceTime, distinctUntilChanged, Subject, Subscription, combineLatest, startWith, map } from 'rxjs'; // For search and filtering
+import { debounceTime, distinctUntilChanged, Subject, Subscription, combineLatest, startWith } from 'rxjs';
 import { ArticleService } from '../../../core/services/article.service';
 import { AuthorService } from '../../../core/services/author.service';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
 import { Article } from '../../../shared/models/article.model';
-import { ArticleCardComponent } from '../components/article-card/article-card.component';
+import { ArticleCardComponent } from '../../articles/article-card/article-card.component'; // Corrected path if needed
 
 @Component({
   selector: 'app-dashboard',
@@ -25,35 +24,36 @@ import { ArticleCardComponent } from '../components/article-card/article-card.co
   styleUrls: ['./dashboard.component.css'],
 })
 export class DashboardComponent implements OnInit, OnDestroy {
-  articles: Article[] = [];
+  allArticles: Article[] = [];
+  displayArticles: Article[] = [];
   filteredArticles: Article[] = [];
-  allTags: string[] = []; // To store all unique tags from articles
-  selectedTags: string[] = []; // Tags currently selected for filtering
+
+  allTags: string[] = [];
+  selectedTags: string[] = [];
 
   loading = true;
   errorMessage: string | null = null;
 
-  // Search properties
   searchQuery = '';
   private searchSubject = new Subject<string>();
+  private tagsSubject = new Subject<string[]>();
   private subscriptions = new Subscription();
 
-  // Pagination properties
+  isDropdownOpen = false;
+
   currentPage = 1;
-  itemsPerPage = 12; // Maximum 12 cards per page
+  itemsPerPage = 12;
 
   constructor(
     private articleService: ArticleService,
-    private authorService: AuthorService // Inject author service
+    private authorService: AuthorService
   ) { }
 
   async ngOnInit(): Promise<void> {
     try {
-      // Fetch all articles
       const fetchedArticles = await this.articleService.getAll();
 
-      // Fetch author names for articles
-      this.articles = await Promise.all(fetchedArticles.map(async article => {
+      this.allArticles = await Promise.all(fetchedArticles.map(async article => {
         if (article.authorId && !article.authorName) {
           const author = await this.authorService.getById(article.authorId);
           return { ...article, authorName: author?.name || 'Unknown Author' };
@@ -61,14 +61,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
         return article;
       }));
 
-      // Extract unique tags
       const uniqueTags = new Set<string>();
-      this.articles.forEach(article => {
+      this.allArticles.forEach(article => {
         article.tags?.forEach(tag => uniqueTags.add(tag));
       });
-      this.allTags = Array.from(uniqueTags);
+      this.allTags = Array.from(uniqueTags).sort();
 
-      // Setup RxJS for filtering and search
       this.setupFiltering();
 
     } catch (error) {
@@ -83,57 +81,65 @@ export class DashboardComponent implements OnInit, OnDestroy {
     this.subscriptions.unsubscribe();
   }
 
+  @HostListener('document:click', ['$event'])
+  onClickOutside(event: Event) {
+    const target = event.target as HTMLElement;
+    // Check if the click was outside the dropdown container itself
+    // We can rely on a single class to identify the dropdown and its toggle.
+    if (this.isDropdownOpen && !target.closest('.tags-dropdown-container')) {
+      this.isDropdownOpen = false;
+    }
+  }
+
   private setupFiltering(): void {
     const search$ = this.searchSubject.pipe(
-      startWith(this.searchQuery), // Emit initial search query
+      startWith(this.searchQuery),
       debounceTime(300),
       distinctUntilChanged()
     );
 
-    const tags$ = new Subject<string[]>(); // Subject for tag changes
-    this.subscriptions.add(tags$.subscribe(selectedTags => {
-      this.selectedTags = selectedTags;
-      this.applyFiltersAndPagination(); // Re-apply filters on tag change
-    }));
-
-
     this.subscriptions.add(
-      combineLatest([search$]).subscribe(([searchQuery]) => {
-        this.searchQuery = searchQuery; // Update searchQuery when search input changes
+      combineLatest([
+        search$,
+        this.tagsSubject.pipe(startWith(this.selectedTags))
+      ]).subscribe(([searchQuery, selectedTags]) => {
+        this.searchQuery = searchQuery;
+        this.selectedTags = selectedTags;
         this.applyFiltersAndPagination();
       })
     );
-    // Initial application of filters
-    this.applyFiltersAndPagination();
-  }
 
+    this.searchSubject.next(this.searchQuery);
+    this.tagsSubject.next(this.selectedTags);
+  }
 
   onSearchChange(value: string): void {
     this.searchSubject.next(value);
-    this.currentPage = 1; // Reset to first page on new search
+    this.currentPage = 1;
   }
 
-  onTagClick(tag: string): void {
-    const index = this.selectedTags.indexOf(tag);
-    if (index > -1) {
-      this.selectedTags.splice(index, 1); // Remove tag if already selected
+  toggleDropdown(): void {
+    this.isDropdownOpen = !this.isDropdownOpen;
+  }
+
+  onTagCheckboxChange(tag: string, event: Event): void {
+    const checkbox = event.target as HTMLInputElement;
+    if (checkbox.checked) {
+      this.selectedTags.push(tag);
     } else {
-      this.selectedTags.push(tag); // Add tag if not selected
+      this.selectedTags = this.selectedTags.filter(t => t !== tag);
     }
-    // Manually trigger filter application as tags$ is not used directly for this anymore
-    this.applyFiltersAndPagination();
-    this.currentPage = 1; // Reset to first page on tag change
+    this.tagsSubject.next(this.selectedTags);
+    this.currentPage = 1;
   }
 
   isTagSelected(tag: string): boolean {
     return this.selectedTags.includes(tag);
   }
 
-
   applyFiltersAndPagination(): void {
-    let tempArticles = [...this.articles];
+    let tempArticles = [...this.allArticles];
 
-    // Apply search filter
     if (this.searchQuery) {
       const lowerCaseQuery = this.searchQuery.toLowerCase();
       tempArticles = tempArticles.filter(
@@ -145,10 +151,11 @@ export class DashboardComponent implements OnInit, OnDestroy {
       );
     }
 
-    // Apply tag filter
+    // Apply tag filter with OR logic
     if (this.selectedTags.length > 0) {
       tempArticles = tempArticles.filter((article) =>
-        this.selectedTags.every((tag) => article.tags?.includes(tag))
+        // Check if the article has *any* of the selected tags
+        this.selectedTags.some((selectedTag) => article.tags?.includes(selectedTag))
       );
     }
 
@@ -159,17 +166,14 @@ export class DashboardComponent implements OnInit, OnDestroy {
   updatePagination(): void {
     const startIndex = (this.currentPage - 1) * this.itemsPerPage;
     const endIndex = startIndex + this.itemsPerPage;
-    // Slice based on filteredArticles, not original articles
-    this.articles = this.filteredArticles.slice(startIndex, endIndex);
+    this.displayArticles = this.filteredArticles.slice(startIndex, endIndex);
   }
 
-  // Pagination handlers
   get totalPages(): number {
     return Math.ceil(this.filteredArticles.length / this.itemsPerPage);
   }
 
   get pages(): number[] {
-    // Generate an array of page numbers for the pagination controls
     return Array.from({ length: this.totalPages }, (_, i) => i + 1);
   }
 

@@ -22,32 +22,41 @@
                     </button>
                 </div>
 
-                <!-- <div class="tags-dropdown-wrapper">
-                    <select multiple class="tags-dropdown" (change)="onTagSelectChange($event)">
-                        <option *ngFor="let tag of allTags" [value]="tag" [selected]="isTagSelected(tag)">
-                            {{ tag }}
-                        </option>
-                    </select>
-                    <div class="tags-selected-display">
-                        <span *ngIf="selectedTags.length === 0" class="placeholder-tag">Tags</span>
-                        <span *ngFor="let tag of selectedTags" class="selected-tag" (click)="onTagClick(tag)">
-                            {{ tag }} <span class="remove-tag">x</span>
-                        </span>
+                <div class="tags-dropdown-container">
+                    <div class="tags-selected-display" (click)="toggleDropdown()">
+                        <ng-container *ngIf="selectedTags.length === 0">
+                            <span class="placeholder-tag">Select Tags</span>
+                        </ng-container>
+                        <ng-container *ngIf="selectedTags.length > 0">
+                            <span class="selected-tags-summary">
+                                {{ selectedTags.length }} tag{{ selectedTags.length !== 1 ? 's' : '' }} selected
+                            </span>
+                        </ng-container>
+                        <svg class="dropdown-arrow" [class.rotated]="isDropdownOpen" xmlns="http://www.w3.org/2000/svg"
+                            width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                            stroke-linecap="round" stroke-linejoin="round">
+                            <polyline points="6 9 12 15 18 9"></polyline>
+                        </svg>
                     </div>
-                </div> -->
-            </div>
-            <div class="clickable-tags">
-                <span *ngFor="let tag of allTags" class="tag-pill" [class.selected]="isTagSelected(tag)"
-                    (click)="onTagClick(tag)">
-                    {{ tag }}
-                </span>
+
+                    <div class="tags-dropdown-menu" *ngIf="isDropdownOpen">
+                        <label *ngFor="let tag of allTags" class="tag-checkbox-item">
+                            <input type="checkbox"
+                                [value]="tag"
+                                [checked]="isTagSelected(tag)"
+                                (change)="onTagCheckboxChange(tag, $event)" />
+                            {{ tag }}
+                        </label>
+                        <div *ngIf="allTags.length === 0" class="no-tags-message">No tags available</div>
+                    </div>
+                </div>
             </div>
         </div>
     </header>
 
     <div class="articles-main-card">
         <div class="articles-grid">
-            <app-article-card *ngFor="let article of articles" [article]="article"></app-article-card>
+            <app-article-card *ngFor="let article of displayArticles" [article]="article"></app-article-card>
             <div *ngIf="filteredArticles.length === 0 && !loading" class="no-articles-message">
                 No articles found matching your criteria.
             </div>
