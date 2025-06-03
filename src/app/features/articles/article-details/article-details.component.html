@@ -1,4 +1,6 @@
-<div *ngIf="article" class="article-details-container">
+<app-loading-spinner *ngIf="loading" />
+
+<div *ngIf="!loading && article" class="article-details-container">
   <div class="article-card">
     <img *ngIf="article.thumbnailUrl" [src]="article.thumbnailUrl" alt="Article image" class="article-thumbnail" />
 
@@ -21,3 +23,7 @@
     <div class="article-content" [innerHTML]="article.content"></div>
   </div>
 </div>
+<div *ngIf="canEdit" class="edit-actions">
+  <button (click)="goToEdit()" class="edit-btn">✏️ Edit Article</button>
+</div>
+

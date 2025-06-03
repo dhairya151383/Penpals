@@ -15,6 +15,7 @@ import { Users } from './../../shared/models/user.model';
 import { FirebaseService } from '../services/firebase.service';
 import { AuthorService } from './author.service';
 import { Author } from '../../shared/models/author.model';
+import { Router } from '@angular/router';
 
 @Injectable({
   providedIn: 'root',
@@ -23,11 +24,12 @@ export class AuthService {
   user$: Observable<User | null>;
   authReady$ = new BehaviorSubject<boolean>(false);
   private firestore: Firestore;
-  private readonly defaultAvatarUrl = 'assets/images/defaultAvatar.jpg'; // 👈 Set default avatar path
+  private readonly defaultAvatarUrl = 'assets/images/defaultAvatar.jpg';
 
   constructor(
     private firebaseService: FirebaseService,
-    private authorService: AuthorService
+    private authorService: AuthorService,
+    private router:Router
   ) {
     this.firestore = firebaseService.firestore;
 
@@ -74,11 +76,8 @@ export class AuthService {
   ): Promise<User | null> {
     try {
       const result = await createUserWithEmailAndPassword(this.firebaseService.auth, email, password);
-
       await updateProfile(result.user, { displayName });
-
       await this.saveUserData(result.user, username, 'email', role, displayName);
-
       if (role === 'author') {
         const avatarUrl = result.user.photoURL || this.defaultAvatarUrl;
         const authorData: Author = {
@@ -87,10 +86,8 @@ export class AuthService {
           avatarUrl,
           createdAt: new Date().toISOString(),
         };
-
         await this.authorService.create(result.user.uid, authorData);
       }
-
       return result.user;
     } catch (error) {
       console.error('Register Error:', error);
@@ -105,6 +102,9 @@ export class AuthService {
     } catch (error) {
       console.error('Sign-Out Error:', error);
       throw error;
+    }
+    finally{
+      this.router.navigate(['/login']);
     }
   }
 

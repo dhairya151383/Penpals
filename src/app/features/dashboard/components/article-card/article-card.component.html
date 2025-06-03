@@ -1,11 +1,12 @@
 <article class="card">
     <img *ngIf="article.thumbnailUrl" [src]="article.thumbnailUrl" [alt]="article.title" class="thumbnail" />
     <div class="content">
-        <h2><a [routerLink]="['/articles', article.id]">{{ article.title }}</a></h2>
+        <a [routerLink]="['/articles', article.id]" [state]="{ article: article }">{{ article.title }}</a>
         <p class="brief">{{ article.briefDescription }}</p>
         <p class="meta">
-            By {{ article.authorName }} | {{ article.publishDate | date: 'mediumDate' }}
+            By {{ article.authorName }} | {{ formattedPublishDate | date: 'mediumDate' }}
             <span *ngIf="article.isFeatured" class="featured">★ Featured</span>
         </p>
+
     </div>
 </article>

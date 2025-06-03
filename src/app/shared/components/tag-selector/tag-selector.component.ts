@@ -13,29 +13,31 @@ import { Tag } from '../../../shared/models/tag.model';
 })
 export class TagSelectorComponent implements OnInit {
   @Input() selectedTags: Tag[] = [];
+  @Input() tagType: 'author' | 'article' = 'article';
+  @Input() filterOnly = false;
   @Output() selectedTagsChange = new EventEmitter<Tag[]>();
 
   availableTags: Tag[] = [];
   filteredTags: Tag[] = [];
   newTagName: string = '';
 
-  constructor(private tagService: TagService) {}
+  constructor(private tagService: TagService) { }
 
   async ngOnInit() {
-    this.availableTags = await this.tagService.getAll();
+    this.availableTags = await this.tagService.getAll(this.tagType);
     this.filterTags();
+
   }
 
   async addTag() {
-    if (!this.newTagName.trim() || this.selectedTags.length >= 10) return;
-
-    const tag = await this.tagService.addTag(this.newTagName.trim());
+    if (this.filterOnly || !this.newTagName.trim() || this.selectedTags.length >= 10) return;
+    const tag = await this.tagService.addTag(this.newTagName.trim(), this.tagType);
     if (!this.selectedTags.find(t => t.id === tag.id)) {
       this.selectedTags.push(tag);
       this.selectedTagsChange.emit(this.selectedTags);
     }
     this.newTagName = '';
-    this.availableTags = await this.tagService.getAll();
+    this.availableTags = await this.tagService.getAll(this.tagType);
     this.filterTags();
   }
 
@@ -43,9 +45,9 @@ export class TagSelectorComponent implements OnInit {
     const search = this.newTagName.trim().toLowerCase();
     this.filteredTags = search
       ? this.availableTags
-          .filter(tag => 
-            tag.name.toLowerCase().includes(search) &&
-            !this.selectedTags.some(t => t.id === tag.id))
+        .filter(tag =>
+          tag.name.toLowerCase().includes(search) &&
+          !this.selectedTags.some(t => t.id === tag.id))
       : [];
   }
 

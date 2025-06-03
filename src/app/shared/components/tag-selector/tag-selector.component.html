@@ -1,5 +1,5 @@
 <div class="tag-selector">
-  <div class="tag-input-group">
+  <div class="tag-input-group" *ngIf="!filterOnly">
     <input
       type="text"
       [(ngModel)]="newTagName"

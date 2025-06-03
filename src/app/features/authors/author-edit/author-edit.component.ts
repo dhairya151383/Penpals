@@ -45,7 +45,7 @@ export class AuthorEditComponent implements OnInit {
       this.authorService.getById(id).then(author => {
         if (author) {
           this.authorId = id;
-          this.tags = (author.tags || []).map(name => ({ name }));
+          this.tags = (author.tags || []).map(name => ({ name , type: 'author'}));
           this.avatarUrl = author.avatarUrl || this.avatarUrl;
 
           // Patch form values without replacing the form group
@@ -63,7 +63,9 @@ export class AuthorEditComponent implements OnInit {
       });
     }
   }
-
+  onTagChange(tags: Tag[]) {
+    this.tags = tags;
+  }
 
   onImageUpload(event: Event) {
     const input = event.target as HTMLInputElement;

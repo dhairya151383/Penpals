@@ -22,18 +22,22 @@
         <div class="form-group">
           <label for="briefDescription">Brief Description</label>
           <textarea id="briefDescription" rows="3" formControlName="briefDescription"></textarea>
-          <div class="error" *ngIf="(formSubmitted || briefDescription.touched || briefDescription.dirty) && briefDescription.hasError('required')">
+          <div class="error"
+            *ngIf="(formSubmitted || briefDescription.touched || briefDescription.dirty) && briefDescription.hasError('required')">
             Description is required.
           </div>
-          <div class="error" *ngIf="(formSubmitted || briefDescription.touched || briefDescription.dirty) && briefDescription.hasError('minlength')">
+          <div class="error"
+            *ngIf="(formSubmitted || briefDescription.touched || briefDescription.dirty) && briefDescription.hasError('minlength')">
             Description must be at least 10 characters.
           </div>
         </div>
 
         <div class="form-group">
           <label>Tags</label>
-          <app-tag-selector [selectedTags]="selectedTags" (selectedTagsChange)="onTagChange($event)">
+          <app-tag-selector [selectedTags]="selectedTags" (selectedTagsChange)="onTagChange($event)"
+            [tagType]="'article'" [filterOnly]="false">
           </app-tag-selector>
+
           <div class="error" *ngIf="(formSubmitted || tags.touched || tags.dirty) && tags.hasError('required')">
             Please select at least one tag.
           </div>
@@ -59,10 +63,7 @@
 
       <div class="form-group">
         <label for="content">Content</label>
-        <quill-editor
-          formControlName="content"
-          (onContentChanged)="onContentChanged()"
-          [styles]="{ height: '300px' }">
+        <quill-editor formControlName="content" (onContentChanged)="onContentChanged()" [styles]="{ height: '300px' }">
         </quill-editor>
         <div class="error" *ngIf="(formSubmitted || content.touched || content.dirty) && content.hasError('required')">
           Content is required.

@@ -1,0 +1,23 @@
+<section class="dashboard">
+    <app-search-bar (search)="onSearch($event)"></app-search-bar>
+    <app-tag-selector [filterOnly]="true" [tagType]="'article'" [selectedTags]="filterTags"
+        (selectedTagsChange)="onTagFilterChange($event)">
+    </app-tag-selector>
+
+    <div *ngIf="loading" class="loading">Loading articles...</div>
+    <div *ngIf="error" class="error">{{ error }}</div>
+
+    <div *ngIf="articles.length === 0 && !loading" class="empty">
+        No articles found.
+    </div>
+
+    <div class="articles-list">
+        <app-article-card *ngFor="let article of pagedArticles" [article]="article"></app-article-card>
+    </div>
+
+    <nav class="pagination" *ngIf="totalPages > 1">
+        <button (click)="prevPage()" [disabled]="page === 1">&laquo; Prev</button>
+        <span>Page {{ page }} of {{ totalPages }}</span>
+        <button (click)="nextPage()" [disabled]="page === totalPages">Next &raquo;</button>
+    </nav>
+</section>

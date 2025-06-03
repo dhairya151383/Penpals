@@ -1,5 +1,5 @@
 import { Component, OnInit } from '@angular/core';
-import { ActivatedRoute } from '@angular/router';
+import { ActivatedRoute, Router } from '@angular/router';
 import { Article } from '../../../shared/models/article.model';
 import { ArticleService } from '../../../core/services/article.service';
 import { AuthorService } from '../../../core/services/author.service';
@@ -7,38 +7,62 @@ import { Author } from '../../../shared/models/author.model';
 import { ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../core/services/auth.service';
-
+import { Timestamp } from 'firebase/firestore';
+import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component'; // ✅ Update path if needed
 
 @Component({
   selector: 'app-article-details',
   standalone: true,
-  imports:[ReactiveFormsModule,CommonModule],
+  imports: [ReactiveFormsModule, CommonModule, LoadingSpinnerComponent],
   templateUrl: './article-details.component.html',
   styleUrl: './article-details.component.css',
 })
 export class ArticleDetailsComponent implements OnInit {
+  article: Article | null = null;
   author: Author | null = null;
   canEdit = false;
-  article: Article | null = null;
+  loading = true;
 
   constructor(
     private route: ActivatedRoute,
+    private router: Router,
+    private articleService: ArticleService,
     private authorService: AuthorService,
     private authService: AuthService
-  ) {}
+  ) { }
 
-  async ngOnInit() {
+  async ngOnInit(): Promise<void> {
     const id = this.route.snapshot.paramMap.get('id');
     if (!id) return;
+    try {
+      const article = await this.articleService.getById(id);
+      if (!article) {
+        console.warn('Article not found');
+        return;
+      }
+      const publishDate = article.publishDate as Timestamp | string;
+      if ((publishDate as Timestamp)?.toDate) {
+        article.publishDate = (publishDate as Timestamp).toDate();
+      } else if (typeof publishDate === 'string') {
+        article.publishDate = new Date(publishDate);
+      }
+      this.article = article;
+      if (article.authorId) {
+        this.author = await this.authorService.getById(article.authorId);
+      }
 
-    this.author = await this.authorService.getById(id);
-
-    // Optionally fetch an article if needed for the template
-    // or remove usage of article if not relevant here
-
-    this.authService.user$.subscribe((user) => {
-      const uid = user?.uid ?? null;
-      this.canEdit = uid === this.author?.id;
-    });
+      this.authService.user$.subscribe(user => {
+        this.canEdit = !!user && user.uid === this.author?.id;
+      });
+    } catch (err) {
+      console.error('Error loading article details:', err);
+    } finally {
+      this.loading = false;
+    }
+  }
+  goToEdit() {
+    if (this.article?.id) {
+      this.router.navigate(['/articles', this.article.id, 'edit']);
+    }
   }
 }

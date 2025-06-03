@@ -4,34 +4,15 @@ import { ArticleService } from '../../../core/services/article.service';
 import { Article } from '../../../shared/models/article.model';
 import { ArticleCardComponent } from '../components/article-card/article-card.component';
 import { SearchBarComponent } from '../components/search-bar/search-bar.component';
+import { TagSelectorComponent } from '../../../shared/components/tag-selector/tag-selector.component';
+import { Tag } from '../../../shared/models/tag.model';
 
 
 @Component({
   selector: 'app-dashboard',
   standalone: true,
-  imports: [CommonModule, ArticleCardComponent, SearchBarComponent],
-  template: `
-    <section class="dashboard">
-      <app-search-bar (search)="onSearch($event)"></app-search-bar>
-
-      <div *ngIf="loading" class="loading">Loading articles...</div>
-      <div *ngIf="error" class="error">{{ error }}</div>
-
-      <div *ngIf="articles.length === 0 && !loading" class="empty">
-        No articles found.
-      </div>
-
-      <div class="articles-list">
-        <app-article-card *ngFor="let article of pagedArticles" [article]="article"></app-article-card>
-      </div>
-
-      <nav class="pagination" *ngIf="totalPages > 1">
-        <button (click)="prevPage()" [disabled]="page === 1">&laquo; Prev</button>
-        <span>Page {{ page }} of {{ totalPages }}</span>
-        <button (click)="nextPage()" [disabled]="page === totalPages">Next &raquo;</button>
-      </nav>
-    </section>
-  `,
+  imports: [CommonModule, ArticleCardComponent, SearchBarComponent, TagSelectorComponent],
+  templateUrl: './dashboard.component.html',
   styles: [
     `
       .dashboard {
@@ -73,8 +54,8 @@ export class DashboardComponent implements OnInit {
   page = 1;
   pageSize = 5;
   totalPages = 1;
-
-  constructor(private articleService: ArticleService) {}
+  filterTags: Tag[] = [];
+  constructor(private articleService: ArticleService) { }
 
   ngOnInit(): void {
     this.fetchArticles();
@@ -130,5 +111,24 @@ export class DashboardComponent implements OnInit {
       this.page--;
       this.updatePagination();
     }
+  }
+  onTagFilterChange(tags: Tag[]) {
+    this.filterTags = tags;
+    this.applyFilters();
+  }
+
+  applyFilters() {
+    let filtered = [...this.articles];
+
+    if (this.filterTags.length > 0) {
+      const tagNames = this.filterTags.map(tag => tag.name.toLowerCase());
+      filtered = filtered.filter(article =>
+        article.tags?.some(tag => tagNames.includes(tag.toLowerCase()))
+      );
+    }
+
+    this.filteredArticles = filtered;
+    this.page = 1;
+    this.updatePagination();
   }
 }

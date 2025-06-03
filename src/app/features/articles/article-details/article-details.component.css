@@ -2,6 +2,7 @@
   max-width: 900px;
   margin: 2rem auto;
   padding: 1rem;
+  overflow-x: hidden; /* Prevent horizontal overflow */
 }
 
 .article-card {
@@ -9,12 +10,15 @@
   padding: 2rem;
   border-radius: 16px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  overflow-wrap: break-word; /* Prevent word overflow */
+  word-break: break-word;
 }
 
 .article-thumbnail {
   width: 100%;
   border-radius: 12px;
   margin-bottom: 1.5rem;
+  object-fit: cover;
 }
 
 .article-title {
@@ -50,4 +54,24 @@
 .article-content {
   line-height: 1.7;
   color: #333;
+  overflow-wrap: break-word;
+  word-break: break-word;
+}
+.edit-actions {
+  text-align: right;
+  margin-bottom: 1rem;
+}
+
+.edit-btn {
+  background-color: #00796b;
+  color: white;
+  padding: 0.5rem 1rem;
+  border-radius: 6px;
+  border: none;
+  cursor: pointer;
+  font-size: 0.95rem;
+}
+
+.edit-btn:hover {
+  background-color: #004d40;
 }
