@@ -1,4 +1,5 @@
-<form [formGroup]="form" class="article-creation-page" (ngSubmit)="save()" *ngIf="!loading && !error; else loadingTpl">
+<app-loading-spinner *ngIf="loading" />
+<form [formGroup]="form" (ngSubmit)="save()" class="article-creation-page" *ngIf="!loading && !error">
   <div class="article-creation-container">
     <div class="form-card">
       <div class="card-header">
@@ -6,7 +7,7 @@
         <hr />
       </div>
 
-      <div class="author-form">
+      <div class="article-form">
         <div class="form-group avatar-upload">
           <app-upload-image [imageUrl]="avatarUrl" (imageChange)="onImageChange($event)">
           </app-upload-image>
@@ -15,7 +16,7 @@
         <div class="form-group">
           <label for="name">Name</label>
           <input id="name" type="text" formControlName="name" />
-          <div class="error" *ngIf="form.get('name')?.invalid && form.get('name')?.touched">
+          <div class="error" *ngIf="(formSubmitted || name.touched || name.dirty) && name.hasError('required')">
             Name is required.
           </div>
         </div>
@@ -26,7 +27,9 @@
             [filterOnly]="false">
           </app-tag-selector>
         </div>
-        </div>
+
+        <button type="submit" class="save-button" [disabled]="form.invalid || loading">Save</button>
+      </div>
     </div>
 
     <div class="editor-card">
@@ -66,19 +69,18 @@
         </div>
       </div>
 
-
       <div class="form-group">
         <label>Bio</label>
-        <quill-editor formControlName="bio" [style]="{ height: '200px' }"></quill-editor>
-        <div class="error" *ngIf="form.get('bio')?.invalid && form.get('bio')?.touched">
+        <quill-editor formControlName="bio" (onContentChanged)="onBioChanged()" [styles]="{ height: '200px' }"></quill-editor>
+        <div class="error" *ngIf="(formSubmitted || bio.touched || bio.dirty) && bio.hasError('required')">
           Bio is required.
         </div>
       </div>
-
-      <button type="submit" class="save-button" [disabled]="form.invalid">Save</button>
+      <div class="global-error" *ngIf="error">{{ error }}</div>
     </div>
   </div>
 </form>
+
 <ng-template #loadingTpl>
   <app-loading-spinner *ngIf="loading" />
   <p class="error" *ngIf="error">{{ error }}</p>

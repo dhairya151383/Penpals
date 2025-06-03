@@ -1,7 +1,6 @@
 .article-creation-page {
   display: flex;
   justify-content: center;
-  width: 100%;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   color: #333;
   margin: 2rem 0;
@@ -9,7 +8,6 @@
 
 .article-creation-container {
   display: flex;
-  flex-direction: row; /* Ensure this is row for horizontal layout */
   width: 90vw;
   background: #fff;
   border-radius: 8px;
@@ -48,8 +46,7 @@
   width: 50px;
 }
 
-/* Specific form group styles, now matching ArticleCreateComponent's structure */
-.author-form .form-group, /* New selector for the wrapper */
+.author-form .form-group,
 .editor-card .form-group {
   margin-bottom: 1.25rem;
   display: flex;
@@ -92,7 +89,7 @@ quill-editor:focus-within {
 }
 
 .save-button {
-  align-self: flex-start; /* Aligns button to the left within its flex container */
+  align-self: flex-start;
   padding: 0.6rem 1.6rem;
   background-color: #2e7d32;
   border: none;
@@ -102,7 +99,7 @@ quill-editor:focus-within {
   font-size: 1.1rem;
   cursor: pointer;
   transition: background-color 0.3s ease;
-  margin-top: auto; /* Pushes the button to the bottom of the .editor-card */
+  margin-top: auto; 
 }
 
 .save-button:disabled {
@@ -175,6 +172,7 @@ pre {
   flex-direction: column;
   align-items: center;
   margin-bottom: 1rem;
+  width: 90%;
 }
 
 .avatar-preview {
