@@ -1,16 +1,16 @@
 .article-creation-page {
   display: flex;
-  justify-content: center; /* center the big container */
+  justify-content: center;
+  width: 100%;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   color: #333;
   margin: 2rem 0;
 }
 
 .article-creation-container {
-  display: flex;
-  flex-direction: row;
-  gap: 24px;
-  width: 90vw; /* 90% of viewport width */
+  display: flex !important;
+  flex-direction: row !important;
+  width: 90vw;
   background: #fff;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0,0,0,0.15);
@@ -24,6 +24,10 @@
   display: flex;
   flex-direction: column;
 }
+.form-card, .editor-card {
+  width: auto !important;
+  max-width: none !important;
+}
 
 /* Right card 3/5 width */
 .editor-card {
@@ -36,8 +40,7 @@
 .form-card { border: 2px dashed red; }
 .editor-card { border: 2px dashed blue; }
 /* Shared card styles */
-.card-header h2,
-.card-header h3 {
+.card-header h2,.card-header h3 {
   margin: 0 0 0.5rem 0;
   font-weight: 700;
   color: #2e7d32;
@@ -146,27 +149,24 @@ pre {
 }
 
 /* Responsive */
-@media (max-width: 768px) {
+/* @media (max-width: 768px) {
   .article-creation-page {
     margin: 1rem;
   }
-
   .article-creation-container {
     flex-direction: column;
     width: 100vw;
   }
-
   .form-card,
   .editor-card {
     flex: none;
     width: 100%;
     padding: 1rem;
   }
-
   button[type="submit"] {
     width: 100%;
   }
-}
+} */
 
 /* Reuse article-creation-page & article-creation-container classes */
 
@@ -222,26 +222,9 @@ pre {
   font-size: 0.9rem;
   font-weight: 600;
 }
-
-@media (max-width: 768px) {
-  .article-creation-container {
-    flex-direction: column;
-  }
-
-  .form-card,
-  .editor-card {
-    width: 100%;
-  }
-
-  .save-button {
-    width: 100%;
-  }
+.social-field svg {
+  margin-right: 8px; /* Add some space between the icon and the input */
 }
-
-.form-card {
-  border: 2px dashed blue;
-}
-
-.editor-card {
-  border: 2px dashed green;
+.social-field:hover svg {
+  color: #007bff;
 }

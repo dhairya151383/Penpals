@@ -8,12 +8,14 @@ import { Tag } from '../../../shared/models/tag.model';
 import { TagSelectorComponent } from '../../../shared/components/tag-selector/tag-selector.component';
 import { QuillModule } from 'ngx-quill';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
+import { UploadImageComponent } from '../../../shared/components/upload-image/upload-image.component';
 
 @Component({
   selector: 'app-author-edit',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TagSelectorComponent, QuillModule,LoadingSpinnerComponent],
+  imports: [CommonModule, ReactiveFormsModule, TagSelectorComponent, QuillModule,LoadingSpinnerComponent,UploadImageComponent],
   templateUrl: './author-edit.component.html',
+  
 })
 export class AuthorEditComponent implements OnInit {
   form!: FormGroup;
@@ -76,29 +78,41 @@ export class AuthorEditComponent implements OnInit {
   onTagChange(tags: Tag[]) {
     this.tags = tags;
   }
-
-  onImageUpload(event: Event) {
-    const input = event.target as HTMLInputElement;
-    if (input.files && input.files.length > 0) {
-      const file = input.files[0];
-      const reader = new FileReader();
-      reader.onload = () => {
-        this.avatarUrl = reader.result as string;
-      };
-      reader.readAsDataURL(file);
-    }
+  onImageChange(newImageUrl: string | null) {
+    this.avatarUrl = newImageUrl || 'assets/avatar-placeholder.png';
   }
+  // onImageUpload(event: Event) {
+  //   const input = event.target as HTMLInputElement;
+  //   if (input.files && input.files.length > 0) {
+  //     const file = input.files[0];
+  //     const reader = new FileReader();
+  //     reader.onload = () => {
+  //       this.avatarUrl = reader.result as string;
+  //     };
+  //     reader.readAsDataURL(file);
+  //   }
+  // }
 
   async save() {
-    if (this.form.invalid) return;
+  if (this.form.invalid) return;
 
-    const updated: Author = {
-      id: this.authorId,
-      ...this.form.value,
-      avatarUrl: this.avatarUrl,
-      tags: this.tags.map(t => t.name),
-      updatedAt: new Date().toISOString(),
-    };
+  const updated: Partial<Author> = {
+    name: this.form.value.name,
+    website: this.form.value.website,
+    bio: this.form.value.bio,
+    avatarUrl: this.avatarUrl,
+    tags: this.tags.map(t => t.name),
+    socialLinks: this.form.value.socialLinks,
+    updatedAt: new Date().toISOString(),
+  };
+
+  try {
+    await this.authorService.update(this.authorId, updated);
     this.router.navigate(['/authors', this.authorId]);
+  } catch (err) {
+    console.error('Failed to update author:', err);
+    this.error = 'Failed to save changes.';
   }
+}
+
 }

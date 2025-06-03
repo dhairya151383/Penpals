@@ -1,0 +1,11 @@
+<div class="upload-image-container">
+      <img *ngIf="imageUrl; else placeholder" [src]="imageUrl" alt="Uploaded Image" class="image-preview" />
+      <ng-template #placeholder>
+        <div class="placeholder">No image uploaded</div>
+      </ng-template>
+
+      <div class="actions">
+        <input type="file" (change)="onFileSelected($event)" accept="image/*" />
+        <button *ngIf="imageUrl" type="button" (click)="removeImage()">Remove</button>
+      </div>
+    </div>
