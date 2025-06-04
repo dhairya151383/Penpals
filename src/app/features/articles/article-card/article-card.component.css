@@ -80,8 +80,8 @@
   line-height: 1.6;
   margin-bottom: 20px; /* Increased margin */
   display: -webkit-box;
-  -webkit-line-clamp: 3; /* Often 3 lines is enough for a brief in a card */
-  line-clamp: 3;
+  -webkit-line-clamp: 2; /* Changed from 3 to 2 for brief description */
+  line-clamp: 2; /* Changed from 3 to 2 for brief description */
   -webkit-box-orient: vertical;
   overflow: hidden;
   flex-grow: 1;
@@ -151,8 +151,8 @@
   }
   .brief {
     font-size: 0.85em;
-    -webkit-line-clamp: 4; /* Allow more lines on smaller screens */
-    line-clamp: 4;
+    -webkit-line-clamp: 3; /* Changed from 4 to 3 - still allow more on very small screens if needed, but not 4 as you said 2 lines */
+    line-clamp: 3; /* Changed from 4 to 3 */
   }
   .meta-row {
     flex-direction: column; /* Stack author info and featured icon on very small screens */

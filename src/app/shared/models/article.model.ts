@@ -1,15 +1,15 @@
 export interface Article {
-  id?: string;                     // Firestore document ID
+  id?: string;
   title: string;
-  thumbnailUrl?: string;          // Optional cover image
-  briefDescription: string;      // Short intro/summary (used in previews/cards)
-  content: string;               // Rich text or HTML string from editor
-  authorId: string;              // Ref to Author document
-  authorName?: string;           // Redundant but useful for quick UI display
+  thumbnailUrl?: string;
+  briefDescription: string;
+  content: string;
+  authorId: string;
+  authorName?: string;
   publishDate: Date | string | null;
-  tags?: string[];               // e.g. ["AI", "Education"]
-  isFeatured?: boolean;         // For homepage or highlighted display
-  likesCount?: number;          // Social engagement
-  commentsCount?: number;       // Optional, to cache number of comments
-  updatedAt?: Date | string;     // Last edit time
+  tags?: string[];
+  isFeatured?: boolean;
+  likesCount?: number;
+  commentsCount?: number;
+  updatedAt?: Date | string;
 }

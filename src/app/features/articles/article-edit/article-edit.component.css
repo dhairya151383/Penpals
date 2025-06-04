@@ -1,15 +1,13 @@
 .article-creation-page {
   display: flex;
   justify-content: center;
-  width: 100%;
   font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
   color: #333;
   margin: 2rem 0;
 }
 
 .article-creation-container {
-  display: flex; /* Ensure flex display */
-  flex-direction: row; /* Explicitly set to row for horizontal alignment */
+  display: flex;
   width: 90vw;
   background: #fff;
   border-radius: 8px;
@@ -19,7 +17,7 @@
 
 /* Left card 2/5 width */
 .form-card {
-  flex: 2; /* Takes 2 parts of the available space */
+  flex: 2;
   padding: 1.5rem 2rem;
   display: flex;
   flex-direction: column;
@@ -27,11 +25,12 @@
 
 /* Right card 3/5 width */
 .editor-card {
-  flex: 3; /* Takes 3 parts of the available space */
+  flex: 3;
   padding: 1.5rem 2rem;
   display: flex;
   flex-direction: column;
   border-left: 1px solid #e0e0e0;
+  overflow: hidden;
 }
 
 /* Shared card styles */
@@ -48,7 +47,8 @@
   width: 50px;
 }
 
-.form-group { /* Targeting form-group in both cards */
+.article-form .form-group,
+.editor-card .form-group {
   margin-bottom: 1.25rem;
   display: flex;
   flex-direction: column;
@@ -78,6 +78,27 @@ quill-editor:focus-within {
   box-shadow: 0 0 5px #81c784;
 }
 
+/* Quill Editor Specific Styles */
+quill-editor {
+  display: block; /* Ensure it behaves like a block element */
+  width: 100%; /* Take full width of its parent */
+  box-sizing: border-box; /* Include padding and border in the element's total width */
+  word-wrap: break-word; /* Break long words */
+  overflow-wrap: break-word; /* Modern alias for word-wrap */
+  white-space: pre-wrap; /* Preserve whitespace and wrap text */
+}
+
+/* Styles for the actual editable content within Quill */
+.ql-editor {
+  word-wrap: break-word; /* Break long words within the editor */
+  overflow-wrap: break-word; /* Modern alias */
+  white-space: pre-wrap; /* Preserve whitespace and wrap text */
+  min-height: 250px; /* Adjust as needed to maintain a good default height */
+  max-height: 400px; /* Optional: set a max-height and add overflow-y: auto if you want a scrollbar for very long content */
+  overflow-y: auto; /* Add scrollbar if content exceeds max-height */
+}
+
+
 .checkbox-group {
   flex-direction: row;
   align-items: center;
@@ -89,7 +110,7 @@ quill-editor:focus-within {
   height: 18px;
 }
 
-.save-button { /* Changed from button[type="submit"] to save-button class */
+button[type="submit"] {
   align-self: flex-start;
   padding: 0.6rem 1.6rem;
   background-color: #2e7d32;
@@ -100,15 +121,15 @@ quill-editor:focus-within {
   font-size: 1.1rem;
   cursor: pointer;
   transition: background-color 0.3s ease;
-  margin-top: auto; /* Pushes the button to the bottom */
+  margin-top: auto;
 }
 
-.save-button:disabled {
+button[type="submit"]:disabled {
   background-color: #a5d6a7;
   cursor: not-allowed;
 }
 
-.save-button:hover:not(:disabled) {
+button[type="submit"]:hover:not(:disabled) {
   background-color: #1b5e20;
 }
 
@@ -119,58 +140,44 @@ quill-editor:focus-within {
   font-weight: 600;
 }
 
-/* Avatar upload specific styles */
-.avatar-upload {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  margin-bottom: 1rem;
+.global-error {
+  margin-top: 1rem;
+  color: #b71c1c;
+  font-weight: 700;
+  font-size: 1rem;
 }
 
-.social-field {
-  display: flex;
-  align-items: center;
-  gap: 8px; /* Consistent gap */
-  margin-bottom: 12px;
+.loading-text {
+  text-align: center;
+  font-size: 1.2rem;
+  color: #2e7d32;
 }
 
-.social-field svg {
-  transition: color 0.3s ease;
-  cursor: pointer;
+pre {
+  background: #f7f7f7;
+  border: 1px solid #ccc;
+  padding: 0.8rem;
+  border-radius: 5px;
+  font-size: 0.8rem;
+  overflow-x: auto;
+  margin-top: 1rem;
 }
 
-/* Social media brand colors */
-.social-field.twitter svg {
-  color: #1DA1F2;
-}
-.social-field.linkedin svg {
-  color: #0077B5;
-}
-.social-field.facebook svg {
-  color: #1877F2;
-}
-
-/* Responsive adjustments */
+/* Responsive */
 @media (max-width: 768px) {
   .article-creation-page {
     margin: 1rem;
   }
   .article-creation-container {
-    flex-direction: column; /* Stack vertically on small screens */
+    flex-direction: column;
     width: 100vw;
   }
-  .form-card,
-  .editor-card {
-    flex: none; /* Remove flex grow */
+  .form-card, .editor-card {
+    flex: none;
     width: 100%;
     padding: 1rem;
   }
-  .editor-card {
-    border-left: none; /* Remove left border */
-    border-top: 1px solid #e0e0e0; /* Add top border for separation */
-  }
-  .save-button {
-    width: 100%; /* Full width button on small screens */
-    align-self: stretch;
+  button[type="submit"] {
+    width: 100%;
   }
 }

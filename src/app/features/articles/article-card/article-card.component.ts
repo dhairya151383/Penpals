@@ -15,3 +15,4 @@ export class ArticleCardComponent {
   @Input() article!: Article;
 
 }
+

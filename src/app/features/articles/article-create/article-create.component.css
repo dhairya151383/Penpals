@@ -30,6 +30,7 @@
   display: flex;
   flex-direction: column;
   border-left: 1px solid #e0e0e0;
+  overflow: hidden;
 }
 
 /* Shared card styles */
@@ -76,6 +77,27 @@ quill-editor:focus-within {
   outline: none;
   box-shadow: 0 0 5px #81c784;
 }
+
+/* Quill Editor Specific Styles */
+quill-editor {
+  display: block; /* Ensure it behaves like a block element */
+  width: 100%; /* Take full width of its parent */
+  box-sizing: border-box; /* Include padding and border in the element's total width */
+  word-wrap: break-word; /* Break long words */
+  overflow-wrap: break-word; /* Modern alias for word-wrap */
+  white-space: pre-wrap; /* Preserve whitespace and wrap text */
+}
+
+/* Styles for the actual editable content within Quill */
+.ql-editor {
+  word-wrap: break-word; /* Break long words within the editor */
+  overflow-wrap: break-word; /* Modern alias */
+  white-space: pre-wrap; /* Preserve whitespace and wrap text */
+  min-height: 250px; /* Adjust as needed to maintain a good default height */
+  max-height: 400px; /* Optional: set a max-height and add overflow-y: auto if you want a scrollbar for very long content */
+  overflow-y: auto; /* Add scrollbar if content exceeds max-height */
+}
+
 
 .checkbox-group {
   flex-direction: row;
