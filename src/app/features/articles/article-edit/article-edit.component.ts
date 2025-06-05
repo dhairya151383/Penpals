@@ -8,9 +8,7 @@ import {
   AbstractControl
 } from '@angular/forms';
 import { ArticleService } from '../../../core/services/article.service';
-import { AuthorService } from '../../../core/services/author.service';
 import { Article } from '../../../shared/models/article.model';
-import { Author } from '../../../shared/models/author.model';
 import { CommonModule } from '@angular/common';
 import { QuillModule } from 'ngx-quill';
 import { TagSelectorComponent } from '../../../shared/components/tag-selector/tag-selector.component';
@@ -27,7 +25,6 @@ import { LoadingSpinnerComponent } from '../../../shared/components/loading-spin
 export class ArticleEditComponent implements OnInit {
   articleId!: string;
   article!: Article;
-  author: Author | null = null;
   form!: FormGroup;
   selectedTags: Tag[] = [];
   loading = true;
@@ -39,7 +36,6 @@ export class ArticleEditComponent implements OnInit {
     private route: ActivatedRoute,
     private router: Router,
     private articleService: ArticleService,
-    private authorService: AuthorService,
     private fb: FormBuilder
   ) { }
 
@@ -70,10 +66,6 @@ export class ArticleEditComponent implements OnInit {
             isFeatured: [article.isFeatured ?? false]
           });
         }
-
-        // Save to author too
-        this.author = await this.authorService.getById(article.authorId);
-
         // Subscribe to form changes to save draft on each change
         this.form.valueChanges.subscribe(() => {
           this.saveDraft();

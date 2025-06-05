@@ -63,7 +63,7 @@
       </div>
       <div class="form-group">
         <label for="content">Content</label>
-        <quill-editor formControlName="bio" [style]="{ height: '300px' }"></quill-editor>
+        <quill-editor formControlName="briefDescription" [style]="{ height: '300px' }"></quill-editor>
         <div class="error" *ngIf="content.invalid && (content.touched || content.dirty)">
           Content is required.
         </div>
