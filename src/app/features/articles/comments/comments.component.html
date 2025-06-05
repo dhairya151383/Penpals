@@ -1,4 +1,3 @@
-
 <app-loading-spinner *ngIf="loading" />
 
 <div *ngIf="!loading" class="comments-container">
@@ -7,7 +6,7 @@
     <button (click)="postComment()" [disabled]="!newComment.trim()">Submit</button>
   </div>
 
-  <div class="comment" *ngFor="let comment of comments">
+  <div class="comment" *ngFor="let comment of displayedComments">
     <div class="comment-header">
       <img *ngIf="comment.userAvatarUrl" [src]="comment.userAvatarUrl" class="avatar" />
       <strong>{{ comment.userName }}</strong>

@@ -10,6 +10,6 @@ export interface Comment {
   content: string;
   createdAt: Timestamp;
   likes: number;
-  parentId?: string;
+  parentId?: string | null;
   replies?: Comment[];
 }
