@@ -11,7 +11,6 @@ import { CommentsComponent } from '../comments/comments.component';
 export class CommentPanelComponent {
   @Input() visible = false;
   @Input() articleId!: string;
-  @Input() user: any;
   @Output() closed = new EventEmitter<void>();
 
   close() {

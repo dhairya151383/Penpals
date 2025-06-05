@@ -31,7 +31,6 @@ export class ArticleDetailsComponent implements OnInit {
   author: Author | null = null;
   canEdit = false;
   loading = true;
-  user: User | null = null;
   showComments = false;
 
   constructor(
@@ -57,7 +56,6 @@ export class ArticleDetailsComponent implements OnInit {
       }
 
       this.authService.user$.subscribe((user) => {
-        this.user = user;
         this.canEdit = !!user && user.uid === this.author?.id;
       });
     } catch (err) {

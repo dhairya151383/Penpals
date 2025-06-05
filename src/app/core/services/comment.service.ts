@@ -35,9 +35,7 @@ export class CommentService {
   constructor(private firebase: FirebaseService) { }
 
   getComments(articleId: string) {
-    console.log('CommentService: getComments called for articleId:', articleId);
     if (!this.commentSubjects.has(articleId)) {
-      console.log('CommentService: Creating new BehaviorSubject for articleId:', articleId);
       const subject = new BehaviorSubject<Comment[]>([]);
       this.commentSubjects.set(articleId, subject);
       this.listenToComments(articleId, subject);
@@ -46,7 +44,6 @@ export class CommentService {
   }
 
   private listenToComments(articleId: string, subject: BehaviorSubject<Comment[]>) {
-    console.log('CommentService: Setting up real-time listener for all comments for articleId:', articleId);
     const commentRef = collection(this.firebase.firestore, 'comments');
     const q = query(commentRef, where('articleId', '==', articleId), orderBy('createdAt', 'desc'));
 
@@ -55,7 +52,6 @@ export class CommentService {
       snapshot.forEach((doc) => {
         comments.push(doc.data() as Comment);
       });
-      console.log('CommentService: Real-time listener: Fetched', comments.length, 'total comments from Firestore.');
       subject.next(comments);
     }, (error) => {
       console.error('CommentService: Real-time listener error:', error);
@@ -63,7 +59,6 @@ export class CommentService {
   }
 
   async addComment(articleId: string, content: string, userId: string, userName: string, userAvatarUrl: string) {
-    console.log('CommentService: Adding comment for articleId:', articleId, 'content:', content);
     const id = uuidv4();
     const newComment: Comment = {
       id,
@@ -81,7 +76,6 @@ export class CommentService {
     const commentDoc = doc(this.firebase.firestore, 'comments', id);
     try {
       await setDoc(commentDoc, newComment);
-      console.log('CommentService: Comment added successfully:', newComment.id);
     } catch (error) {
       console.error('CommentService: Error adding comment:', error);
       throw error;
@@ -90,7 +84,6 @@ export class CommentService {
 
   // Modified likeComment method to handle unique likes/unlikes
   async toggleLikeComment(commentId: string, userId: string) {
-    console.log(`CommentService: Toggling like for comment: ${commentId} by user: ${userId}`);
     const commentDocRef = doc(this.firebase.firestore, 'comments', commentId);
 
     try {
@@ -110,14 +103,12 @@ export class CommentService {
           likes: increment(-1),
           likedBy: arrayRemove(userId)
         });
-        console.log('CommentService: Comment unliked successfully:', commentId);
       } else {
         // User has not liked, so like it
         await updateDoc(commentDocRef, {
           likes: increment(1),
           likedBy: arrayUnion(userId)
         });
-        console.log('CommentService: Comment liked successfully:', commentId);
       }
     } catch (error) {
       console.error('CommentService: Error toggling like for comment:', error);
@@ -133,7 +124,6 @@ export class CommentService {
     userName: string,
     userAvatarUrl: string
   ) {
-    console.log('CommentService: Adding reply to parent:', parentId, 'content:', content);
     const id = uuidv4();
     const newReply: Comment = {
       id,
@@ -151,7 +141,6 @@ export class CommentService {
     const commentDoc = doc(this.firebase.firestore, 'comments', id);
     try {
       await setDoc(commentDoc, newReply);
-      console.log('CommentService: Reply added successfully:', newReply.id);
     } catch (error) {
       console.error('CommentService: Error adding reply:', error);
       throw error;
@@ -159,7 +148,6 @@ export class CommentService {
   }
 
   async loadMoreComments(articleId: string, pageSize = 5, lastVisibleCommentId: string | null = null): Promise<Comment[]> {
-    console.log('CommentService: loadMoreComments called for articleId:', articleId, 'pageSize:', pageSize, 'lastVisibleCommentId:', lastVisibleCommentId);
     const commentRef = collection(this.firebase.firestore, 'comments');
     let q = query(
       commentRef,
@@ -177,7 +165,6 @@ export class CommentService {
       if (!docSnapshot.empty) {
         lastVisibleDoc = docSnapshot.docs[0];
         q = query(q, startAfter(lastVisibleDoc));
-        console.log('CommentService: loadMoreComments: Querying with startAfter document:', lastVisibleDoc.id);
       } else {
         console.warn('CommentService: loadMoreComments: lastVisibleCommentId provided but document not found. Ignoring startAfter.');
       }
@@ -186,7 +173,6 @@ export class CommentService {
     try {
       const snapshot = await getDocs(q);
       const fetchedComments = snapshot.docs.map(doc => doc.data() as Comment);
-      console.log('CommentService: loadMoreComments: Fetched', fetchedComments.length, 'top-level comments.');
       return fetchedComments;
     } catch (error) {
       console.error('CommentService: Error in loadMoreComments:', error);
@@ -195,11 +181,9 @@ export class CommentService {
   }
 
   async deleteComment(commentId: string) {
-    console.log('CommentService: Deleting comment:', commentId);
     const docRef = doc(this.firebase.firestore, 'comments', commentId);
     try {
       await deleteDoc(docRef);
-      console.log('CommentService: Comment deleted successfully:', commentId);
     } catch (error) {
       console.error('CommentService: Error deleting comment:', error);
       throw error;
@@ -207,11 +191,9 @@ export class CommentService {
   }
 
   async editComment(commentId: string, content: string) {
-    console.log('CommentService: Editing comment:', commentId, 'with content:', content);
     const docRef = doc(this.firebase.firestore, 'comments', commentId);
     try {
       await updateDoc(docRef, { content });
-      console.log('CommentService: Comment edited successfully:', commentId);
     } catch (error) {
       console.error('CommentService: Error editing comment:', error);
       throw error;

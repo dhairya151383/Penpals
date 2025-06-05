@@ -48,16 +48,11 @@ export class CommentsComponent implements OnInit, OnDestroy {
   ) { }
 
   async ngOnInit() {
-    console.log('CommentsComponent: ngOnInit started');
-    console.log('CommentsComponent: articleId received:', this.articleId);
-
     // Combine authReady$ and user$ to manage loading state and user info
     this.authSubscription = combineLatest([
       this.authService.authReady$.pipe(filter(isReady => isReady)),
       this.authService.user$
     ]).subscribe(([authReady, user]) => {
-      console.log('CommentsComponent: Auth state updated. User:', user?.uid);
-
       if (user) {
         this.userId = user.uid;
         this.userName = user.displayName ?? 'Anonymous';
@@ -67,9 +62,6 @@ export class CommentsComponent implements OnInit, OnDestroy {
         this.userName = 'Anonymous';
         this.userAvatarUrl = '';
       }
-
-      console.log('CommentsComponent: User Info:', { userId: this.userId, userName: this.userName, userAvatarUrl: this.userAvatarUrl });
-
       // If the real-time comments listener hasn't been set up yet, do it now
       if (!this.realTimeCommentsSubscription) {
          this.setupRealTimeCommentsListener();
@@ -78,18 +70,14 @@ export class CommentsComponent implements OnInit, OnDestroy {
       // No need to set loadingAuthAndComments = false here, it will be set in loadMore()
       // once comments are fetched.
     });
-
-    console.log('CommentsComponent: ngOnInit finished (waiting for auth state)');
   }
 
   ngOnDestroy(): void {
     if (this.realTimeCommentsSubscription) {
       this.realTimeCommentsSubscription.unsubscribe();
-      console.log('CommentsComponent: realTimeCommentsSubscription unsubscribed');
     }
     if (this.authSubscription) {
       this.authSubscription.unsubscribe();
-      console.log('CommentsComponent: authSubscription unsubscribed');
     }
   }
 
@@ -106,7 +94,6 @@ export class CommentsComponent implements OnInit, OnDestroy {
         )
         .subscribe(
           (fetchedComments: Comment[]) => {
-            console.log('CommentsComponent: Real-time listener: fetchedComments (all comments) received:', fetchedComments.length);
             this.allComments = fetchedComments;
             this.loadMore(true); // Always refresh the displayed comments when new data comes in
             this.loadingAuthAndComments = false; // Hide loading spinner once comments are initially fetched
@@ -124,7 +111,6 @@ export class CommentsComponent implements OnInit, OnDestroy {
   }
 
   async loadMore(refresh: boolean = false) {
-    console.log('CommentsComponent: loadMore started. Refresh:', refresh);
     // Do NOT set `loadingAuthAndComments = true;` here if it's a refresh from real-time listener
     // as that would cause the spinner to flash unnecessarily for every real-time update.
     // It's only for the initial load or explicit "Load more" button click.
@@ -149,8 +135,6 @@ export class CommentsComponent implements OnInit, OnDestroy {
 
         this.hasMore = currentTopLevelComments.length > this.displayedComments.length;
 
-        console.log('CommentsComponent: loadMore (refresh): displayedComments updated:', this.displayedComments.length);
-        console.log('CommentsComponent: loadMore (refresh): hasMore set to:', this.hasMore);
         // Loading state is managed by the subscriber for initial fetch
         return;
       }
@@ -158,8 +142,6 @@ export class CommentsComponent implements OnInit, OnDestroy {
       // Explicit "Load More" button click
       this.loadingAuthAndComments = true; // Show spinner only for explicit load more
       const moreTopLevelComments = await this.commentService.loadMoreComments(this.articleId, this.pageSize, this.lastVisibleCommentId);
-      console.log('CommentService: loadMoreComments: Fetched', moreTopLevelComments.length, 'top-level comments from Firestore.');
-
       const newUniqueComments = moreTopLevelComments.filter(
         comment => !this.displayedComments.some(dc => dc.id === comment.id)
       );
@@ -178,15 +160,10 @@ export class CommentsComponent implements OnInit, OnDestroy {
       } else {
         this.lastVisibleCommentId = null;
       }
-
-      console.log('CommentsComponent: loadMore: displayedComments array updated:', this.displayedComments.length);
-      console.log('CommentsComponent: loadMore: hasMore set to:', this.hasMore);
-
     } catch (error) {
       console.error('CommentsComponent: Error in loadMore:', error);
     } finally {
       this.loadingAuthAndComments = false; // Hide spinner after explicit load more
-      console.log('CommentsComponent: loadMore finished. Loading set to:', this.loadingAuthAndComments);
     }
   }
 
@@ -202,7 +179,6 @@ export class CommentsComponent implements OnInit, OnDestroy {
 
   async deleteComment(commentId: string) {
     if (confirm('Are you sure you want to delete this comment?')) {
-      console.log('CommentsComponent: Deleting comment:', commentId);
       try {
         await this.commentService.deleteComment(commentId);
       } catch (error) {
@@ -217,15 +193,12 @@ export class CommentsComponent implements OnInit, OnDestroy {
 
   async postComment() {
     if (!this.userId) {
-      console.warn('CommentsComponent: Cannot post comment: User not logged in.');
       return;
     }
     if (this.newComment.trim()) {
-      console.log('CommentsComponent: Posting new comment...');
       try {
         await this.commentService.addComment(this.articleId, this.newComment, this.userId, this.userName, this.userAvatarUrl);
         this.newComment = '';
-        console.log('CommentsComponent: Comment posted successfully.');
       } catch (error) {
         console.error('CommentsComponent: Error posting comment:', error);
       }
@@ -234,18 +207,15 @@ export class CommentsComponent implements OnInit, OnDestroy {
 
   async postReply(parentId: string) {
     if (!this.userId) {
-      console.warn('CommentsComponent: Cannot post reply: User not logged in.');
       return;
     }
     const content = this.replyText[parentId];
     if (content?.trim()) {
-      console.log('CommentsComponent: Posting reply...');
       try {
         await this.commentService.addReply(this.articleId, parentId, content, this.userId, this.userName, this.userAvatarUrl);
         this.replyText[parentId] = '';
         this.replyingTo = null;
         this.showReplies[parentId] = true;
-        console.log('CommentsComponent: Reply posted successfully.');
       } catch (error) {
         console.error('CommentsComponent: Error posting reply:', error);
       }
@@ -260,7 +230,6 @@ export class CommentsComponent implements OnInit, OnDestroy {
       console.warn('CommentsComponent: User not logged in to like comments.');
       return;
     }
-    console.log(`CommentsComponent: Attempting to toggle like for comment: ${comment.id} by user: ${this.userId}`);
     await this.commentService.toggleLikeComment(comment.id, this.userId);
   }
 

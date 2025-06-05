@@ -49,7 +49,6 @@ export class AuthService {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(this.firebaseService.auth, provider);
       await this.saveUserData(result.user, undefined, 'google', 'user');
-      console.log('Signed in with Google');
     } catch (error) {
       console.error('Google Sign-In Error:', error);
       throw error;
@@ -59,7 +58,6 @@ export class AuthService {
   async signInWithEmail(email: string, password: string) {
     try {
       const result = await signInWithEmailAndPassword(this.firebaseService.auth, email, password);
-      console.log('Signed in with Email');
       return result.user;
     } catch (error) {
       console.error('Email Sign-In Error:', error);
@@ -98,7 +96,6 @@ export class AuthService {
   async signOut() {
     try {
       await signOut(this.firebaseService.auth);
-      console.log('Signed out');
     } catch (error) {
       console.error('Sign-Out Error:', error);
       throw error;

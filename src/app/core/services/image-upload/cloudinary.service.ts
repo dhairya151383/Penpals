@@ -22,7 +22,6 @@ export class CloudinaryService {
 
     formData.append('file', file);
     formData.append('upload_preset', this.uploadPreset);
-    console.log(url);
     return this.http.post<CloudinaryUploadResponse>(url, formData).pipe(
       map((response) => response.secure_url)
     );
