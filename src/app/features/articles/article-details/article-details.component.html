@@ -1,3 +1,4 @@
+
 <app-loading-spinner *ngIf="loading" />
 
 <div *ngIf="!loading && article" class="article-details-container">
@@ -25,8 +26,11 @@
       <span *ngFor="let tag of article.tags" class="tag-chip">#{{ tag }}</span>
     </div>
 
-    <div class="article-content" [innerHTML]="article.content"></div>
+    <div class="article-content" [innerHTML]="article.content"></div>  
   </div>
+  <ng-container *ngIf="article?.id as articleId">
+  <app-comments [articleId]="articleId" [user]="user"></app-comments>
+</ng-container>
 </div>
 <div *ngIf="canEdit" class="edit-actions">
   <button (click)="goToEdit()" class="edit-btn">✏️ Edit Article</button>

@@ -2,7 +2,7 @@ import { addDoc, collection, deleteDoc, doc, getDoc, getDocs, orderBy, query, up
 import { Article } from "../../shared/models/article.model";
 import { FirebaseService } from "./firebase.service";
 import { Injectable } from "@angular/core";
-import { Timestamp } from "firebase/firestore"; // Import Timestamp
+import { Timestamp } from "firebase/firestore";
 
 @Injectable({
   providedIn: 'root',
@@ -16,12 +16,13 @@ export class ArticleService {
 
   // Helper function to convert Firestore Timestamps (and strings) to JavaScript Date objects
   private convertArticleDates(articleData: DocumentData | QueryDocumentSnapshot<DocumentData>): Article {
-    // If articleData is a QueryDocumentSnapshot, get its data
+    // Get document data
     const data = (articleData as QueryDocumentSnapshot<DocumentData>).data
       ? (articleData as QueryDocumentSnapshot<DocumentData>).data()
       : (articleData as DocumentData);
 
-    const article: Article = { ...data } as Article; // Create a mutable copy
+    // Spread data and add document ID from Firestore snapshot (if available)
+    const article: Article = { id: (articleData as QueryDocumentSnapshot).id, ...data } as Article;
 
     // Convert publishDate
     if (article.publishDate instanceof Timestamp) {
@@ -29,7 +30,6 @@ export class ArticleService {
     } else if (typeof article.publishDate === 'string') {
       article.publishDate = new Date(article.publishDate);
     } else if (article.publishDate === null || article.publishDate === undefined) {
-      // Handle cases where publishDate might be null or undefined
       article.publishDate = null;
     }
 
@@ -43,12 +43,10 @@ export class ArticleService {
     return article;
   }
 
-
   async getAll(): Promise<Article[]> {
     const snapshot = await getDocs(this.articlesRef);
-    return snapshot.docs.map(doc => {
-      // Apply conversion for each document
-      return { id: doc.id, ...this.convertArticleDates(doc) };
+    return snapshot.docs.map(docSnap => {
+      return this.convertArticleDates(docSnap);
     });
   }
 
@@ -56,25 +54,23 @@ export class ArticleService {
     const docRef = doc(this.articlesRef, id);
     const docSnap = await getDoc(docRef);
     if (docSnap.exists()) {
-      // Apply conversion for the single document
-      return { id: docSnap.id, ...this.convertArticleDates(docSnap) };
+      return this.convertArticleDates(docSnap);
     }
     return null;
   }
 
   async create(article: Article): Promise<string> {
-    // When creating, you might want to convert Date objects back to Timestamps
-    // if your backend explicitly expects Timestamps.
-    // For now, assuming Firestore can handle Date objects directly on write.
-    // If not, you'd add conversion here before addDoc.
+    // Add the article document to Firestore
     const docRef = await addDoc(this.articlesRef, article);
+
+    // Update the document with its generated ID inside the document data
+    await updateDoc(docRef, { id: docRef.id });
+
     return docRef.id;
   }
 
   async update(id: string, article: Partial<Article>): Promise<void> {
     const docRef = doc(this.articlesRef, id);
-    // Similar to create, consider converting Date objects back to Timestamps
-    // if needed by your Firestore rules/structure on update.
     await updateDoc(docRef, article);
   }
 
@@ -86,9 +82,8 @@ export class ArticleService {
   async getByAuthorId(authorId: string): Promise<Article[]> {
     const q = query(this.articlesRef, where('authorId', '==', authorId), orderBy('publishDate', 'desc'));
     const snapshot = await getDocs(q);
-    return snapshot.docs.map(doc => {
-      // Apply conversion for each document
-      return { id: doc.id, ...this.convertArticleDates(doc) };
+    return snapshot.docs.map(docSnap => {
+      return this.convertArticleDates(docSnap);
     });
   }
 }

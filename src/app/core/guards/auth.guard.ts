@@ -17,7 +17,7 @@ export class AuthGuard implements CanActivate {
       this.authService.authReady$,
       this.authService.user$
     ]).pipe(
-      filter(([ready]) => ready), // Wait until Firebase Auth is initialized
+      filter(([ready]) => ready),
       take(1),
       map(([_, user]) => {
         if (user) return true;

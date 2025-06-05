@@ -28,30 +28,39 @@ export class RoleGuard implements CanActivate {
       filter(([ready]) => ready),
       take(1),
       switchMap(([_, user]) => {
+        // 🔐 User not logged in → redirect to /login
         if (!user) {
           this.router.navigate(['/login']);
           return of(false);
         }
+
+        // ✅ Allow self-edit if applicable
         if (allowSelfEdit && routeId && routeId === user.uid) {
           return of(true);
         }
+
         const userDocRef = doc(this.firestore, `users/${user.uid}`);
         return from(getDoc(userDocRef)).pipe(
           map(docSnap => {
             const data = docSnap.data() as Users | undefined;
             const roles = data?.roles;
 
+            // ❌ No roles found → access denied
             if (!roles) {
-              this.router.navigate(['/dashboard']);
               return false;
             }
+
+            // ✅ Admins always allowed
             if (roles.admin) {
               return true;
             }
+
+            // ✅ Check for expected role
             if (roles[expectedRole as keyof typeof roles]) {
               return true;
             }
-            this.router.navigate(['/dashboard']);
+
+            // ❌ Role missing → access denied
             console.warn('Access Denied: User lacks role:', expectedRole);
             return false;
           })
@@ -60,3 +69,4 @@ export class RoleGuard implements CanActivate {
     );
   }
 }
+

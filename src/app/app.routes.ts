@@ -19,6 +19,7 @@ export const routes: Routes = [
   {
     path: '',
     component: LayoutComponent,
+    canActivate: [AuthGuard],
     children: [
       { path: '', redirectTo: 'dashboard', pathMatch: 'full' },
 
@@ -34,13 +35,13 @@ export const routes: Routes = [
       {
         path: 'create-article',
         loadComponent: () => import('./features/articles/article-create/article-create.component').then(m => m.ArticleCreateComponent),
-        canActivate: [AuthGuard, RoleGuard],
+        canActivate: [RoleGuard],
         data: { expectedRole: 'author' }
       },
       {
         path: 'articles/:id/edit',
         loadComponent: () => import('./features/articles/article-edit/article-edit.component').then(m => m.ArticleEditComponent),
-        canActivate: [AuthGuard, RoleGuard],
+        canActivate: [RoleGuard],
         data: { expectedRole: 'author' }
       },
       {
@@ -54,7 +55,7 @@ export const routes: Routes = [
       {
         path: 'authors/edit/:id',
         loadComponent: () => import('./features/authors/author-edit/author-edit.component').then(m => m.AuthorEditComponent),
-        canActivate: [AuthGuard, RoleGuard],
+        canActivate: [RoleGuard],
         data: { expectedRole: 'author' }
       },
       // Wildcard route for 404 within the layout
