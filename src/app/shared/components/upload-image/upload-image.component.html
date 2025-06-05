@@ -1,11 +1,44 @@
-<div class="upload-image-container">
-      <img *ngIf="imageUrl; else placeholder" [src]="imageUrl" alt="Uploaded Image" class="image-preview" />
-      <ng-template #placeholder>
-        <div class="placeholder">No image uploaded</div>
-      </ng-template>
+<div class="upload-image-wrapper" [ngClass]="{
+    'profile-pic-container': type === 'profilePic',
+    'thumbnail-container': type === 'thumbnailUrl'
+  }">
 
-      <div class="actions">
-        <input type="file" (change)="onFileSelected($event)" accept="image/*" />
-        <button *ngIf="imageUrl" type="button" (click)="removeImage()">Remove</button>
+  <div class="image-display-area" [ngClass]="{
+      'profile-pic-area': type === 'profilePic',
+      'thumbnail-area': type === 'thumbnailUrl'
+    }">
+
+    <img *ngIf="imageUrl; else placeholder" [src]="imageUrl" alt="Uploaded Image"
+      [ngClass]="{
+        'profile-pic-preview': type === 'profilePic',
+        'thumbnail-preview': type === 'thumbnailUrl'
+      }" />
+
+    <ng-template #placeholder>
+      <div class="image-placeholder-content" [ngClass]="{
+          'profile-pic-placeholder': type === 'profilePic',
+          'thumbnail-placeholder': type === 'thumbnailUrl'
+        }">
+        <span class="upload-icon">
+          🖼️
+        </span>
+        <span class="placeholder-text">Upload Image</span>
+        <span class="size-limit-text">Max 2MB</span>
       </div>
-    </div>
+    </ng-template>
+
+  </div>
+
+  <input type="file" id="fileUploadInput" (change)="onFileSelected($event)" accept="image/*" style="display: none;" />
+
+  <div class="overlay">
+    <label for="fileUploadInput" class="upload-edit-icon" [title]="imageUrl ? 'Change Image' : 'Upload Image'">
+      ✏️
+    </label>
+
+    <button type="button" *ngIf="imageUrl" class="remove-icon" (click)="removeImage()" aria-label="Remove image" title="Remove Image">
+      &times;
+    </button>
+  </div>
+
+</div>

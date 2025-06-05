@@ -9,7 +9,8 @@
 
       <div class="article-form">
         <div class="form-group avatar-upload">
-          <app-upload-image [imageUrl]="avatarUrl" (imageChange)="onImageChange($event)">
+          <app-upload-image [type]="'profilePic'" [imageUrl]="avatarUrl"
+            (imageChange)="onImageChange($event)">
           </app-upload-image>
         </div>
 
@@ -71,7 +72,8 @@
 
       <div class="form-group">
         <label>Bio</label>
-        <quill-editor formControlName="bio" (onContentChanged)="onBioChanged()" [styles]="{ height: '200px' }"></quill-editor>
+        <quill-editor formControlName="bio" (onContentChanged)="onBioChanged()"
+          [styles]="{ height: '200px' }"></quill-editor>
         <div class="error" *ngIf="(formSubmitted || bio.touched || bio.dirty) && bio.hasError('required')">
           Bio is required.
         </div>

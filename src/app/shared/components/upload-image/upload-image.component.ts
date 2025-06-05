@@ -11,6 +11,7 @@ import { CloudinaryService } from '../../../core/services/image-upload/cloudinar
 })
 export class UploadImageComponent {
   @Input() imageUrl: string | null = null;
+  @Input() type: 'profilePic' | 'thumbnailUrl' = 'profilePic'; // New input for type
   @Output() imageChange = new EventEmitter<string | null>();
 
   uploading = false;

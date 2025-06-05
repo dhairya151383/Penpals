@@ -18,6 +18,7 @@ import { Article } from '../../../shared/models/article.model';
 import { Tag } from '../../../shared/models/tag.model';
 import { TagSelectorComponent } from '../../../shared/components/tag-selector/tag-selector.component';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
+import { UploadImageComponent } from '../../../shared/components/upload-image/upload-image.component'; // Import the upload image component
 
 export function quillRequired(control: AbstractControl): ValidationErrors | null {
   const value = control.value || '';
@@ -39,9 +40,16 @@ export function minTagsSelected(min = 1): ValidatorFn {
 @Component({
   selector: 'app-article-create',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, QuillModule, TagSelectorComponent, LoadingSpinnerComponent],
+  imports: [
+    CommonModule,
+    ReactiveFormsModule,
+    QuillModule,
+    TagSelectorComponent,
+    LoadingSpinnerComponent,
+    UploadImageComponent,
+  ],
   templateUrl: './article-create.component.html',
-  styleUrls: ['./article-create.component.css']
+  styleUrls: ['./article-create.component.css'],
 })
 export class ArticleCreateComponent implements OnInit {
   form!: FormGroup;
@@ -49,13 +57,14 @@ export class ArticleCreateComponent implements OnInit {
   selectedTags: Tag[] = [];
   formSubmitted = false;
   loading = true;
+  avatarUrl: string | null = null; // For the thumbnail image
 
   constructor(
     private fb: FormBuilder,
     private router: Router,
     private articleService: ArticleService,
     private firebaseService: FirebaseService
-  ) { }
+  ) {}
 
   ngOnInit() {
     try {
@@ -65,6 +74,7 @@ export class ArticleCreateComponent implements OnInit {
         content: ['', [quillRequired]],
         tags: [[], [minTagsSelected(1)]],
         isFeatured: [false],
+        isPublished: [false],
       });
     } catch (err) {
       console.error('Error loading article add:', err);
@@ -90,6 +100,10 @@ export class ArticleCreateComponent implements OnInit {
     return this.form.get('tags')!;
   }
 
+  get isPublished() {
+    return this.form.get('isPublished')!;
+  }
+
   onContentChanged() {
     const control = this.content;
     control.markAsTouched();
@@ -102,6 +116,10 @@ export class ArticleCreateComponent implements OnInit {
     tagsControl.setValue(tags);
     tagsControl.markAsTouched();
     tagsControl.updateValueAndValidity();
+  }
+
+  onImageChange(imageUrl: string | null) {
+    this.avatarUrl = imageUrl;
   }
 
   async onSubmit() {
@@ -124,17 +142,27 @@ export class ArticleCreateComponent implements OnInit {
       }
 
       const formValue = this.form.value;
-      const newArticle: Article = {
+      let newArticle: Article = {
         title: formValue.title,
+        thumbnailUrl: this.avatarUrl || undefined, // Add thumbnail URL
         briefDescription: formValue.briefDescription,
         content: formValue.content,
         authorId: currentUser.uid,
         authorName: currentUser.displayName || 'Anonymous',
-        publishDate: new Date(),
         tags: formValue.tags.map((tag: Tag) => tag.name),
         isFeatured: formValue.isFeatured,
         updatedAt: new Date(),
+        publishDate: null, // Initialize publishDate to null
+        isPublished: false, // Default to false
       };
+
+      if (formValue.isPublished) {
+        newArticle.isPublished = true;
+        newArticle.publishDate = new Date();
+      }  else {
+        newArticle.isPublished = false;
+        newArticle.publishDate = null;
+      }
 
       const createdId = await this.articleService.create(newArticle);
       this.router.navigate(['/articles', createdId]);

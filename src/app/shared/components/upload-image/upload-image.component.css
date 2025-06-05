@@ -1,42 +1,214 @@
-.upload-image-container {
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-    }
-    .image-preview {
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      object-fit: cover;
-      border: 2px solid #ccc;
-      margin-bottom: 0.5rem;
-    }
-    .placeholder {
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
-      border: 2px dashed #ccc;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      color: #aaa;
-      margin-bottom: 0.5rem;
-    }
-    .actions {
-      display: flex;
-      gap: 0.5rem;
-    }
-    input[type="file"] {
-      cursor: pointer;
-    }
-    button {
-      background-color: #d32f2f;
-      border: none;
-      color: white;
-      padding: 0.3rem 0.6rem;
-      border-radius: 4px;
-      cursor: pointer;
-    }
-    button:hover {
-      background-color: #b71c1c;
-    }
+/* Base container for the component */
+.upload-image-wrapper {
+  display: flex; /* For centering content within the wrapper */
+  justify-content: center;
+  align-items: center;
+  overflow: hidden;
+  position: relative; /* CRUCIAL: Establishes positioning context for absolute children (.image-display-area and .overlay) */
+  box-sizing: border-box;
+  border-radius: 8px;
+  background-color: #f9f9f9;
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+
+  /* Dimensions for the wrapper itself */
+  width: 80%; /* Takes 80% of its parent's width by default */
+  max-width: 400px; /* Max width to prevent it from getting too large */
+  min-width: 200px; /* Minimum width for the entire component */
+  /* If you want an overall fixed aspect ratio for the wrapper, use padding-bottom here,
+     otherwise the height will be determined by its content.
+     For now, we'll let image-display-area define its own aspect ratio. */
+}
+
+/* Specific wrapper styles for profile picture (circular) */
+.profile-pic-container {
+  padding-bottom: 80%; /* Makes the wrapper a square for circular content */
+  max-width: 300px; /* Tighter max-width for circles */
+  max-height: 300px;
+  min-width: 120px;
+  min-height: 120px;
+  border-radius: 50%; /* Make the wrapper itself circular */
+}
+
+/* Specific wrapper styles for thumbnail (rectangular card) */
+.thumbnail-container {
+  padding-bottom: 50%; /* Example: 16:9 aspect ratio (height = 50% of width) */
+  max-width: 500px; /* Adjust max-width for rectangular card */
+  max-height: 300px; /* Adjust max-height for rectangular card */
+  min-width: 180px;
+  min-height: 100px;
+  border-radius: 8px; /* Make the wrapper itself rectangular */
+}
+
+
+/* Common area for image or placeholder visual - it should fill its parent's content box */
+.image-display-area {
+  position: absolute; /* Positioned relative to .upload-image-wrapper */
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  background-color: #f0f0f0; /* Fallback background */
+  overflow: hidden; /* Ensures content respects border-radius */
+}
+
+.profile-pic-area {
+  border-radius: 50%; /* Ensure the image area itself is circular */
+}
+
+.profile-pic-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border: 2px solid #ccc;
+  border-radius: 50%;
+}
+
+/* Placeholder content (visual only now) */
+.image-placeholder-content {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  color: #aaa;
+  text-align: center;
+  background-color: #e9e9e9;
+  border: 2px dashed #ccc;
+  cursor: default; /* No pointer cursor on the placeholder itself */
+}
+
+.profile-pic-placeholder {
+  border-radius: 50%;
+}
+
+/* Styles for thumbnail image area */
+.thumbnail-area {
+  border-radius: 8px;
+}
+
+.thumbnail-preview {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+}
+
+.thumbnail-placeholder {
+  border-radius: 8px;
+}
+
+/* Common placeholder text/icons */
+.upload-icon {
+  font-size: 3em;
+  margin-bottom: 5px;
+  line-height: 1;
+}
+
+.uploading-text {
+  font-weight: bold;
+  color: #007bff;
+}
+
+.placeholder-text {
+  font-weight: bold;
+  margin-bottom: 5px;
+}
+
+.size-limit-text {
+  font-size: 0.8em;
+  color: #888;
+}
+
+/* Overlay for interaction icons - ABSOLUTELY POSITIONED RELATIVE TO .upload-image-wrapper */
+.overlay {
+  position: absolute; /* Key change: Positioned relative to .upload-image-wrapper */
+  top: 10px; /* Distance from the top of .upload-image-wrapper */
+  right: 10px; /* Distance from the right of .upload-image-wrapper */
+  display: flex;
+  gap: 5px; /* Space between icons */
+  z-index: 20; /* Higher z-index to ensure it's on top of everything */
+}
+
+/* Edit/Upload Icon */
+.upload-edit-icon {
+  background-color: rgba(0, 0, 0, 0.6);
+  color: white;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  font-size: 1.2em;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease;
+}
+
+.upload-edit-icon:hover {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+/* Remove Icon */
+.remove-icon {
+  background-color: #ff4d4f;
+  color: white;
+  border: none;
+  border-radius: 50%;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.2em;
+  cursor: pointer;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  transition: background-color 0.3s ease;
+  padding: 0;
+  line-height: 1;
+}
+
+.remove-icon:hover {
+  background-color: #cc0000;
+}
+
+/* Media Queries for responsiveness */
+@media (max-width: 768px) {
+  .profile-pic-container {
+    max-width: 200px;
+    max-height: 200px;
+  }
+  .thumbnail-container {
+    max-width: 300px;
+    max-height: 180px;
+  }
+  .upload-edit-icon, .remove-icon {
+    width: 28px;
+    height: 28px;
+    font-size: 1em;
+  }
+  .overlay {
+    top: 5px;
+    right: 5px;
+  }
+}
+
+@media (max-width: 480px) {
+  .profile-pic-container {
+    width: 90%;
+    padding-bottom: 90%;
+    min-width: 100px;
+    min-height: 100px;
+  }
+  .thumbnail-container {
+    width: 90%;
+    padding-bottom: 60%;
+    min-width: 150px;
+    min-height: 80px;
+  }
+}

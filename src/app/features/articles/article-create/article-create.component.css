@@ -11,7 +11,7 @@
   width: 90vw;
   background: #fff;
   border-radius: 8px;
-  box-shadow: 0 0 10px rgba(0,0,0,0.15);
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.15);
   overflow: hidden;
 }
 
@@ -31,10 +31,16 @@
   flex-direction: column;
   border-left: 1px solid #e0e0e0;
   overflow: hidden;
+  /* Ensure editor-card can dictate height for its children */
+  min-height: 500px;
+  /* Example fixed minimum height for the card to demonstrate bottom spacing */
+  justify-content: space-between;
+  /* Distribute space vertically */
 }
 
 /* Shared card styles */
-.card-header h2, .card-header h3 {
+.card-header h2,
+.card-header h3 {
   margin: 0 0 0.5rem 0;
   font-weight: 700;
   color: #2e7d32;
@@ -47,11 +53,20 @@
   width: 50px;
 }
 
-.article-form .form-group,
-.editor-card .form-group {
-  margin-bottom: 1.25rem;
+.article-form .form-group {
+  margin-bottom: 1.5rem;
+  /* Consistent spacing */
   display: flex;
   flex-direction: column;
+}
+
+.editor-card .form-group {
+  margin-bottom: 1.5rem;
+  display: flex;
+  flex-direction: column;
+  flex-grow: 1;
+  height: 100%;
+  min-height: 0;
 }
 
 label {
@@ -80,34 +95,80 @@ quill-editor:focus-within {
 
 /* Quill Editor Specific Styles */
 quill-editor {
-  display: block; /* Ensure it behaves like a block element */
-  width: 100%; /* Take full width of its parent */
-  box-sizing: border-box; /* Include padding and border in the element's total width */
-  word-wrap: break-word; /* Break long words */
-  overflow-wrap: break-word; /* Modern alias for word-wrap */
-  white-space: pre-wrap; /* Preserve whitespace and wrap text */
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
+  /* flex-grow: 1; */
+  /* REMOVED */
+  height: 80%;
+  /* MODIFIED: Set height to 80% of parent's available space */
+  margin-bottom: 1.5rem;
+  /* MODIFIED: Adjusted margin for consistency */
+  min-height: 200px;
 }
 
 /* Styles for the actual editable content within Quill */
 .ql-editor {
-  word-wrap: break-word; /* Break long words within the editor */
-  overflow-wrap: break-word; /* Modern alias */
-  white-space: pre-wrap; /* Preserve whitespace and wrap text */
-  min-height: 250px; /* Adjust as needed to maintain a good default height */
-  max-height: 400px; /* Optional: set a max-height and add overflow-y: auto if you want a scrollbar for very long content */
-  overflow-y: auto; /* Add scrollbar if content exceeds max-height */
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
+  height: 100%;
+  /* Remains the same: Make editor content fill the quill-editor container */
+  min-height: 100%;
+  /* Remains the same: Important for initial display */
+  overflow-y: auto;
+  /* Remains the same: Add scrollbar if content exceeds max-height */
 }
 
 
-.checkbox-group {
+/* Horizontal alignment for checkboxes */
+.options-row {
+  display: flex;
+  flex-wrap: wrap;
+  /* Allow wrapping on smaller screens */
+  align-items: center;
+  /* Vertically align items in the row */
+  margin-bottom: 1.5rem;
+  padding-top: 10px;
+  }
+
+.options-row .checkbox-group {
   flex-direction: row;
   align-items: center;
+  margin-bottom: 0;
+  /* Remove individual margin as spacing is handled by padding-right */
+  padding-right: 2rem;
+  /* Spacing between checkbox groups */
+}
+
+.checkbox-group label {
+  margin-bottom: 0;
+  /* Align label with checkbox */
 }
 
 .checkbox-group input[type="checkbox"] {
   margin-right: 0.5rem;
   width: 18px;
   height: 18px;
+}
+
+/* Thumbnail upload component styling */
+app-upload-image {
+  width: 70%;
+  height: 200px;
+  margin: 1.5rem auto;
+  /* Increased top/bottom margin, centered horizontally */
+  display: block;
+}
+
+.thumbnail-upload-wrapper {
+  margin: 1.5rem auto;
+  /* Apply the margin to the wrapper */
+  text-align: center;
+  /* To center the app-upload-image if it's display: block and has a width less than 100% */
 }
 
 button[type="submit"] {
@@ -122,6 +183,7 @@ button[type="submit"] {
   cursor: pointer;
   transition: background-color 0.3s ease;
   margin-top: auto;
+  /* Push button to the bottom in its flex container */
 }
 
 button[type="submit"]:disabled {
@@ -168,16 +230,53 @@ pre {
   .article-creation-page {
     margin: 1rem;
   }
+
   .article-creation-container {
     flex-direction: column;
     width: 100vw;
   }
-  .form-card, .editor-card {
+
+  .form-card,
+  .editor-card {
     flex: none;
     width: 100%;
     padding: 1rem;
+    min-height: unset;
+    /* Remove fixed minimum height on small screens */
   }
+
   button[type="submit"] {
     width: 100%;
+  }
+
+  app-upload-image {
+    width: 100%;
+    height: auto;
+  }
+
+  app-upload-image {
+    width: 100%;
+    height: auto;
+  }
+
+  .thumbnail-upload-wrapper {
+    margin: 1.5rem 0;
+    /* Adjust for smaller screens if needed */
+  }
+
+  .options-row {
+    flex-direction: column;
+    /* Stack checkboxes vertically on small screens */
+    gap: 0.5rem;
+  }
+
+  .options-row .checkbox-group {
+    padding-right: 0;
+    padding-top: 20px;
+  }
+
+  quill-editor {
+    margin-bottom: 1.5rem;
+    /* Adjust margin for small screens */
   }
 }

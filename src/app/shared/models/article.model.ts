@@ -9,6 +9,7 @@ export interface Article {
   publishDate: Date | string | null;
   tags?: string[];
   isFeatured?: boolean;
+  isPublished?: boolean;
   likesCount?: number;
   commentsCount?: number;
   updatedAt?: Date | string;
