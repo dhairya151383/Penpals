@@ -6,8 +6,9 @@ import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { User } from 'firebase/auth';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
-import { Subscription } from 'rxjs';
-import { map } from 'rxjs/operators';
+import { Subscription, combineLatest } from 'rxjs';
+import { map, filter } from 'rxjs/operators';
+import { AuthService } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-comments',
@@ -18,7 +19,7 @@ import { map } from 'rxjs/operators';
 })
 export class CommentsComponent implements OnInit, OnDestroy {
   @Input() articleId!: string;
-  @Input() user: User | null = null;
+  // Removed: @Input() user: User | null = null; // No longer needed as an Input
 
   allComments: Comment[] = [];
   displayedComments: Comment[] = [];
@@ -26,61 +27,59 @@ export class CommentsComponent implements OnInit, OnDestroy {
   replyingTo: string | null = null;
   replyText: { [key: string]: string } = {};
 
-  userId = '';
-  userName = '';
-  userAvatarUrl = '';
+  userId: string | null = null; // Initialize as null
+  userName: string = '';
+  userAvatarUrl: string = '';
 
   showReplies: { [key: string]: boolean } = {};
   editingCommentId: string | null = null;
   editContent = '';
   hasMore = true;
   pageSize = 5;
-  loading = true;
+  loadingAuthAndComments = true; // Renamed for clarity: tracks both auth and initial comment loading
 
   private realTimeCommentsSubscription: Subscription | undefined;
+  private authSubscription: Subscription | undefined;
   private lastVisibleCommentId: string | null = null;
 
-  constructor(private commentService: CommentService) { }
+  constructor(
+    private commentService: CommentService,
+    private authService: AuthService
+  ) { }
 
   async ngOnInit() {
     console.log('CommentsComponent: ngOnInit started');
     console.log('CommentsComponent: articleId received:', this.articleId);
-    console.log('CommentsComponent: user received:', this.user);
 
-    this.userId = this.user?.uid ?? '';
-    this.userName = this.user?.displayName ?? 'Anonymous';
-    this.userAvatarUrl = this.user?.photoURL ?? '';
+    // Combine authReady$ and user$ to manage loading state and user info
+    this.authSubscription = combineLatest([
+      this.authService.authReady$.pipe(filter(isReady => isReady)),
+      this.authService.user$
+    ]).subscribe(([authReady, user]) => {
+      console.log('CommentsComponent: Auth state updated. User:', user?.uid);
 
-    console.log('CommentsComponent: User Info:', { userId: this.userId, userName: this.userName, userAvatarUrl: this.userAvatarUrl });
+      if (user) {
+        this.userId = user.uid;
+        this.userName = user.displayName ?? 'Anonymous';
+        this.userAvatarUrl = user.photoURL ?? '';
+      } else {
+        this.userId = null;
+        this.userName = 'Anonymous';
+        this.userAvatarUrl = '';
+      }
 
-    this.realTimeCommentsSubscription = this.commentService.getComments(this.articleId)
-      .pipe(
-        map(comments => {
-          return comments.sort((a, b) => {
-            const timeA = (a.createdAt instanceof Timestamp) ? a.createdAt.toMillis() : 0;
-            const timeB = (b.createdAt instanceof Timestamp) ? b.createdAt.toMillis() : 0;
-            return timeB - timeA;
-          });
-        })
-      )
-      .subscribe(
-        (fetchedComments: Comment[]) => {
-          console.log('CommentsComponent: Real-time listener: fetchedComments (all comments) received:', fetchedComments.length);
-          this.allComments = fetchedComments;
-          // IMPORTANT: Re-trigger loadMore to refresh the paginated view.
-          // This ensures newly added top-level comments are reflected in the paginated list,
-          // and deleted comments are removed.
-          // We don't call updateDisplayedComments directly here anymore to avoid breaking pagination logic.
-          this.loadMore(true); // Pass true to indicate a refresh, keeping current loaded count
-        },
-        (error) => {
-          console.error("CommentsComponent: Error fetching real-time comments:", error);
-        }
-      );
+      console.log('CommentsComponent: User Info:', { userId: this.userId, userName: this.userName, userAvatarUrl: this.userAvatarUrl });
 
-    // Initial load of top-level comments for pagination
-    await this.loadMore();
-    console.log('CommentsComponent: ngOnInit finished');
+      // If the real-time comments listener hasn't been set up yet, do it now
+      if (!this.realTimeCommentsSubscription) {
+         this.setupRealTimeCommentsListener();
+      }
+
+      // No need to set loadingAuthAndComments = false here, it will be set in loadMore()
+      // once comments are fetched.
+    });
+
+    console.log('CommentsComponent: ngOnInit finished (waiting for auth state)');
   }
 
   ngOnDestroy(): void {
@@ -88,85 +87,91 @@ export class CommentsComponent implements OnInit, OnDestroy {
       this.realTimeCommentsSubscription.unsubscribe();
       console.log('CommentsComponent: realTimeCommentsSubscription unsubscribed');
     }
+    if (this.authSubscription) {
+      this.authSubscription.unsubscribe();
+      console.log('CommentsComponent: authSubscription unsubscribed');
+    }
   }
 
-  // Removed updateDisplayedComments as its logic will be mostly absorbed by loadMore
-  // or a more direct approach with allComments and getReplies.
-  // We want loadMore to be the single source of truth for `displayedComments`.
-  private updateDisplayedComments() {
-    // This method is no longer directly manipulating `displayedComments` based on `allComments` slice.
-    // Instead, `loadMore` will be responsible for fetching and updating `displayedComments`.
-    // We can use this method to re-evaluate `hasMore` or simply rely on `loadMore(true)` to refresh.
+  private setupRealTimeCommentsListener() {
+      this.realTimeCommentsSubscription = this.commentService.getComments(this.articleId)
+        .pipe(
+          map(comments => {
+            return comments.sort((a, b) => {
+              const timeA = (a.createdAt instanceof Timestamp) ? a.createdAt.toMillis() : 0;
+              const timeB = (b.createdAt instanceof Timestamp) ? b.createdAt.toMillis() : 0;
+              return timeB - timeA;
+            });
+          })
+        )
+        .subscribe(
+          (fetchedComments: Comment[]) => {
+            console.log('CommentsComponent: Real-time listener: fetchedComments (all comments) received:', fetchedComments.length);
+            this.allComments = fetchedComments;
+            this.loadMore(true); // Always refresh the displayed comments when new data comes in
+            this.loadingAuthAndComments = false; // Hide loading spinner once comments are initially fetched
+          },
+          (error) => {
+            console.error("CommentsComponent: Error fetching real-time comments:", error);
+            this.loadingAuthAndComments = false; // Hide loading spinner on error too
+          }
+        );
 
-    // Let's keep it simple for now, relying on `loadMore(true)` after real-time updates.
-    // If you need more granular control over `displayedComments` without refetching,
-    // this method would need a more complex strategy (e.g., adding only new top-level
-    // comments *before* the current `lastVisibleCommentId`).
-    console.log('CommentsComponent: updateDisplayedComments: (not actively used for pagination anymore)');
+        // Initial load of top-level comments for pagination after listener is setup
+        // This ensures the first set of paginated comments is loaded.
+        // It also sets `loadingAuthAndComments` to false once done.
+        this.loadMore();
   }
-
 
   async loadMore(refresh: boolean = false) {
     console.log('CommentsComponent: loadMore started. Refresh:', refresh);
-    this.loading = true;
+    // Do NOT set `loadingAuthAndComments = true;` here if it's a refresh from real-time listener
+    // as that would cause the spinner to flash unnecessarily for every real-time update.
+    // It's only for the initial load or explicit "Load more" button click.
 
     try {
-      let currentTopLevelComments = this.allComments.filter(comment => comment.parentId === null)
+      const currentTopLevelComments = this.allComments.filter(comment => comment.parentId === null)
                                     .sort((a, b) => {
                                       const timeA = (a.createdAt instanceof Timestamp) ? a.createdAt.toMillis() : 0;
                                       const timeB = (b.createdAt instanceof Timestamp) ? b.createdAt.toMillis() : 0;
-                                      return timeB - timeA; // Latest first
+                                      return timeB - timeA;
                                     });
 
-      let commentsToFetch = this.pageSize;
-      let startAfterId: string | null = this.lastVisibleCommentId;
-
       if (refresh) {
-        // If it's a refresh, we want to re-evaluate the displayed comments based on
-        // the *current* `allComments` and the total number of comments currently displayed.
-        // This ensures deleted comments are removed and new comments at the top are visible.
-        commentsToFetch = Math.max(this.pageSize, this.displayedComments.length);
-        startAfterId = null; // We might need to re-fetch from the beginning to ensure correct order/removal
-                              // Or, simply reconstruct displayedComments from `currentTopLevelComments`
-                              // based on the total count we want to maintain.
+        const currentDisplayedCount = this.displayedComments.length;
+        this.displayedComments = currentTopLevelComments.slice(0, Math.max(this.pageSize, currentDisplayedCount));
 
-        // Reconstruct displayedComments from the sorted `currentTopLevelComments`
-        // taking as many as were previously displayed, or `pageSize` if it's the initial load.
-        this.displayedComments = currentTopLevelComments.slice(0, commentsToFetch);
-
-        // Update lastVisibleCommentId based on the *newly reconstructed* displayedComments
         if (this.displayedComments.length > 0) {
             this.lastVisibleCommentId = this.displayedComments[this.displayedComments.length - 1].id;
         } else {
             this.lastVisibleCommentId = null;
         }
 
-        // Determine if there are more comments than currently displayed
         this.hasMore = currentTopLevelComments.length > this.displayedComments.length;
 
         console.log('CommentsComponent: loadMore (refresh): displayedComments updated:', this.displayedComments.length);
         console.log('CommentsComponent: loadMore (refresh): hasMore set to:', this.hasMore);
-        this.loading = false;
-        return; // Exit as we've updated from in-memory `allComments`
+        // Loading state is managed by the subscriber for initial fetch
+        return;
       }
 
-      // If not a refresh, proceed with actual Firestore pagination
-      const moreTopLevelComments = await this.commentService.loadMoreComments(this.articleId, commentsToFetch, startAfterId);
+      // Explicit "Load More" button click
+      this.loadingAuthAndComments = true; // Show spinner only for explicit load more
+      const moreTopLevelComments = await this.commentService.loadMoreComments(this.articleId, this.pageSize, this.lastVisibleCommentId);
       console.log('CommentService: loadMoreComments: Fetched', moreTopLevelComments.length, 'top-level comments from Firestore.');
 
-      // Filter out duplicates (though with proper startAfter, this should be minimal)
       const newUniqueComments = moreTopLevelComments.filter(
         comment => !this.displayedComments.some(dc => dc.id === comment.id)
       );
 
       this.displayedComments = [...this.displayedComments, ...newUniqueComments]
-        .sort((a, b) => { // Re-sort after merging to maintain order
+        .sort((a, b) => {
           const timeA = (a.createdAt instanceof Timestamp) ? a.createdAt.toMillis() : 0;
           const timeB = (b.createdAt instanceof Timestamp) ? b.createdAt.toMillis() : 0;
-          return timeB - timeA; // Descending order (latest first)
+          return timeB - timeA;
         });
 
-      this.hasMore = moreTopLevelComments.length === this.pageSize; // If fetched less than pageSize, no more to load
+      this.hasMore = moreTopLevelComments.length === this.pageSize;
 
       if (this.displayedComments.length > 0) {
         this.lastVisibleCommentId = this.displayedComments[this.displayedComments.length - 1].id;
@@ -176,11 +181,12 @@ export class CommentsComponent implements OnInit, OnDestroy {
 
       console.log('CommentsComponent: loadMore: displayedComments array updated:', this.displayedComments.length);
       console.log('CommentsComponent: loadMore: hasMore set to:', this.hasMore);
+
     } catch (error) {
       console.error('CommentsComponent: Error in loadMore:', error);
     } finally {
-      this.loading = false;
-      console.log('CommentsComponent: loadMore finished. Loading set to:', this.loading);
+      this.loadingAuthAndComments = false; // Hide spinner after explicit load more
+      console.log('CommentsComponent: loadMore finished. Loading set to:', this.loadingAuthAndComments);
     }
   }
 
@@ -210,6 +216,10 @@ export class CommentsComponent implements OnInit, OnDestroy {
   }
 
   async postComment() {
+    if (!this.userId) {
+      console.warn('CommentsComponent: Cannot post comment: User not logged in.');
+      return;
+    }
     if (this.newComment.trim()) {
       console.log('CommentsComponent: Posting new comment...');
       try {
@@ -223,6 +233,10 @@ export class CommentsComponent implements OnInit, OnDestroy {
   }
 
   async postReply(parentId: string) {
+    if (!this.userId) {
+      console.warn('CommentsComponent: Cannot post reply: User not logged in.');
+      return;
+    }
     const content = this.replyText[parentId];
     if (content?.trim()) {
       console.log('CommentsComponent: Posting reply...');
@@ -240,8 +254,18 @@ export class CommentsComponent implements OnInit, OnDestroy {
   toggleReply(commentId: string) {
     this.replyingTo = this.replyingTo === commentId ? null : commentId;
   }
-  likeComment(commentId: string) {
-    this.commentService.likeComment(commentId);
+
+  async likeComment(comment: Comment) {
+    if (!this.userId) {
+      console.warn('CommentsComponent: User not logged in to like comments.');
+      return;
+    }
+    console.log(`CommentsComponent: Attempting to toggle like for comment: ${comment.id} by user: ${this.userId}`);
+    await this.commentService.toggleLikeComment(comment.id, this.userId);
+  }
+
+  hasUserLiked(comment: Comment): boolean {
+    return this.userId ? (comment.likedBy?.includes(this.userId) || false) : false;
   }
 
   getReplies(parentId: string) {

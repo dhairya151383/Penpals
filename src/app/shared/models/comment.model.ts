@@ -11,5 +11,5 @@ export interface Comment {
   createdAt: Timestamp;
   likes: number;
   parentId?: string | null;
-  replies?: Comment[];
+  likedBy?: string[];
 }

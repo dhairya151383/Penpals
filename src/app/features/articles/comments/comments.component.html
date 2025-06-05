@@ -1,9 +1,9 @@
-<app-loading-spinner *ngIf="loading" />
+<app-loading-spinner *ngIf="loadingAuthAndComments" />
 
-<div *ngIf="!loading" class="comments-container">
+<div *ngIf="!loadingAuthAndComments" class="comments-container">
   <div class="comment-input">
     <textarea [(ngModel)]="newComment" placeholder="Add a comment..." rows="2"></textarea>
-    <button (click)="postComment()" [disabled]="!newComment.trim()">Submit</button>
+    <button (click)="postComment()" [disabled]="!newComment.trim() || !userId">Submit</button>
   </div>
 
   <div class="comment" *ngFor="let comment of displayedComments">
@@ -24,7 +24,13 @@
     </ng-template>
 
     <div class="comment-actions">
-      <span (click)="likeComment(comment.id)">👍 {{ comment.likes }}</span>
+      <span
+        (click)="likeComment(comment)"
+        [class.liked]="hasUserLiked(comment)"
+        [class.disabled-like]="!userId"
+      >
+        <span [ngClass]="{'liked-icon': hasUserLiked(comment)}">👍</span> {{ comment.likes }}
+      </span>
       <span (click)="toggleReply(comment.id)">Reply</span>
       <span *ngIf="comment.userId === userId" (click)="enableEdit(comment)">Edit</span>
       <span *ngIf="comment.userId === userId" (click)="deleteComment(comment.id)">Delete</span>
@@ -33,7 +39,7 @@
 
     <div *ngIf="replyingTo === comment.id" class="reply-box">
       <textarea [(ngModel)]="replyText[comment.id]" placeholder="Reply..." rows="2"></textarea>
-      <button (click)="postReply(comment.id)" [disabled]="!replyText[comment.id].trim()">Post</button>
+      <button (click)="postReply(comment.id)" [disabled]="!replyText[comment.id].trim() || !userId">Post</button>
     </div>
 
     <div *ngIf="showReplies[comment.id]">
@@ -46,7 +52,13 @@
 
         <p>{{ reply.content }}</p>
         <div class="comment-actions">
-          <span (click)="likeComment(reply.id)">👍 {{ reply.likes }}</span>
+          <span
+            (click)="likeComment(reply)"
+            [class.liked]="hasUserLiked(reply)"
+            [class.disabled-like]="!userId"
+          >
+            <span [ngClass]="{'liked-icon': hasUserLiked(reply)}">👍</span> {{ reply.likes }}
+          </span>
           <span (click)="toggleReply(reply.id)">Reply</span>
           <span *ngIf="reply.userId === userId" (click)="enableEdit(reply)">Edit</span>
           <span *ngIf="reply.userId === userId" (click)="deleteComment(reply.id)">Delete</span>
@@ -54,7 +66,7 @@
 
         <div *ngIf="replyingTo === reply.id" class="reply-box">
           <textarea [(ngModel)]="replyText[reply.id]" placeholder="Reply..." rows="2"></textarea>
-          <button (click)="postReply(reply.id)" [disabled]="!replyText[reply.id].trim()">Post</button>
+          <button (click)="postReply(reply.id)" [disabled]="!replyText[reply.id].trim() || !userId">Post</button>
         </div>
       </div>
     </div>

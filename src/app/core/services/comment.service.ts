@@ -1,3 +1,4 @@
+// src/app/core/services/comment.service.ts
 import { Injectable } from '@angular/core';
 import {
   collection,
@@ -16,7 +17,9 @@ import {
   doc,
   updateDoc,
   increment,
-  deleteDoc
+  deleteDoc,
+  arrayUnion, // Import arrayUnion
+  arrayRemove // Import arrayRemove
 } from 'firebase/firestore';
 import { BehaviorSubject } from 'rxjs';
 import { Comment } from '../../shared/models/comment.model';
@@ -28,8 +31,6 @@ import { v4 as uuidv4 } from 'uuid';
 })
 export class CommentService {
   private commentSubjects = new Map<string, BehaviorSubject<Comment[]>>();
-  // Removed private lastVisible: QueryDocumentSnapshot<DocumentData> | null = null;
-  // This will now be managed by the component for top-level comments specifically.
 
   constructor(private firebase: FirebaseService) { }
 
@@ -47,8 +48,6 @@ export class CommentService {
   private listenToComments(articleId: string, subject: BehaviorSubject<Comment[]>) {
     console.log('CommentService: Setting up real-time listener for all comments for articleId:', articleId);
     const commentRef = collection(this.firebase.firestore, 'comments');
-    // Important: The real-time listener should fetch ALL comments for the article,
-    // including replies, so `getReplies` in the component can work.
     const q = query(commentRef, where('articleId', '==', articleId), orderBy('createdAt', 'desc'));
 
     onSnapshot(q, (snapshot) => {
@@ -75,7 +74,8 @@ export class CommentService {
       userAvatarUrl,
       createdAt: serverTimestamp() as Timestamp,
       likes: 0,
-      parentId: null
+      parentId: null,
+      likedBy: []
     };
 
     const commentDoc = doc(this.firebase.firestore, 'comments', id);
@@ -84,20 +84,43 @@ export class CommentService {
       console.log('CommentService: Comment added successfully:', newComment.id);
     } catch (error) {
       console.error('CommentService: Error adding comment:', error);
-      throw error; // Re-throw to propagate to component
+      throw error;
     }
   }
 
-  async likeComment(commentId: string) {
-    console.log('CommentService: Liking comment:', commentId);
-    const commentDoc = doc(this.firebase.firestore, 'comments', commentId);
+  // Modified likeComment method to handle unique likes/unlikes
+  async toggleLikeComment(commentId: string, userId: string) {
+    console.log(`CommentService: Toggling like for comment: ${commentId} by user: ${userId}`);
+    const commentDocRef = doc(this.firebase.firestore, 'comments', commentId);
+
     try {
-      await updateDoc(commentDoc, {
-        likes: increment(1),
-      });
-      console.log('CommentService: Comment liked successfully:', commentId);
+      const commentSnapshot = await getDocs(query(collection(this.firebase.firestore, 'comments'), where('id', '==', commentId)));
+
+      if (commentSnapshot.empty) {
+        console.warn('CommentService: Comment not found for liking:', commentId);
+        return;
+      }
+
+      const commentData = commentSnapshot.docs[0].data() as Comment;
+      const likedBy = commentData.likedBy || []; // Ensure likedBy array exists
+
+      if (likedBy.includes(userId)) {
+        // User has already liked, so unlike it
+        await updateDoc(commentDocRef, {
+          likes: increment(-1),
+          likedBy: arrayRemove(userId)
+        });
+        console.log('CommentService: Comment unliked successfully:', commentId);
+      } else {
+        // User has not liked, so like it
+        await updateDoc(commentDocRef, {
+          likes: increment(1),
+          likedBy: arrayUnion(userId)
+        });
+        console.log('CommentService: Comment liked successfully:', commentId);
+      }
     } catch (error) {
-      console.error('CommentService: Error liking comment:', error);
+      console.error('CommentService: Error toggling like for comment:', error);
       throw error;
     }
   }
@@ -122,7 +145,7 @@ export class CommentService {
       userAvatarUrl,
       createdAt: serverTimestamp() as Timestamp,
       likes: 0,
-      // replies: [], // No need for this in the Firestore document; replies are separate documents
+      likedBy: []
     };
 
     const commentDoc = doc(this.firebase.firestore, 'comments', id);
@@ -141,15 +164,16 @@ export class CommentService {
     let q = query(
       commentRef,
       where('articleId', '==', articleId),
-      where('parentId', '==', null), // This is for top-level only
+      where('parentId', '==', null),
       orderBy('createdAt', 'desc'),
       limit(pageSize)
     );
 
     let lastVisibleDoc: QueryDocumentSnapshot<DocumentData> | null = null;
     if (lastVisibleCommentId) {
-      // To use startAfter with a commentId, we need to fetch the document first
-      const docSnapshot = await getDocs(query(commentRef, where('id', '==', lastVisibleCommentId)));
+      // Fetch the last visible document itself to use with startAfter
+      const lastDocQuery = query(commentRef, where('id', '==', lastVisibleCommentId), limit(1));
+      const docSnapshot = await getDocs(lastDocQuery);
       if (!docSnapshot.empty) {
         lastVisibleDoc = docSnapshot.docs[0];
         q = query(q, startAfter(lastVisibleDoc));
@@ -158,7 +182,6 @@ export class CommentService {
         console.warn('CommentService: loadMoreComments: lastVisibleCommentId provided but document not found. Ignoring startAfter.');
       }
     }
-
 
     try {
       const snapshot = await getDocs(q);
