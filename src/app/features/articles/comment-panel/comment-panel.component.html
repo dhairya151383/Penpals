@@ -1,0 +1,7 @@
+<div class="comment-panel" [class.open]="visible">
+  <div class="header">
+    <h3>Comments</h3>
+    <button (click)="close()">×</button>
+  </div>
+  <app-comments [articleId]="articleId" [user]="user"></app-comments>
+</div>

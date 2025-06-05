@@ -1,3 +1,4 @@
+
 import { Injectable } from '@angular/core';
 import {
   collection,
@@ -43,19 +44,15 @@ export class CommentService {
 
   private listenToComments(articleId: string, subject: BehaviorSubject<Comment[]>) {
     const commentRef = collection(this.firebase.firestore, 'comments');
-    const q = query(commentRef, where('articleId', '==', articleId));
+    // This query correctly fetches ALL comments for the article, including replies
+    const q = query(commentRef, where('articleId', '==', articleId), orderBy('createdAt', 'desc')); // Order for easier processing
 
     onSnapshot(q, (snapshot) => {
       const comments: Comment[] = [];
       snapshot.forEach((doc) => {
         comments.push(doc.data() as Comment);
       });
-
-      comments.sort(
-        (a, b) => (b.createdAt as Timestamp).toMillis() - (a.createdAt as Timestamp).toMillis()
-      );
-
-      subject.next(comments);
+      subject.next(comments); // Emit all comments fetched
     });
   }
 
@@ -117,7 +114,7 @@ export class CommentService {
     let q = query(
       commentRef,
       where('articleId', '==', articleId),
-      where('parentId', '==', null),
+      where('parentId', '==', null), // This is for top-level only
       orderBy('createdAt', 'desc'),
       limit(pageSize)
     );

@@ -1,69 +1,65 @@
+
 <app-loading-spinner *ngIf="loading" />
 
 <div *ngIf="!loading" class="comments-container">
-  <div class="comments-container">
-    <h3>Comments</h3>
+  <div class="comment-input">
+    <textarea [(ngModel)]="newComment" placeholder="Add a comment..." rows="2"></textarea>
+    <button (click)="postComment()" [disabled]="!newComment.trim()">Submit</button>
+  </div>
 
-    <div class="comment-input">
-      <textarea [(ngModel)]="newComment" placeholder="Add a comment..." rows="2"></textarea>
-      <button (click)="postComment()">Submit</button>
+  <div class="comment" *ngFor="let comment of comments">
+    <div class="comment-header">
+      <img *ngIf="comment.userAvatarUrl" [src]="comment.userAvatarUrl" class="avatar" />
+      <strong>{{ comment.userName }}</strong>
+      <span class="timestamp">{{ timeAgo(comment.createdAt) }}</span>
     </div>
 
-    <div class="comment" *ngFor="let comment of comments">
-      <div class="comment-header">
-        <img *ngIf="comment.userAvatarUrl" [src]="comment.userAvatarUrl" class="avatar" />
-        <strong>{{ comment.userName }}</strong>
-        <span class="timestamp">{{ timeAgo(comment.createdAt) }}</span>
-      </div>
+    <ng-container *ngIf="editingCommentId !== comment.id; else editForm">
+      <p>{{ comment.content }}</p>
+    </ng-container>
 
-      <ng-container *ngIf="editingCommentId !== comment.id; else editForm">
-        <p>{{ comment.content }}</p>
-      </ng-container>
+    <ng-template #editForm>
+      <textarea [(ngModel)]="editContent" rows="2"></textarea>
+      <button (click)="saveEdit(comment.id)">Save</button>
+      <button (click)="editingCommentId = null">Cancel</button>
+    </ng-template>
 
-      <ng-template #editForm>
-        <textarea [(ngModel)]="editContent" rows="2"></textarea>
-        <button (click)="saveEdit(comment.id)">Save</button>
-        <button (click)="editingCommentId = null">Cancel</button>
-      </ng-template>
+    <div class="comment-actions">
+      <span (click)="likeComment(comment.id)">👍 {{ comment.likes }}</span>
+      <span (click)="toggleReply(comment.id)">Reply</span>
+      <span *ngIf="comment.userId === userId" (click)="enableEdit(comment)">Edit</span>
+      <span *ngIf="comment.userId === userId" (click)="deleteComment(comment.id)">Delete</span>
+      <span (click)="toggleReplies(comment.id)">View Replies</span>
+    </div>
 
-      <div class="comment-actions">
-        <span (click)="likeComment(comment.id)">👍 {{ comment.likes }}</span>
-        <span (click)="toggleReply(comment.id)">Reply</span>
-        <span *ngIf="comment.userId === userId" (click)="enableEdit(comment)">Edit</span>
-        <span *ngIf="comment.userId === userId" (click)="deleteComment(comment.id)">Delete</span>
-        <span (click)="toggleReplies(comment.id)">View Replies</span>
-      </div>
+    <div *ngIf="replyingTo === comment.id" class="reply-box">
+      <textarea [(ngModel)]="replyText[comment.id]" placeholder="Reply..." rows="2"></textarea>
+      <button (click)="postReply(comment.id)" [disabled]="!replyText[comment.id].trim()">Post</button>
+    </div>
 
-      <div *ngIf="replyingTo === comment.id" class="reply-box">
-        <textarea [(ngModel)]="replyText[comment.id]" placeholder="Reply..." rows="2"></textarea>
-        <button (click)="postReply(comment.id)">Post</button>
-      </div>
+    <div *ngIf="showReplies[comment.id]">
+      <div class="reply" *ngFor="let reply of getReplies(comment.id)">
+        <div class="comment-header">
+          <img *ngIf="reply.userAvatarUrl" [src]="reply.userAvatarUrl" class="avatar" />
+          <strong>{{ reply.userName }}</strong>
+          <span class="timestamp">{{ timeAgo(reply.createdAt) }}</span>
+        </div>
 
-      <div *ngIf="showReplies[comment.id]">
-        <div class="reply" *ngFor="let reply of getReplies(comments, comment.id)">
-          <div class="comment-header">
-            <img *ngIf="reply.userAvatarUrl" [src]="reply.userAvatarUrl" class="avatar" />
-            <strong>{{ reply.userName }}</strong>
-            <span class="timestamp">{{ timeAgo(reply.createdAt) }}</span>
-          </div>
+        <p>{{ reply.content }}</p>
+        <div class="comment-actions">
+          <span (click)="likeComment(reply.id)">👍 {{ reply.likes }}</span>
+          <span (click)="toggleReply(reply.id)">Reply</span>
+          <span *ngIf="reply.userId === userId" (click)="enableEdit(reply)">Edit</span>
+          <span *ngIf="reply.userId === userId" (click)="deleteComment(reply.id)">Delete</span>
+        </div>
 
-          <p>{{ reply.content }}</p>
-          <div class="comment-actions">
-            <span (click)="likeComment(reply.id)">👍 {{ reply.likes }}</span>
-            <span (click)="toggleReply(reply.id)">Reply</span>
-            <span *ngIf="reply.userId === userId" (click)="enableEdit(reply)">Edit</span>
-            <span *ngIf="reply.userId === userId" (click)="deleteComment(reply.id)">Delete</span>
-          </div>
-
-          <div *ngIf="replyingTo === reply.id" class="reply-box">
-            <textarea [(ngModel)]="replyText[reply.id]" placeholder="Reply..." rows="2"></textarea>
-            <button (click)="postReply(reply.id)">Post</button>
-          </div>
+        <div *ngIf="replyingTo === reply.id" class="reply-box">
+          <textarea [(ngModel)]="replyText[reply.id]" placeholder="Reply..." rows="2"></textarea>
+          <button (click)="postReply(reply.id)" [disabled]="!replyText[reply.id].trim()">Post</button>
         </div>
       </div>
     </div>
-
-    <button *ngIf="hasMore" (click)="loadMore()">Load more</button>
-
   </div>
+
+  <button *ngIf="hasMore" (click)="loadMore()">Load more</button>
 </div>

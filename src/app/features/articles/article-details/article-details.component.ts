@@ -11,6 +11,7 @@ import { LoadingSpinnerComponent } from '../../../shared/components/loading-spin
 import { ArticleDatePipe } from '../../../shared/pipes/article-date.pipe';
 import { CommentsComponent } from '../comments/comments.component';
 import { User } from 'firebase/auth';
+import { CommentPanelComponent } from '../comment-panel/comment-panel.component';
 
 @Component({
   selector: 'app-article-details',
@@ -20,7 +21,7 @@ import { User } from 'firebase/auth';
     CommonModule,
     LoadingSpinnerComponent,
     ArticleDatePipe,
-    CommentsComponent
+    CommentPanelComponent
   ],
   templateUrl: './article-details.component.html',
   styleUrls: ['./article-details.component.css'],
@@ -31,6 +32,7 @@ export class ArticleDetailsComponent implements OnInit {
   canEdit = false;
   loading = true;
   user: User | null = null;
+  showComments = false;
 
   constructor(
     private route: ActivatedRoute,

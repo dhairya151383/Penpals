@@ -19,3 +19,4 @@ export class FirebaseService {
     console.log('Firebase initialized!');
   }
 }
+
