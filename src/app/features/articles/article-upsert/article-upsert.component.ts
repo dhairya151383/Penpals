@@ -48,10 +48,10 @@ export function minTagsSelected(min = 1): ValidatorFn {
     LoadingSpinnerComponent,
     UploadImageComponent,
   ],
-  templateUrl: './article-create.component.html',
-  styleUrls: ['./article-create.component.css'],
+  templateUrl: './article-upsert.component.html',
+  styleUrls: ['./article-upsert.component.css'],
 })
-export class ArticleCreateComponent implements OnInit {
+export class ArticleUpsertComponent implements OnInit {
   form!: FormGroup;
   error: string | null = null;
   selectedTags: Tag[] = [];

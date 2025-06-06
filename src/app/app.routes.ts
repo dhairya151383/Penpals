@@ -34,7 +34,7 @@ export const routes: Routes = [
       },
       {
         path: 'create-article',
-        loadComponent: () => import('./features/articles/article-create/article-create.component').then(m => m.ArticleCreateComponent),
+        loadComponent: () => import('./features/articles/article-upsert/article-upsert.component').then(m => m.ArticleUpsertComponent),
         canActivate: [RoleGuard],
         data: { expectedRole: 'author' }
       },
