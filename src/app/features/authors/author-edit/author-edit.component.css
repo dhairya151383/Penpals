@@ -1,3 +1,4 @@
+/* Overall page container styling */
 .article-creation-page {
   display: flex;
   justify-content: center;
@@ -6,16 +7,17 @@
   margin: 2rem 0;
 }
 
+/* Container for the two main cards (left form, right editor) */
 .article-creation-container {
   display: flex;
-  width: 90vw;
+  width: 90vw; /* Take 90% of viewport width */
   background: #fff;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0,0,0,0.15);
   overflow: hidden;
 }
 
-/* Left card 2/5 width */
+/* Left card (form section) - takes 2/5 of the width */
 .form-card {
   flex: 2;
   padding: 1.5rem 2rem;
@@ -23,30 +25,31 @@
   flex-direction: column;
 }
 
-/* Right card 3/5 width */
+/* Right card (editor section) - takes 3/5 of the width */
 .editor-card {
   flex: 3;
   padding: 1.5rem 2rem;
   display: flex;
   flex-direction: column;
-  border-left: 1px solid #e0e0e0;
+  border-left: 1px solid #e0e0e0; /* Separator line */
   overflow: hidden;
 }
 
-/* Shared card header styles */
+/* Shared styles for card headers */
 .card-header h2, .card-header h3 {
   margin: 0 0 0.5rem 0;
   font-weight: 700;
-  color: #2e7d32;
+  color: #2e7d32; /* Green brand color */
 }
 
 .card-header hr {
   border: none;
   border-bottom: 2px solid #2e7d32;
   margin-bottom: 1rem;
-  width: 50px;
+  width: 50px; /* Short underline effect */
 }
 
+/* Common styling for form groups (labels and inputs/components) */
 .author-form .form-group,
 .editor-card .form-group {
   margin-bottom: 1.25rem;
@@ -57,9 +60,10 @@
 label {
   font-weight: 600;
   margin-bottom: 0.3rem;
-  color: #2e7d32;
+  color: #2e7d32; /* Green brand color */
 }
 
+/* Styling for text inputs and textareas */
 input[type="text"],
 textarea {
   padding: 0.5rem 0.75rem;
@@ -70,35 +74,35 @@ textarea {
   font-family: inherit;
 }
 
+/* Focus styles for inputs, textareas, and Quill editor */
 input[type="text"]:focus,
 textarea:focus,
 quill-editor:focus-within {
-  border-color: #66bb6a;
+  border-color: #66bb6a; /* Lighter green on focus */
   outline: none;
-  box-shadow: 0 0 5px #81c784;
+  box-shadow: 0 0 5px #81c784; /* Soft shadow on focus */
 }
 
-/* Quill Editor Specific Styles for content wrapping */
+/* Quill Editor Specific Styles for content wrapping and height */
 quill-editor {
-  display: block; /* Ensure it behaves like a block element */
-  width: 100%; /* Take full width of its parent */
-  box-sizing: border-box; /* Include padding and border in the element's total width */
-  word-wrap: break-word; /* Break long words */
-  overflow-wrap: break-word; /* Modern alias for word-wrap */
-  white-space: pre-wrap; /* Preserve whitespace and wrap text */
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
 }
 
-/* Styles for the actual editable content within Quill */
 .ql-editor {
-  word-wrap: break-word; /* Break long words within the editor */
-  overflow-wrap: break-word; /* Modern alias */
-  white-space: pre-wrap; /* Preserve whitespace and wrap text */
-  min-height: 250px; /* Adjust as needed to maintain a good default height */
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
+  min-height: 250px; /* Minimum height for the editor */
   max-height: 400px; /* Optional: set a max-height and add overflow-y: auto if you want a scrollbar for very long content */
   overflow-y: auto; /* Add scrollbar if content exceeds max-height */
 }
 
-
+/* Checkbox group (if applicable) */
 .checkbox-group {
   flex-direction: row;
   align-items: center;
@@ -110,10 +114,11 @@ quill-editor {
   height: 18px;
 }
 
+/* Save Button Styling */
 .save-button {
-  align-self: flex-start;
+  align-self: flex-start; /* Align to the start of the flex container */
   padding: 0.6rem 1.6rem;
-  background-color: #2e7d32;
+  background-color: #2e7d32; /* Green button background */
   border: none;
   border-radius: 6px;
   color: white;
@@ -121,38 +126,42 @@ quill-editor {
   font-size: 1.1rem;
   cursor: pointer;
   transition: background-color 0.3s ease;
-  margin-top: auto;
+  margin-top: auto; /* Pushes the button to the bottom if content is short */
 }
 
 .save-button:disabled {
-  background-color: #a5d6a7;
+  background-color: #a5d6a7; /* Lighter green when disabled */
   cursor: not-allowed;
 }
 
 .save-button:hover:not(:disabled) {
-  background-color: #1b5e20;
+  background-color: #1b5e20; /* Darker green on hover */
 }
 
+/* Error message styling for individual fields */
 .error {
   margin-top: 0.25rem;
-  color: #d32f2f;
+  color: #d32f2f; /* Red for errors */
   font-size: 0.9rem;
   font-weight: 600;
 }
 
+/* Global error message styling */
 .global-error {
   margin-top: 1rem;
-  color: #b71c1c;
+  color: #b71c1c; /* Darker red for global errors */
   font-weight: 700;
   font-size: 1rem;
 }
 
+/* Loading text (if separate from spinner component) */
 .loading-text {
   text-align: center;
   font-size: 1.2rem;
   color: #2e7d32;
 }
 
+/* Pre-formatted text (e.g., for code snippets) */
 pre {
   background: #f7f7f7;
   border: 1px solid #ccc;
@@ -163,14 +172,14 @@ pre {
   margin-top: 1rem;
 }
 
-/* Responsive adjustments */
+/* Responsive adjustments for smaller screens */
 @media (max-width: 768px) {
   .article-creation-page {
     margin: 1rem;
   }
   .article-creation-container {
     flex-direction: column; /* Stack vertically on small screens */
-    width: 100vw;
+    width: 100vw; /* Take full viewport width */
   }
   .form-card,
   .editor-card {
@@ -182,9 +191,9 @@ pre {
     border-left: none; /* Remove left border */
     border-top: 1px solid #e0e0e0; /* Add top border for separation */
   }
-  .save-button { /* Ensure the save button goes full width on small screens */
-    width: 100%;
-    align-self: stretch;
+  .save-button {
+    width: 100%; /* Make button full width on small screens */
+    align-self: stretch; /* Stretch to fill available width */
   }
 }
 
@@ -194,23 +203,36 @@ pre {
   flex-direction: column;
   align-items: center;
   margin-bottom: 1rem;
-  width: 90%; /* This might cause issues if parent width is fixed. Consider 100% or adjusting parent. */
 }
 
-.avatar-preview {
-  width: 120px;
-  height: 120px;
-  border-radius: 100%;
-  object-fit: cover;
-  border: 2px solid #ccc;
-  margin-bottom: 0.5rem;
+/* Increase the size of the upload-image component */
+.avatar-upload app-upload-image {
+  width: 150px; /* Desired width */
+  height: 150px; /* Desired height */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  margin-bottom: 1rem; /* Margin below the image component */
+}
+
+/* Ensure the actual image inside app-upload-image scales correctly */
+.avatar-upload app-upload-image .avatar-preview {
+    width: 100%;
+    height: 100%;
+    object-fit: cover; /* Cover the area, cropping if necessary */
+    border-radius: 100%; /* Make it circular */
+}
+
+/* Add spacing between tag container and Save button */
+.tag-selector-container {
+  margin-bottom: 2rem; /* Increased margin to create spacing */
 }
 
 /* Social fields - keeping your existing styles for these */
 .social-field {
   display: flex;
   align-items: center;
-  gap: 8px; /* Consistent gap */
+  gap: 8px; /* Consistent gap between icon and input */
   margin-bottom: 12px;
 }
 
@@ -219,7 +241,7 @@ pre {
   cursor: pointer;
 }
 
-/* Social media brand colors */
+/* Social media brand colors for icons */
 .social-field.twitter svg {
   color: #1DA1F2;
 }
@@ -228,4 +250,17 @@ pre {
 }
 .social-field.facebook svg {
   color: #1877F2;
+}
+
+/* Styling for the character count message */
+.form-group .character-count {
+  font-size: 0.85em;
+  color: #777; /* A subtle grey for normal state */
+  margin-top: 5px;
+  text-align: right; /* Align to the right for better visual */
+}
+
+.form-group .character-count.error {
+  color: #d9534f; /* Red color when limit is exceeded */
+  font-weight: bold;
 }
