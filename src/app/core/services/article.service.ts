@@ -71,6 +71,7 @@ export class ArticleService {
 
   async update(id: string, article: Partial<Article>): Promise<void> {
     const docRef = doc(this.articlesRef, id);
+    // Ensure that thumbnailUrl can be updated
     await updateDoc(docRef, article);
   }
 

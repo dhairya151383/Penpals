@@ -3,7 +3,7 @@
   <div class="article-creation-container">
     <div class="form-card">
       <div class="card-header">
-        <h2>Create Article</h2>
+        <h2>{{ isEditMode ? 'Edit Article' : 'Create Article' }}</h2>
         <hr />
       </div>
 
@@ -60,9 +60,15 @@
           </div>
         </div>
 
-        <button type="submit" [disabled]="form.invalid || loading" class="submit-btn">
-          {{ isPublished.value ? 'Publish Article' : 'Save Draft' }}
-        </button>
+        <div class="form-actions">
+          <div class="draft-buttons" *ngIf="hasDraft()">
+            <button type="button" class="discard-btn" (click)="discardDraft()">Discard Draft</button>
+          </div>
+
+          <button type="submit" [disabled]="form.invalid || loading" class="submit-btn">
+            {{ isEditMode ? 'Update Article' : (isPublished.value ? 'Publish Article' : 'Save Draft') }}
+          </button>
+        </div>
       </div>
     </div>
 

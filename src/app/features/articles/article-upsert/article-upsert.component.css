@@ -29,8 +29,8 @@
   flex-direction: column;
   border-left: 1px solid #e0e0e0;
   overflow: hidden;
-  min-height: 500px;
-  justify-content: space-between;
+  min-height: 500px; /* Ensures the card has a minimum height */
+  justify-content: space-between; /* Distributes space between flex items */
 }
 
 .card-header h2,
@@ -52,18 +52,18 @@
   display: flex;
   flex-direction: column;
   position: relative;
-  padding-bottom: 1.5rem;
+  padding-bottom: 1.5rem; /* Space for error messages */
 }
 
 .editor-card .form-group {
   margin-bottom: 1.5rem;
   display: flex;
   flex-direction: column;
-  flex-grow: 1;
-  height: 100%; /* Ensure it fills parent's height */
-  min-height: 0;
+  flex-grow: 1; /* Allows this form-group to take available space */
+  height: 100%; /* Important for flex-grow to work on children if parent is flex */
+  min-height: 0; /* Allows shrinking below content height if needed */
   position: relative;
-  padding-bottom: 1.5rem;
+  padding-bottom: 1.5rem; /* Space for error messages */
 }
 
 label {
@@ -91,15 +91,23 @@ textarea:focus {
 
 /* Quill Editor Specific Styles */
 quill-editor {
-  display: flex; /* Make quill-editor a flex container */
-  flex-direction: column; /* Stack toolbar and editor content vertically */
+  display: flex; /* Makes quill-editor a flex container */
+  flex-direction: column; /* Stacks toolbar and editor content vertically */
   width: 100%;
   box-sizing: border-box;
   word-wrap: break-word;
   overflow-wrap: break-word;
   white-space: pre-wrap;
-  flex-grow: 1; /* Allow quill-editor to grow */
-  min-height: 200px;
+  flex-grow: 1; /* Allows the quill-editor component to take available vertical space */
+  
+  /* --- IMPORTANT CHANGE START --- */
+  /* Set a fixed height or max-height for the quill-editor component itself */
+  height: 350px; /* Example: A fixed height. Adjust as needed. */
+  /* If you prefer to fill available space but with a max cap, use max-height: */
+  /* max-height: 450px; */
+  overflow: hidden; /* Hide any overflow at the quill-editor component level */
+  /* --- IMPORTANT CHANGE END --- */
+
   border: 1.5px solid #ccc; /* Default border */
   border-radius: 6px;
   transition: border-color 0.3s ease;
@@ -116,15 +124,19 @@ quill-editor:focus-within {
   background-color: #f7f7f7;
   border-top-left-radius: 5px;
   border-top-right-radius: 5px;
+  flex-shrink: 0; /* Prevent toolbar from shrinking */
 }
 
 .ql-editor {
   word-wrap: break-word;
   overflow-wrap: break-word;
   white-space: pre-wrap;
-  flex-grow: 1; /* Allow content area to grow within quill-editor */
-  min-height: 100px;
-  overflow-y: auto;
+  flex-grow: 1; /* Allows the content area to grow within quill-editor's height */
+  min-height: 100px; /* Minimum height for the editable content area */
+  /* --- CRITICAL FOR SCROLLBAR --- */
+  /* max-height is no longer needed here if quill-editor has fixed height/max-height */
+  overflow-y: auto; /* Add vertical scrollbar if content exceeds its available height */
+  /* --- END CRITICAL FOR SCROLLBAR --- */
   padding: 0.5rem 0.75rem;
 }
 
@@ -170,10 +182,19 @@ app-tag-selector {
   margin-bottom: 0.5rem;
 }
 
-button[type="submit"] {
-  align-self: flex-start;
+/* Styles for the action buttons (Submit and Discard Draft) */
+.form-actions {
+  display: flex; /* Arranges buttons in a row */
+  gap: 1rem; /* Space between buttons */
+  margin-top: auto; /* Pushes buttons to the bottom of the form-card if form-card is flex column */
+  align-items: center; /* Vertically aligns buttons */
+  justify-content: flex-start; /* Align buttons to the start of the row */
+}
+
+/* Base style for both submit and discard buttons */
+.submit-btn,
+.discard-btn {
   padding: 0.6rem 1.6rem;
-  background-color: #2e7d32;
   border: none;
   border-radius: 6px;
   color: white;
@@ -181,16 +202,42 @@ button[type="submit"] {
   font-size: 1.1rem;
   cursor: pointer;
   transition: background-color 0.3s ease;
-  margin-top: auto;
+  white-space: nowrap; /* Prevent text from wrapping */
 }
 
-button[type="submit"]:disabled {
+/* Specific style for the submit button */
+.submit-btn {
+  background-color: #2e7d32; /* Primary green */
+}
+
+.submit-btn:disabled {
   background-color: #a5d6a7;
   cursor: not-allowed;
 }
 
-button[type="submit"]:hover:not(:disabled) {
-  background-color: #1b5e20;
+.submit-btn:hover:not(:disabled) {
+  background-color: #1b5e20; /* Darker green on hover */
+}
+
+/* Specific style for the discard button */
+.discard-btn {
+  background-color: #f44336; /* Red for discard */
+}
+
+.discard-btn:disabled {
+  background-color: #ef9a9a; /* Lighter red when disabled */
+  cursor: not-allowed;
+}
+
+.discard-btn:hover:not(:disabled) {
+  background-color: #d32f2f; /* Darker red on hover */
+}
+
+/* The draft-buttons div itself just needs to display its content correctly */
+.draft-buttons {
+    display: flex;
+    align-items: center;
+    justify-content: center;
 }
 
 .error {
@@ -250,11 +297,19 @@ pre {
     flex: none;
     width: 100%;
     padding: 1rem;
-    min-height: unset;
+    min-height: unset; /* Allow height to adjust on smaller screens */
   }
 
-  button[type="submit"] {
-    width: 100%;
+  /* Responsive for form-actions buttons */
+  .form-actions {
+    flex-direction: column; /* Stack buttons vertically on small screens */
+    width: 100%; /* Make the container take full width */
+    gap: 0.5rem; /* Reduce gap when stacked */
+  }
+
+  .form-actions .submit-btn,
+  .form-actions .discard-btn {
+    width: 100%; /* Make buttons full width when stacked */
   }
 
   app-upload-image {
@@ -277,12 +332,20 @@ pre {
   }
 
   quill-editor {
-    margin-bottom: 1.5rem;
-    flex-grow: unset; /* Revert flex-grow for mobile */
+    /* Adjust height or max-height for mobile if necessary */
+    height: 300px; /* Example: Slightly smaller height on mobile */
+    /* If you set a fixed height here, remove max-height: unset; */
+    flex-grow: unset; /* Revert flex-grow if a fixed height is applied */
   }
 
   .editor-card .form-group {
     height: auto; /* Revert height for mobile */
+  }
+
+  /* Ensure the .ql-editor itself still scrolls on mobile if content is too long */
+  .ql-editor {
+    max-height: 200px; /* Example: slightly smaller max-height on mobile if quill-editor is flex-grow */
+    overflow-y: auto; /* Ensure scroll remains */
   }
 
   .article-form .form-group {

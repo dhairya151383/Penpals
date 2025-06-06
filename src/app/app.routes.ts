@@ -39,8 +39,8 @@ export const routes: Routes = [
         data: { expectedRole: 'author' }
       },
       {
-        path: 'articles/:id/edit',
-        loadComponent: () => import('./features/articles/article-edit/article-edit.component').then(m => m.ArticleEditComponent),
+        path: 'edit-article/:id', // New route for editing
+        loadComponent: () => import('./features/articles/article-upsert/article-upsert.component').then(m => m.ArticleUpsertComponent),
         canActivate: [RoleGuard],
         data: { expectedRole: 'author' }
       },

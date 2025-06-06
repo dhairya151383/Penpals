@@ -67,7 +67,7 @@ export class ArticleDetailsComponent implements OnInit {
 
   goToEdit() {
     if (this.article?.id) {
-      this.router.navigate(['/articles', this.article.id, 'edit']);
+      this.router.navigate(['/edit-article', this.article.id]);
     }
   }
 }
