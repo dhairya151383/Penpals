@@ -43,6 +43,16 @@
                     </div>
 
                     <div class="tags-dropdown-menu" *ngIf="isDropdownOpen">
+                        <label class="tag-checkbox-item select-all-option">
+                            <input type="checkbox"
+                                [checked]="selectedTags.length === allTags.length && allTags.length > 0"
+                                [indeterminate]="selectedTags.length > 0 && selectedTags.length < allTags.length"
+                                (change)="toggleSelectAllTags($event)" />
+                            {{ selectedTags.length === allTags.length && allTags.length > 0 ? 'Deselect All' : 'Select
+                            All' }}
+                        </label>
+                        <div class="divider" *ngIf="allTags.length > 0"></div>
+
                         <label *ngFor="let tag of allTags" class="tag-checkbox-item">
                             <input type="checkbox" [value]="tag" [checked]="isTagSelected(tag)"
                                 (change)="onTagCheckboxChange(tag, $event)" />
@@ -53,13 +63,22 @@
                         </div>
                     </div>
                 </div>
+
+                <div class="sort-dropdown-container">
+                    <select [(ngModel)]="selectedSortOption" (ngModelChange)="onSortChange()" class="sort-select">
+                        <option value="latest">Sort by Latest</option>
+                        <option value="popular">Sort by Most Popular</option>
+                        <option value="titleAsc">Sort by Title (A-Z)</option>
+                    </select>
+                </div>
             </div>
         </div>
     </header>
 
     <div class="featured-articles-section" *ngIf="featuredArticles.length > 0">
         <h2>Featured Articles</h2>
-        <p-carousel [value]="featuredArticles" [numVisible]="1" [numScroll]="1" [circular]="true">
+        <p-carousel [value]="featuredArticles" [numVisible]="1" [numScroll]="1" [circular]="true"
+            [responsiveOptions]="responsiveOptions">
             <ng-template let-article pTemplate="item">
                 <div class="carousel-item-wrapper">
                     <app-article-card [article]="article" [isFeatured]="true"></app-article-card>
