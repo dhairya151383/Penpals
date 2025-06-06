@@ -7,7 +7,7 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
   overflow: hidden;
   transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-  width: 100%; /* Ensures it fills its grid cell or container */
+  width: 100%;
 }
 
 .card:hover {
@@ -17,7 +17,7 @@
 
 .thumbnail-container {
   width: 100%;
-  height: 200px; /* Consistent image height for regular cards */
+  height: 200px;
   overflow: hidden;
 }
 
@@ -36,88 +36,118 @@
   padding: 15px 20px;
   display: flex;
   flex-direction: column;
-  flex-grow: 1; /* Allows content section to take available height */
+  flex-grow: 1;
 }
 
-/* Consolidated Tags Styles */
 .tags-container {
-  margin-top: 10px; /* Space between brief and tags */
-  margin-bottom: 0; /* Remove default margin-bottom */
+  margin-bottom: 0; /* Ensures no extra space below tags by default */
   display: flex;
   flex-wrap: wrap;
-  gap: 8px;
-  flex-shrink: 0; /* Prevent tags from shrinking */
+  gap: 5px; /* Horizontal and vertical gap between individual tags */
+  flex-shrink: 0;
+  /* Overflow will be handled by the specific regular-tags-container or featured-tags-container for truncation */
 }
 
 .tag {
+  border-radius: 20px;
+  font-weight: 500;
+  white-space: nowrap;
+  border: 1px solid;
+  flex-shrink: 0;
+  display: inline-flex;
+  align-items: center;
+}
+
+/* --- Regular Card Tags Styles --- */
+.regular-tags-container {
+  height: 75px; /* Fixed height for two lines of tags */
+  overflow: hidden; /* Crucial: Hides any tags that exceed this two-line height */
+  margin-bottom: 10px; /* Add margin below the tag container to separate it from the title */
+}
+
+.regular-tag {
   background-color: #e6f7ff;
   color: #1890ff;
   padding: 6px 10px;
-  border-radius: 20px;
   font-size: 0.8em;
-  font-weight: 500;
-  white-space: nowrap;
-  border: 1px solid #91d5ff;
+  border-color: #91d5ff;
 }
 
-/* Consolidated Title Styles */
+/* --- Featured Card Tags Styles --- */
+.featured-tags-container {
+  /* Keeping featured as is based on your previous request */
+  --featured-tag-line-height: 30px; /* This is the height of a single featured tag */
+  --tag-row-gap: 30px; /* Consistent gap between rows for featured tags */
+  /* Calculated height for exactly two lines of featured tags */
+  /* (2 * featured-tag-line-height) + tag-row-gap = (2 * 30px) + 5px = 65px */
+  height: calc(2 * var(--featured-tag-line-height) + var(--tag-row-gap));
+  overflow: hidden; /* Hides any tags that exceed this height */
+  order: -1; /* Pushes tags to the top in featured card */
+  margin-bottom: 10px; /* Consistent margin below tags */
+  margin-top: 0;
+}
+
+.featured-tag {
+  background-color: #1890ff;
+  color: #ffffff;
+  padding: 8px 12px;
+  font-size: 0.9em;
+  border-color: #1890ff;
+}
+
 .title {
-  font-size: 1.8em; /* Apply featured card's font size */
+  font-size: 1.8em;
   font-weight: 700;
-  margin-bottom: 0; /* Remove default margin-bottom */
+  margin-bottom: 0;
   color: #262626;
   text-decoration: none;
   display: -webkit-box;
-  -webkit-line-clamp: 2; /* Limit title to 2 lines */
-  line-clamp: 2; /* Standard property */
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
   -webkit-box-orient: vertical;
-  overflow: hidden; /* Ensure overflow is hidden */
-  line-height: 1.3em; /* Apply featured card's line height */
-  word-break: break-word; /* Break long words if they overflow */
-  min-height: calc(2 * 1.3em); /* Calculate min-height using line-height as the unit */
-  max-height: calc(2 * 1.3em); /* Ensure it's exactly 2 lines */
-  flex-shrink: 0; /* Prevent title from shrinking */
+  overflow: hidden;
+  line-height: 1.3em;
+  word-break: break-word;
+  min-height: calc(2 * 1.3em);
+  max-height: calc(2 * 1.3em);
+  flex-shrink: 0;
 }
 
 .title:hover {
   color: #1890ff;
 }
 
-/* Consolidated Brief Styles */
 .brief {
-  font-size: 0.9em; /* Apply featured card's font size */
-  line-height: 1.1em; /* Apply featured card's line height */
+  font-size: 0.9em;
+  line-height: 1.1em;
   color: #595959;
-  margin-top: 10px; /* Space between title and brief */
-  margin-bottom: 5px; /* Remove default margin-bottom */
-  overflow: hidden; /* Crucial for 3-line truncation */
+  margin-top: 10px;
+  margin-bottom: 5px;
+  overflow: hidden;
   position: relative;
   display: -webkit-box;
-  -webkit-line-clamp: 3; /* Limit to 3 lines for brief */
-  line-clamp: 3; /* Standard property */
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
   -webkit-box-orient: vertical;
-  text-overflow: ellipsis; /* Fallback for browsers */
-  word-break: break-word; /* Break long words if they overflow */
-  white-space: normal; /* Ensure text wraps naturally */
+  text-overflow: ellipsis;
+  word-break: break-word;
+  white-space: normal;
   min-height: calc(3 * 1.5em);
-  max-height: calc(3 * 1.5em + 10px); /* Added 1px to provide a tiny bit more room */
-  flex-shrink: 0; /* Prevent brief from shrinking */
+  max-height: calc(3 * 1.5em + 10px);
+  flex-shrink: 0;
 }
 
-/* Ellipsis fade effect for brief (visual enhancement) */
 .brief::after {
   content: "";
   position: absolute;
   bottom: 0;
   right: 0;
   left: 0;
-  height: 1.4em; /* Adjusted height to be slightly less than a full line */
-  background: linear-gradient(
-    to top,
-    rgba(255, 255, 255, 1) 0%,
-    rgba(255, 255, 255, 1) 70%,
-    rgba(255, 255, 255, 0) 100%
-  );
+  height: 1.4em;
+  background: linear-gradient(to top,
+      rgba(255, 255, 255, 1) 0%,
+      rgba(255, 255, 255, 1) 70%,
+      rgba(255, 255, 255, 0) 100%);
   pointer-events: none;
 }
 
@@ -125,7 +155,7 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-top: auto; /* Pushes to the bottom of the content container */
+  margin-top: auto; /* Pushes meta-row to the bottom */
   padding-top: 15px;
   border-top: 1px solid #f0f0f0;
 }
@@ -157,32 +187,38 @@
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
-/* --- Responsive adjustments for regular article cards --- */
-@media (max-width: 768px) {
-  .thumbnail-container {
-    height: 180px;
+@media (max-width: 992px) {
+  .featured-card {
+    flex-direction: column;
+    height: auto;
+    max-height: none;
   }
 
-  .title {
-    font-size: 1.5em; /* Adjust for responsiveness */
+  .text-content,
+  .featured-image-container {
+    width: 100%;
+    height: auto;
   }
 
-  .brief {
-    font-size: 1em; /* Adjust for responsiveness */
-    -webkit-line-clamp: 4; /* Allow more lines for brief on smaller cards */
+  .featured-image-container {
+    height: 250px;
+  }
+
+  .featured-card .title {
+    font-size: 1.5em;
+  }
+
+  .featured-card .brief {
+    font-size: 1em;
+    -webkit-line-clamp: 4;
     line-clamp: 4;
   }
-  .brief::after {
-    height: 1.2em; /* Smaller fade area */
-    background: linear-gradient(
-      to bottom,
-      rgba(255, 255, 255, 0),
-      rgba(255, 255, 255, 1) 50%
-    ); /* Adjust gradient direction */
-  }
 
-  .author-info {
-    font-size: 0.8em;
+  .featured-card .brief::after {
+    height: 1.2em;
+    background: linear-gradient(to bottom,
+        rgba(255, 255, 255, 0),
+        rgba(255, 255, 255, 1) 50%);
   }
 }
 
@@ -196,12 +232,12 @@
   }
 
   .title {
-    font-size: 1.3em;
+      font-size: 1.3em;
   }
 
   .brief {
     font-size: 0.95em;
-    -webkit-line-clamp: 5; /* Even more lines for brief on tiny screens */
+    -webkit-line-clamp: 5;
     line-clamp: 5;
   }
 
@@ -216,19 +252,18 @@
   }
 }
 
-/* --- Styles for the FEATURED card (Consistent Size & Responsive within Carousel) --- */
 .featured-card {
   display: flex;
-  flex-direction: row; /* Content on left, Image on right */
-  width: 100%; /* Will take the full width of the carousel item */
-  height: 350px; /* FIXED HEIGHT for consistency, adjust this value as needed */
+  flex-direction: row;
+  width: 100%;
+  height: 350px;
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
   transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-  overflow: hidden; /* Crucial for clipping content if it exceeds the fixed height */
-  flex-shrink: 0; /* Prevent the card from shrinking unexpectedly */
-  flex-grow: 0; /* Prevent the card from growing beyond its content needs (if width allows) */
+  overflow: hidden;
+  flex-shrink: 0;
+  flex-grow: 0;
 }
 
 .featured-card:hover {
@@ -238,31 +273,31 @@
 
 .featured-content {
   display: flex;
-  flex-direction: row; /* Ensures text-content and image-container stay in a row */
+  flex-direction: row;
   width: 100%;
-  height: 100%; /* Occupy full height of .featured-card */
+  height: 100%;
 }
 
 .text-content {
-  width: 50%; /* Text content takes half the width */
+  width: 50%;
   display: flex;
   flex-direction: column;
   padding: 20px;
-  box-sizing: border-box; /* Include padding in the 50% width */
-  overflow: hidden; /* Important for ellipsis to work within this container */
-  min-width: 0; /* Allow flex item to shrink below content width if needed */
+  box-sizing: border-box;
+  overflow: hidden;
+  min-width: 0;
 }
 
 .featured-image-container {
-  width: 50%; /* Image takes half the width */
-  height: 100%; /* Image container takes full height of the card */
-  overflow: hidden; /* Ensures image does not overflow its container */
+  width: 50%;
+  height: 100%;
+  overflow: hidden;
 }
 
 .featured-image {
   width: 100%;
   height: 100%;
-  object-fit: cover; /* This makes the image cover the entire container, cropping if necessary */
+  object-fit: cover;
   transition: transform 0.3s ease;
 }
 
@@ -271,27 +306,29 @@
 }
 
 .featured-card .title {
-  /* Inherits most from .title, but can have specific overrides if needed */
-  font-size: 1.8em; /* Ensure this is explicitly set if you want it different from default .title */
+  font-size: 1.8em;
   min-height: calc(2 * 1.3em);
   max-height: calc(2 * 1.3em);
 }
 
 .featured-card .brief {
-  /* Inherits most from .brief, but can have specific overrides if needed */
   font-size: 0.9em;
   min-height: calc(3 * 1.5em);
   max-height: calc(3 * 1.5em + 10px);
 }
 
 .featured-card .brief::after {
-  height: 1.4em; /* Adjusted height to be slightly less than a full line */
-  background: linear-gradient(
-    to top,
-    rgba(255, 255, 255, 1) 0%,
-    rgba(255, 255, 255, 1) 70%,
-    rgba(255, 255, 255, 0) 100%
-  );
+  content: "";
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  height: 1.4em;
+  background: linear-gradient(to top,
+      rgba(255, 255, 255, 1) 0%,
+      rgba(255, 255, 255, 1) 70%,
+      rgba(255, 255, 255, 0) 100%);
+  pointer-events: none;
 }
 
 .featured-card .meta-row {
@@ -302,8 +339,8 @@
   color: #777;
   padding-top: 15px;
   border-top: 1px solid #f0f0f0;
-  margin-top: auto; /* Pushes meta-row to the bottom of the text-content */
-  flex-shrink: 0; /* Prevent meta-row from shrinking */
+  margin-top: auto;
+  flex-shrink: 0;
 }
 
 .featured-card .author-info {
@@ -323,48 +360,41 @@
   white-space: nowrap;
 }
 
-/* Ensure inner content of text-content is hidden if it overflows */
-.text-content > * {
+.text-content>* {
   overflow: hidden;
-  text-overflow: ellipsis; /* Ensures ellipsis for any overflowing text child */
-  white-space: normal; /* Allow text to wrap naturally unless explicitly set to nowrap */
-  word-break: break-word; /* Ensure long words break */
+  text-overflow: ellipsis;
+  white-space: normal;
+  word-break: break-word;
 }
 
-/* --- PrimeNG Carousel Overrides (Essential for proper display) --- */
-
-/* The wrapper around each app-article-card inside the carousel */
 .carousel-item-wrapper {
-  padding: 10px; /* Adjust spacing around the card within the carousel item */
-  height: 100%; /* Make wrapper fill height of its pTemplate="item" parent */
+  padding: 10px;
+  height: 100%;
   box-sizing: border-box;
-  display: flex; /* Make it a flex container */
-  justify-content: center; /* Center the card inside */
-  align-items: center; /* Center vertically */
-  flex-basis: 100%; /* Ensure it takes full space */
-  flex-shrink: 0; /* Prevents shrinking */
-  flex-grow: 1; /* Allows growth */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  flex-basis: 100%;
+  flex-shrink: 0;
+  flex-grow: 1;
 }
 
-/* Override PrimeNG's default carousel item styling to ensure responsiveness */
 :host ::ng-deep .p-carousel-item {
-  display: flex; /* Make carousel item a flex container */
-  justify-content: center; /* Center cards horizontally */
-  align-items: stretch; /* Make items stretch to fill available height of the carousel track */
-  height: auto !important; /* Allow card's height to dictate, overriding PrimeNG's potential fixed height */
-  width: 100% !important; /* Ensure it takes full width for single card display */
-  flex-basis: 100% !important; /* Critical to ensure each item occupies its full 100% slot */
-  flex-shrink: 0; /* Prevents items from shrinking */
-  flex-grow: 1; /* Allows item to grow */
+  display: flex;
+  justify-content: center;
+  align-items: stretch;
+  height: auto !important;
+  width: 100% !important;
+  flex-basis: 100% !important;
+  flex-shrink: 0;
+  flex-grow: 1;
 }
 
-/* Ensure the carousel's content container itself allows flexible sizing */
 :host ::ng-deep .p-carousel-items-content {
   display: flex;
-  align-items: stretch; /* Make items stretch to fill available height */
+  align-items: stretch;
 }
 
-/* PrimeNG Navigation/Indicators */
 :host ::ng-deep .p-carousel .p-carousel-indicators {
   margin-top: 20px;
 }
@@ -395,23 +425,21 @@
   background-color: rgba(0, 0, 0, 0.7);
 }
 
-/* --- Responsive adjustments for FEATURED card on smaller screens --- */
 @media (max-width: 992px) {
-  /* Tablets and smaller laptops */
   .featured-card {
-    flex-direction: column; /* Stack image and text vertically */
-    height: auto; /* Allow height to adjust when stacking */
-    max-height: none; /* Remove max-height constraint when stacked */
+    flex-direction: column;
+    height: auto;
+    max-height: none;
   }
 
   .text-content,
   .featured-image-container {
-    width: 100%; /* Both take full width when stacked */
+    width: 100%;
     height: auto;
   }
 
   .featured-image-container {
-    height: 250px; /* Fixed height for image when stacked on mobile/tablet */
+    height: 250px;
   }
 
   .featured-card .title {
@@ -420,36 +448,38 @@
 
   .featured-card .brief {
     font-size: 1em;
-    -webkit-line-clamp: 4; /* Allow more lines for brief on smaller featured cards */
+    -webkit-line-clamp: 4;
     line-clamp: 4;
   }
+
   .featured-card .brief::after {
-    height: 1.2em; /* Smaller fade area */
-    background: linear-gradient(
-      to bottom,
-      rgba(255, 255, 255, 0),
-      rgba(255, 255, 255, 1) 50%
-    ); /* Adjust gradient direction */
+    height: 1.2em;
+    background: linear-gradient(to bottom,
+        rgba(255, 255, 255, 0),
+        rgba(255, 255, 255, 1) 50%);
   }
 }
 
 @media (max-width: 576px) {
-  /* Mobile phones */
   .featured-card {
-    margin: 10px; /* Add some margin around the card on very small screens */
+    margin: 10px;
   }
+
   .featured-image-container {
-    height: 180px; /* Smaller image height on very small screens */
+    height: 180px;
   }
+
   .text-content {
     padding: 15px;
   }
+
   .featured-card .title {
     font-size: 1.3em;
   }
+
   .featured-card .brief {
     font-size: 0.95em;
-    -webkit-line-clamp: 5; /* Even more lines for brief on tiny screens */
+    -webkit-line-clamp: 5;
     line-clamp: 5;
   }
 }
