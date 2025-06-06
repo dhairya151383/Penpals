@@ -133,10 +133,7 @@ quill-editor:focus-within {
   white-space: pre-wrap;
   flex-grow: 1; /* Allows the content area to grow within quill-editor's height */
   min-height: 100px; /* Minimum height for the editable content area */
-  /* --- CRITICAL FOR SCROLLBAR --- */
-  /* max-height is no longer needed here if quill-editor has fixed height/max-height */
   overflow-y: auto; /* Add vertical scrollbar if content exceeds its available height */
-  /* --- END CRITICAL FOR SCROLLBAR --- */
   padding: 0.5rem 0.75rem;
 }
 
@@ -146,6 +143,7 @@ quill-editor:focus-within {
   align-items: center;
   margin-bottom: 1.5rem;
   padding-top: 10px;
+  margin-top: 1.5rem;
 }
 
 .options-row .checkbox-group {
