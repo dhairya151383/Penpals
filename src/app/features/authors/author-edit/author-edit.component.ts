@@ -69,33 +69,29 @@ export class AuthorEditComponent implements OnInit {
   error: string | null = null;
   formSubmitted = false;
 
-  bioCharacterCount: number = 0; // Property to track current plain text character count of the bio
-  readonly bioCharacterLimit: number = 2000; // Define the character limit for the bio
+  bioCharacterCount: number = 0;
+  readonly bioCharacterLimit: number = 1000; 
 
-  // Quill editor configuration to restrict content (no images, videos)
   quillModules = {
     toolbar: [
-      ['bold', 'italic', 'underline', 'strike'],        // toggled buttons for text formatting
-      ['blockquote'],                                   // blockquote
+      ['bold', 'italic', 'underline', 'strike'],        
+      ['blockquote'],                                   
 
-      [{ 'header': 1 }, { 'header': 2 }],               // custom button values for headers
-      [{ 'list': 'ordered'}, { 'list': 'bullet' }],     // ordered and unordered lists
-      [{ 'script': 'sub'}, { 'script': 'super' }],      // superscript/subscript
-      [{ 'indent': '-1'}, { 'indent': '+1' }],          // outdent/indent
-      [{ 'direction': 'rtl' }],                         // text direction
+      [{ 'header': 1 }, { 'header': 2 }],               
+      [{ 'list': 'ordered'}, { 'list': 'bullet' }],     
+      [{ 'script': 'sub'}, { 'script': 'super' }],      
+      [{ 'indent': '-1'}, { 'indent': '+1' }],          
+      [{ 'direction': 'rtl' }],                         
 
-      [{ 'size': ['small', false, 'large', 'huge'] }],  // custom dropdown for font sizes
-      [{ 'header': [1, 2, 3, 4, 5, 6, false] }],        // custom dropdown for header levels
+      [{ 'size': ['small', false, 'large', 'huge'] }],  
+      [{ 'header': [1, 2, 3, 4, 5, 6, false] }],        
 
-      [{ 'color': [] }, { 'background': [] }],          // dropdown with defaults for text color and background
-      [{ 'font': [] }],                                 // font family dropdown
-      [{ 'align': [] }],                                // text alignment
-
-      ['clean']                                         // remove formatting button
-      // Image and video buttons are deliberately omitted here to restrict content
+      [{ 'color': [] }, { 'background': [] }],          
+      [{ 'font': [] }],                                 
+      [{ 'align': [] }],                                
+      ['clean']                                         
     ]
   };
-
 
   constructor(
     private fb: FormBuilder,

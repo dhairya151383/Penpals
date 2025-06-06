@@ -1,3 +1,5 @@
+/* author-details.component.css */
+
 .author-card {
   width: 100%;
   max-width: 1000px;
@@ -10,14 +12,102 @@
   overflow-x: auto;
 }
 
+.author-header {
+  text-align: center;
+  margin-bottom: 2rem;
+}
 
+.author-main-title {
+  font-family: 'Kalam', cursive;
+  font-size: 3.5rem;
+  color: #e57373;
+  position: relative;
+  display: inline-block;
+  margin-top: 2rem;
+  margin-bottom: 1rem;
+}
 
-.author-container {
+/* Illustrations positioning (re-added based on image) */
+.title-illustration {
+  position: absolute;
+  width: 50px;
+  height: auto;
+  top: -20px;
+}
+
+.bird-top {
+  left: -60px;
+}
+
+.cat-top {
+  right: -60px;
+}
+
+.author-header-nav {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 1rem;
+  margin-bottom: 2rem;
+  font-family: Arial, sans-serif;
+  font-size: 1.1rem;
+  flex-wrap: wrap;
+}
+
+.author-header-tags {
+  display: flex;
+  align-items: center;
+  gap: 0.8rem;
+}
+
+.header-tag {
+  color: #333;
+  text-decoration: none;
+  padding: 0.5rem 0.2rem;
+  white-space: nowrap;
+}
+
+.tag-divider {
+  color: #ccc;
+  font-size: 1.1rem;
+  white-space: nowrap;
+}
+
+.header-social-links {
+  display: flex;
+  gap: 1rem;
+  align-items: center;
+}
+
+/* Styles for the SVG social icons */
+.social-icon {
+  width: 28px;
+  height: 28px;
+  transition: transform 0.2s ease, fill 0.3s ease;
+}
+
+.header-social-links a:hover .social-icon {
+  transform: scale(1.1);
+}
+
+/* Social media brand colors for icons - apply directly to anchor's SVG fill */
+.header-social-links a[aria-label="Twitter"] .social-icon {
+  fill: #1DA1F2; /* Ensures Twitter icon is clearly visible */
+}
+.header-social-links a[aria-label="LinkedIn"] .social-icon {
+  fill: #0077B5;
+}
+.header-social-links a[aria-label="Facebook"] .social-icon {
+  fill: #1877F2;
+}
+
+.author-content-body {
   display: flex;
   flex-direction: row;
   flex-wrap: wrap;
   gap: 2rem;
   align-items: flex-start;
+  margin-top: 2rem;
 }
 
 .author-left {
@@ -36,87 +126,24 @@
 .author-right {
   flex: 2 1 0;
   min-width: 0;
-  padding-top: 1rem;
+  padding-top: 0;
 }
 
-.author-name {
+.author-subtitle {
   font-size: 2rem;
   font-weight: bold;
-  margin-bottom: 1rem;
+  margin-bottom: 0.5rem;
   font-family: 'Georgia', serif;
+  color: #333;
 }
 
 .author-bio {
-  font-size: 1.1rem;
-  line-height: 1.6;
+  font-size: 0.8rem;
+  line-height: 1.4;
   margin-bottom: 1rem;
-}
-
-.tags {
-  margin-bottom: 1rem;
-}
-
-.tag {
-  display: inline-block;
-  background-color: #e2f3e4;
-  color: #2e7d32;
-  padding: 0.4rem 0.8rem;
-  border-radius: 12px;
-  margin: 0 0.3rem 0.3rem 0;
-  font-size: 0.9rem;
-}
-
-.website {
-  margin: 1rem 0;
-}
-
-.website a {
-  color: #007acc;
-  text-decoration: none;
-}
-
-.website a:hover {
-  text-decoration: underline;
-}
-
-.social-links {
-  display: flex;
-  gap: 1rem;
-  align-items: center;
-  margin-top: 1rem;
-}
-
-.social-links img {
-  width: 28px;
-  height: 28px;
-  transition: transform 0.2s ease;
-}
-
-.social-links img:hover {
-  transform: scale(1.1);
-}
-
-/* Responsive styles */
-@media (max-width: 768px) {
-  .author-container {
-    flex-direction: column;
-    align-items: center;
-  }
-
-  .author-left, .author-right {
-    width: 100%;
-    text-align: center;
-  }
-  .author-name {
-    font-size: 1.6rem;
-  }
-}
-.author-bio {
-  font-size: 1.1rem;
-  line-height: 1.6;
-  margin-bottom: 1rem;
-  word-wrap: break-word;
+  word-break: normal;
   overflow-wrap: break-word;
+  white-space: normal;
   max-width: 100%;
 }
 
@@ -144,4 +171,67 @@
   display: block;
   white-space: pre-wrap;
   word-wrap: break-word;
+}
+
+.edit-button-wrapper {
+  text-align: center;
+  margin-top: 2rem;
+}
+
+.edit-button {
+  background-color: #007acc;
+  color: white;
+  padding: 0.8rem 1.5rem;
+  border: none;
+  border-radius: 8px;
+  font-size: 1rem;
+  cursor: pointer;
+  transition: background-color 0.3s ease;
+}
+
+.edit-button:hover {
+  background-color: #005f99;
+}
+
+/* Responsive styles */
+@media (max-width: 768px) {
+  .author-content-body {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .author-left, .author-right {
+    width: 100%;
+    text-align: center;
+  }
+  .author-subtitle {
+    font-size: 1.6rem;
+  }
+
+  .author-main-title {
+    font-size: 2.5rem;
+  }
+
+  .title-illustration {
+    width: 30px;
+    top: -15px;
+  }
+
+  .bird-top {
+    left: -35px;
+  }
+
+  .cat-top {
+    right: -35px;
+  }
+
+  .author-header-nav {
+    flex-direction: column; /* Stack tags and social links vertically */
+    gap: 1rem;
+  }
+
+  .author-header-tags {
+    flex-wrap: wrap; /* Allow tags to wrap if too long */
+    justify-content: center;
+  }
 }
