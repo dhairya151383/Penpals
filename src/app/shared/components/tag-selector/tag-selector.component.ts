@@ -31,7 +31,7 @@ export class TagSelectorComponent implements OnInit {
 
   async addTag() {
     const trimmedName = this.newTagName.trim();
-    if (this.filterOnly || !trimmedName || this.selectedTags.length >= 10) return;
+    if (this.filterOnly || !trimmedName || this.selectedTags.length >= 5) return;
     if (trimmedName.length > 15) {
       alert('Tag name cannot exceed 15 characters.');
       return;
@@ -57,7 +57,7 @@ export class TagSelectorComponent implements OnInit {
   }
 
   selectTag(tag: Tag) {
-    if (!this.selectedTags.find(t => t.id === tag.id) && this.selectedTags.length < 10) {
+    if (!this.selectedTags.find(t => t.id === tag.id) && this.selectedTags.length < 5) {
       this.selectedTags.push(tag);
       this.selectedTagsChange.emit(this.selectedTags);
     }
