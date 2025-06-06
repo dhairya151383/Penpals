@@ -29,31 +29,44 @@
                         </ng-container>
                         <ng-container *ngIf="selectedTags.length > 0">
                             <span class="selected-tags-summary">
-                                {{ selectedTags.length }} tag{{ selectedTags.length !== 1 ? 's' : '' }} selected
+                                {{ selectedTags.length }} tag{{
+                                selectedTags.length !== 1 ? 's' : ''
+                                }}
+                                selected
                             </span>
                         </ng-container>
                         <svg class="dropdown-arrow" [class.rotated]="isDropdownOpen" xmlns="http://www.w3.org/2000/svg"
-                            width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
-                            stroke-linecap="round" stroke-linejoin="round">
+                            width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
+                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
                             <polyline points="6 9 12 15 18 9"></polyline>
                         </svg>
                     </div>
 
                     <div class="tags-dropdown-menu" *ngIf="isDropdownOpen">
                         <label *ngFor="let tag of allTags" class="tag-checkbox-item">
-                            <input type="checkbox"
-                                [value]="tag"
-                                [checked]="isTagSelected(tag)"
+                            <input type="checkbox" [value]="tag" [checked]="isTagSelected(tag)"
                                 (change)="onTagCheckboxChange(tag, $event)" />
                             {{ tag }}
                         </label>
-                        <div *ngIf="allTags.length === 0" class="no-tags-message">No tags available</div>
+                        <div *ngIf="allTags.length === 0" class="no-tags-message">
+                            No tags available
+                        </div>
                     </div>
                 </div>
             </div>
         </div>
     </header>
 
+    <div class="featured-articles-section" *ngIf="featuredArticles.length > 0">
+        <h2>Featured Articles</h2>
+        <p-carousel [value]="featuredArticles" [numVisible]="1" [numScroll]="1" [circular]="true">
+            <ng-template let-article pTemplate="item">
+                <div class="carousel-item-wrapper">
+                    <app-article-card [article]="article" [isFeatured]="true"></app-article-card>
+                </div>
+            </ng-template>
+        </p-carousel>
+    </div>
     <div class="articles-main-card">
         <div class="articles-grid">
             <app-article-card *ngFor="let article of displayArticles" [article]="article"></app-article-card>

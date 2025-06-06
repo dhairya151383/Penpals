@@ -1,0 +1,449 @@
+/* Dashboard Container */
+.dashboard-container {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  background-color: #f8f8f8;
+  position: relative; /* Ensure it forms a stacking context */
+  z-index: 1; /* A base z-index */
+  overflow: visible; /* Ensure it's not clipping */
+}
+
+/* Hero Section (Header with Background Image) */
+.hero-section {
+  background-image: url('./../../../assets/images/header-bg.jpg');
+  background-size: cover;
+  background-position: center;
+  color: white;
+  padding: 80px 20px 120px 20px; /* Provides space for the card overlap */
+  text-align: center;
+  position: relative;
+  overflow: visible; /* Ensure this is visible if it was hiding */
+  z-index: 2; /* Higher than dashboard-container base */
+}
+
+.hero-section::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.5);
+  z-index: 1; /* Behind hero-content */
+}
+
+.hero-content {
+  position: relative;
+  z-index: 3; /* Above hero-section overlay */
+  max-width: 900px;
+  margin: 0 auto;
+  overflow: visible; /* Ensure this is visible if it was hiding */
+}
+
+/* Search and Tags Group - This is the immediate parent of search/dropdown */
+.search-and-tags-group {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 15px;
+  justify-content: center;
+  margin-bottom: 20px;
+  position: relative; /* CRITICAL: Must be positioned */
+  z-index: 1000; /* Give it a high z-index, so children can be higher than hero content */
+  overflow: visible; /* Ensure this is visible if it was hiding */
+  align-items: center; /* Align items vertically */
+}
+
+/* Search Input styles */
+.search-input-wrapper {
+  flex-grow: 1;
+  max-width: 350px;
+  position: relative;
+}
+
+.search-input {
+  width: 100%;
+  padding: 12px 40px 12px 15px;
+  border: none;
+  border-radius: 25px;
+  font-size: 1em;
+  background-color: rgba(255, 255, 255, 0.9);
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+  outline: none;
+  transition: all 0.3s ease;
+}
+
+.search-input:focus {
+  box-shadow: 0 0 0 3px rgba(100, 150, 255, 0.5);
+}
+
+.search-button {
+  position: absolute;
+  right: 10px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  color: #555;
+  cursor: pointer;
+}
+
+.search-button svg {
+  vertical-align: middle;
+}
+
+/* Custom Tags Dropdown Container - THIS IS THE MOST CRITICAL ELEMENT */
+.tags-dropdown-container {
+  position: relative; /* Must be positioned for z-index to work */
+  width: 250px; /* Adjust as needed */
+  /* Set an extremely high z-index to guarantee it's on top of everything */
+  z-index: 999999; /* Making this absurdly high */
+  overflow: visible; /* IMPORTANT: Ensure this is visible if it was hiding */
+}
+
+.tags-selected-display {
+  border: 1px solid #ccc;
+  padding: 8px 12px;
+  border-radius: 25px; /* Rounded corners for the "button" */
+  cursor: pointer;
+  min-height: 38px; /* To match input height */
+  display: flex;
+  align-items: center;
+  flex-wrap: wrap; /* Allow selected tags to wrap */
+  gap: 5px; /* Space between selected tags */
+  background-color: rgba(255, 255, 255, 0.9); /* Slightly transparent white, matching search */
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2); /* Matching search box shadow */
+  transition: all 0.3s ease;
+  color: #333; /* Default text color */
+}
+
+.tags-selected-display:hover {
+  box-shadow: 0 0 0 3px rgba(100, 150, 255, 0.5); /* Focus outline on hover */
+}
+
+.tags-selected-display .placeholder-tag {
+  color: #6c757d;
+  flex-grow: 1; /* Allow placeholder to take available space */
+}
+
+.tags-selected-display .selected-tags-summary {
+  color: #333;
+}
+
+.tags-selected-display .selected-tag-pill {
+  background-color: #007bff; /* A distinct background color for selected tags */
+  color: white;
+  padding: 3px 8px;
+  border-radius: 15px; /* Pill shape */
+  font-size: 0.85em;
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  white-space: nowrap; /* Prevent tag text from wrapping inside the pill */
+}
+
+.tags-selected-display .remove-tag-x {
+  cursor: pointer;
+  font-weight: bold;
+  color: rgba(255, 255, 255, 0.8);
+  transition: color 0.2s ease;
+  margin-left: 4px; /* Space between text and 'x' */
+}
+
+.tags-selected-display .remove-tag-x:hover {
+  color: white;
+}
+
+.tags-selected-display .dropdown-arrow {
+  margin-left: auto; /* Push arrow to the right */
+  transition: transform 0.2s ease-in-out;
+  color: #555; /* Color for the arrow */
+}
+
+.tags-selected-display .dropdown-arrow.rotated {
+  transform: rotate(180deg);
+}
+
+/* Dropdown Menu (The actual list of checkboxes) */
+.tags-dropdown-menu {
+  position: absolute; /* Crucial for positioning relative to tags-dropdown-container */
+  top: calc(100% + 5px); /* Position slightly below the display box */
+  left: 0;
+  width: 100%;
+  background-color: #fff;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  max-height: 228px; /* Corrected max-height (was 200px) for consistency with previous suggestions */
+  overflow-y: auto;
+  padding: 5px 0;
+  /* IMPORTANT: This needs to be higher than its container in its stacking context */
+  z-index: 999999; /* Even higher than its container if needed, but relative to container */
+}
+
+.tag-checkbox-item {
+  display: flex;
+  align-items: center;
+  padding: 8px 12px;
+  cursor: pointer;
+  user-select: none; /* Prevent text selection */
+  color: #333; /* Text color for tags in dropdown */
+}
+
+.tag-checkbox-item input[type='checkbox'] {
+  margin-right: 10px; /* Space between checkbox and text */
+}
+
+.tag-checkbox-item:hover {
+  background-color: #f0f0f0;
+}
+
+.no-tags-message {
+  padding: 10px 12px;
+  color: #6c757d;
+  text-align: center;
+}
+
+/* Featured Articles Section */
+.featured-articles-section {
+  max-width: 1200px;
+  width: 90%;
+  margin: 30px auto; /* Adjust margin as needed */
+  padding: 20px;
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+  text-align: center;
+}
+
+.featured-articles-section h2 {
+  font-size: 2em;
+  color: #333;
+  margin-bottom: 25px;
+}
+
+.carousel-item-wrapper {
+  padding: 10px; /* Spacing between cards in the carousel */
+}
+
+/* PrimeNG Carousel Overrides for better visual integration */
+/* This might require inspecting PrimeNG's default classes */
+:host ::ng-deep .p-carousel .p-carousel-indicators {
+  margin-top: 20px;
+}
+
+:host ::ng-deep .p-carousel .p-carousel-indicator-icon {
+  background-color: #ccc; /* Default dot color */
+}
+
+:host ::ng-deep .p-carousel .p-carousel-indicator.p-highlight .p-carousel-indicator-icon {
+  background-color: #007bff; /* Active dot color */
+}
+
+:host ::ng-deep .p-carousel .p-carousel-next,
+:host ::ng-deep .p-carousel .p-carousel-prev {
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent arrows */
+  color: white;
+  border-radius: 50%;
+  width: 35px;
+  height: 35px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.3s;
+}
+
+:host ::ng-deep .p-carousel .p-carousel-next:hover,
+:host ::ng-deep .p-carousel .p-carousel-prev:hover {
+  background-color: rgba(0, 0, 0, 0.7);
+}
+
+
+/* Main Articles Card */
+.articles-main-card {
+  background-color: #fff;
+  border-radius: 10px;
+  box-shadow: 0 6px 15px rgba(0, 0, 0, 0.1);
+  margin: 20px auto 20px auto; /* Adjusted margin to accommodate carousel above */
+  max-width: 1200px;
+  width: 80%;
+  padding: 30px;
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  position: relative; /* Crucial for z-index to work */
+  z-index: 1000; /* High enough for hero, low enough for dropdown */
+}
+
+.articles-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 25px;
+  padding: 20px 0;
+  flex-grow: 1;
+}
+
+.no-articles-message {
+  text-align: center;
+  font-size: 1.2em;
+  color: #777;
+  padding: 50px;
+  grid-column: 1 / -1;
+}
+
+/* Card Footer Pagination */
+.card-footer-pagination {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding-top: 20px;
+  border-top: 1px solid #eee;
+  margin-top: 30px;
+  flex-wrap: wrap;
+}
+
+.pagination-button {
+  background-color: #007bff;
+  color: white;
+  border: none;
+  padding: 10px 18px;
+  border-radius: 5px;
+  cursor: pointer;
+  margin: 0 5px;
+  transition: background-color 0.3s ease;
+  font-size: 0.95em;
+  min-width: 100px;
+}
+
+.pagination-button:hover:not(:disabled) {
+  background-color: #0056b3;
+}
+
+.pagination-button:disabled {
+  background-color: #cccccc;
+  cursor: not-allowed;
+}
+
+.page-numbers {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  margin: 0 10px;
+}
+
+.page-number {
+  background-color: #e9ecef;
+  color: #333;
+  padding: 10px 15px;
+  border-radius: 5px;
+  margin: 2px;
+  min-width: 40px;
+  text-align: center;
+}
+
+.page-number.active {
+  background-color: #007bff;
+  color: white;
+  font-weight: bold;
+}
+
+/* Responsive Adjustments */
+@media (max-width: 1250px) {
+  .articles-main-card {
+    width: 90%;
+  }
+}
+
+@media (max-width: 992px) {
+  .hero-title {
+    font-size: 2.5em;
+  }
+
+  .hero-description {
+    font-size: 1em;
+  }
+
+  .featured-articles-section {
+    width: 95%;
+  }
+
+  .articles-main-card {
+    margin: 20px auto 15px auto; /* Adjusted margin */
+    width: 90%;
+    max-width: 800px;
+    padding: 20px;
+  }
+
+  .articles-grid {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+}
+
+@media (max-width: 768px) {
+  .hero-section {
+    padding: 60px 15px;
+  }
+
+  .hero-title {
+    font-size: 2em;
+  }
+
+  .search-and-tags-group {
+    flex-direction: column;
+    align-items: center;
+  }
+
+  .search-input-wrapper {
+    width: 90%;
+    max-width: 350px;
+  }
+
+  .featured-articles-section {
+    width: 100%; /* Full width on smaller screens */
+    padding: 15px;
+  }
+}
+
+@media (max-width: 576px) {
+  .hero-section {
+    padding: 40px 10px;
+  }
+
+  .hero-title {
+    font-size: 1.8em;
+  }
+
+  .articles-main-card {
+    margin: 15px auto 10px auto; /* Adjusted margin */
+    width: 95%;
+    max-width: none;
+    padding: 15px;
+  }
+
+  .articles-grid {
+    grid-template-columns: 1fr;
+    gap: 15px;
+  }
+
+  .pagination-button {
+    padding: 8px 12px;
+    font-size: 0.9em;
+    min-width: unset;
+  }
+
+  .page-number {
+    font-size: 0.85em;
+    padding: 8px 12px;
+    min-width: unset;
+  }
+
+  .card-footer-pagination {
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  .page-numbers {
+    margin: 0;
+  }
+}

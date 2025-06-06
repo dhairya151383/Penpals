@@ -1,5 +1,4 @@
-/* You can add global styles to this file, and also import other style files */
-/* These styles should be in your main application stylesheet */
+
 .article-creation-page {
   display: flex;
   justify-content: center;
@@ -26,5 +25,3 @@
     width: 100vw;
   }
 }
-
-/* Any other global or shared utility styles */

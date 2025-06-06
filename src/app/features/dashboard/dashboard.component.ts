@@ -4,12 +4,12 @@ import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
 
 import { debounceTime, distinctUntilChanged, Subject, Subscription, combineLatest, startWith } from 'rxjs';
-import { ArticleService } from '../../../core/services/article.service';
-import { AuthorService } from '../../../core/services/author.service';
-import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
-import { Article } from '../../../shared/models/article.model';
-import { ArticleCardComponent } from '../../articles/article-card/article-card.component'; // Corrected path if needed
-
+import { ArticleService } from '../../core/services/article.service';
+import { AuthorService } from '../../core/services/author.service';
+import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner/loading-spinner.component';
+import { Article } from '../../shared/models/article.model';
+import { ArticleCardComponent } from '../articles/article-card/article-card.component';
+import { CarouselModule } from 'primeng/carousel';
 @Component({
   selector: 'app-dashboard',
   standalone: true,
@@ -19,6 +19,7 @@ import { ArticleCardComponent } from '../../articles/article-card/article-card.c
     RouterModule,
     LoadingSpinnerComponent,
     ArticleCardComponent,
+    CarouselModule,
   ],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css'],
@@ -27,6 +28,7 @@ export class DashboardComponent implements OnInit, OnDestroy {
   allArticles: Article[] = [];
   displayArticles: Article[] = [];
   filteredArticles: Article[] = [];
+  featuredArticles: Article[] = [];
 
   allTags: string[] = [];
   selectedTags: string[] = [];
@@ -44,6 +46,26 @@ export class DashboardComponent implements OnInit, OnDestroy {
   currentPage = 1;
   itemsPerPage = 12;
 
+  // Responsive options for PrimeNG Carousel
+  responsiveOptions: any[] = [
+    {
+      breakpoint: '1024px',
+      numVisible: 3,
+      numScroll: 3
+    },
+    {
+      breakpoint: '768px',
+      numVisible: 2,
+      numScroll: 2
+    },
+    {
+      breakpoint: '560px',
+      numVisible: 1,
+      numScroll: 1
+    }
+  ];
+
+
   constructor(
     private articleService: ArticleService,
     private authorService: AuthorService
@@ -60,6 +82,16 @@ export class DashboardComponent implements OnInit, OnDestroy {
         }
         return article;
       }));
+
+      // Filter and sort featured articles
+      this.featuredArticles = this.allArticles
+        .filter(article => article.isFeatured && article.isPublished)
+        .sort((a, b) => {
+          const dateA = a.updatedAt ? new Date(a.updatedAt) : new Date(a.publishDate || 0);
+          const dateB = b.updatedAt ? new Date(b.updatedAt) : new Date(b.publishDate || 0);
+          return dateB.getTime() - dateA.getTime(); // Sort by latest (descending)
+        })
+        .slice(0, 10); // Take a maximum of 10 articles
 
       const uniqueTags = new Set<string>();
       this.allArticles.forEach(article => {
@@ -139,6 +171,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   applyFiltersAndPagination(): void {
     let tempArticles = [...this.allArticles];
+
+    // Exclude featured articles from the main list display
+    // This assumes that featured articles are distinct from the regular list.
+    // If featured articles should also appear in the main list, remove this line.
+    tempArticles = tempArticles.filter(article => !article.isFeatured || !article.isPublished);
+
 
     if (this.searchQuery) {
       const lowerCaseQuery = this.searchQuery.toLowerCase();

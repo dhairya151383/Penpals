@@ -13,6 +13,6 @@ import { ArticleDatePipe } from '../../../shared/pipes/article-date.pipe';
 })
 export class ArticleCardComponent {
   @Input() article!: Article;
-
+  @Input() isFeatured: boolean = false;
 }
 
