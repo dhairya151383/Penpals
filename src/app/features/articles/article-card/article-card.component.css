@@ -1,5 +1,3 @@
-/* article-card.component.css */
-
 /* --- Base Card Styles (for both regular and featured, with overrides for featured) --- */
 .card {
   display: flex;
@@ -41,11 +39,14 @@
   flex-grow: 1; /* Allows content section to take available height */
 }
 
+/* Consolidated Tags Styles */
 .tags-container {
-  margin-bottom: 12px;
+  margin-top: 10px; /* Space between brief and tags */
+  margin-bottom: 0; /* Remove default margin-bottom */
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+  flex-shrink: 0; /* Prevent tags from shrinking */
 }
 
 .tag {
@@ -59,35 +60,65 @@
   border: 1px solid #91d5ff;
 }
 
+/* Consolidated Title Styles */
 .title {
-  font-size: 1.35em;
+  font-size: 1.8em; /* Apply featured card's font size */
   font-weight: 700;
+  margin-bottom: 0; /* Remove default margin-bottom */
   color: #262626;
   text-decoration: none;
-  margin-bottom: 10px;
   display: -webkit-box;
-  -webkit-line-clamp: 2;
-  line-clamp: 2; /* Standard property for compatibility */
+  -webkit-line-clamp: 2; /* Limit title to 2 lines */
+  line-clamp: 2; /* Standard property */
   -webkit-box-orient: vertical;
-  overflow: hidden;
-  line-height: 1.3;
+  overflow: hidden; /* Ensure overflow is hidden */
+  line-height: 1.3em; /* Apply featured card's line height */
+  word-break: break-word; /* Break long words if they overflow */
+  min-height: calc(2 * 1.3em); /* Calculate min-height using line-height as the unit */
+  max-height: calc(2 * 1.3em); /* Ensure it's exactly 2 lines */
+  flex-shrink: 0; /* Prevent title from shrinking */
 }
 
 .title:hover {
   color: #1890ff;
 }
 
+/* Consolidated Brief Styles */
 .brief {
-  font-size: 0.95em;
+  font-size: 0.9em; /* Apply featured card's font size */
+  line-height: 1.1em; /* Apply featured card's line height */
   color: #595959;
-  line-height: 1.6;
-  margin-bottom: 20px;
+  margin-top: 10px; /* Space between title and brief */
+  margin-bottom: 5px; /* Remove default margin-bottom */
+  overflow: hidden; /* Crucial for 3-line truncation */
+  position: relative;
   display: -webkit-box;
-  -webkit-line-clamp: 2; /* Limit to 2 lines for regular cards */
-  line-clamp: 2; /* Standard property for compatibility */
+  -webkit-line-clamp: 3; /* Limit to 3 lines for brief */
+  line-clamp: 3; /* Standard property */
   -webkit-box-orient: vertical;
-  overflow: hidden;
-  flex-grow: 1; /* Allows brief to push other elements down */
+  text-overflow: ellipsis; /* Fallback for browsers */
+  word-break: break-word; /* Break long words if they overflow */
+  white-space: normal; /* Ensure text wraps naturally */
+  min-height: calc(3 * 1.5em);
+  max-height: calc(3 * 1.5em + 10px); /* Added 1px to provide a tiny bit more room */
+  flex-shrink: 0; /* Prevent brief from shrinking */
+}
+
+/* Ellipsis fade effect for brief (visual enhancement) */
+.brief::after {
+  content: "";
+  position: absolute;
+  bottom: 0;
+  right: 0;
+  left: 0;
+  height: 1.4em; /* Adjusted height to be slightly less than a full line */
+  background: linear-gradient(
+    to top,
+    rgba(255, 255, 255, 1) 0%,
+    rgba(255, 255, 255, 1) 70%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  pointer-events: none;
 }
 
 .meta-row {
@@ -133,11 +164,21 @@
   }
 
   .title {
-    font-size: 1.2em;
+    font-size: 1.5em; /* Adjust for responsiveness */
   }
 
   .brief {
-    font-size: 0.9em;
+    font-size: 1em; /* Adjust for responsiveness */
+    -webkit-line-clamp: 4; /* Allow more lines for brief on smaller cards */
+    line-clamp: 4;
+  }
+  .brief::after {
+    height: 1.2em; /* Smaller fade area */
+    background: linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0),
+      rgba(255, 255, 255, 1) 50%
+    ); /* Adjust gradient direction */
   }
 
   .author-info {
@@ -155,13 +196,13 @@
   }
 
   .title {
-    font-size: 1.1em;
+    font-size: 1.3em;
   }
 
   .brief {
-    font-size: 0.85em;
-    -webkit-line-clamp: 3; /* Allow more lines on very small screens for regular cards */
-    line-clamp: 3;
+    font-size: 0.95em;
+    -webkit-line-clamp: 5; /* Even more lines for brief on tiny screens */
+    line-clamp: 5;
   }
 
   .meta-row {
@@ -174,7 +215,6 @@
     margin-left: 0;
   }
 }
-
 
 /* --- Styles for the FEATURED card (Consistent Size & Responsive within Carousel) --- */
 .featured-card {
@@ -207,7 +247,6 @@
   width: 50%; /* Text content takes half the width */
   display: flex;
   flex-direction: column;
-  /* Removed justify-content: space-between here. We'll manage vertical space more precisely. */
   padding: 20px;
   box-sizing: border-box; /* Include padding in the 50% width */
   overflow: hidden; /* Important for ellipsis to work within this container */
@@ -232,71 +271,30 @@
 }
 
 .featured-card .title {
-  font-size: 1.8em; /* 28.8px based on 16px default */
-  font-weight: 700;
-  margin-bottom: 0; /* Remove default margin-bottom */
-  color: #262626;
-  text-decoration: none;
-  display: -webkit-box;
-  -webkit-line-clamp: 2; /* Limit title to 2 lines */
-  line-clamp: 2; /* Standard property */
-  -webkit-box-orient: vertical;
-  overflow: hidden; /* Ensure overflow is hidden */
-  line-height: 1.3em; /* Equivalent to 1.3 * 28.8px = 37.44px */
-  word-break: break-word; /* Break long words if they overflow */
-  /* Fixed space for 2 lines based on font-size and line-height */
-  min-height: calc(2 * 1.3em); /* Calculate min-height using line-height as the unit */
-  max-height: calc(2 * 1.3em); /* Ensure it's exactly 2 lines */
-  flex-shrink: 0; /* Prevent title from shrinking */
+  /* Inherits most from .title, but can have specific overrides if needed */
+  font-size: 1.8em; /* Ensure this is explicitly set if you want it different from default .title */
+  min-height: calc(2 * 1.3em);
+  max-height: calc(2 * 1.3em);
 }
 
-.featured-card .featured-brief {
-  font-size: 1.1em; /* 17.6px based on 16px default */
-  line-height: 1.3em; /* Equivalent to 1.5 * 17.6px = 26.4px */
-  color: #595959;
-  margin-top: 10px; /* Space between title and brief */
-  margin-bottom: 0; /* Remove default margin-bottom */
-  overflow: hidden; /* Crucial for 3-line truncation */
-  position: relative;
-  display: -webkit-box;
-  -webkit-line-clamp: 3; /* Limit to 3 lines for featured description */
-  line-clamp: 3; /* Standard property */
-  -webkit-box-orient: vertical;
-  text-overflow: ellipsis; /* Fallback for browsers */
-  word-break: break-word; /* Break long words if they overflow */
-  white-space: normal; /* Ensure text wraps naturally */
-
-  /* Fixed space for 3 lines based on font-size and line-height */
-  /* Giving slightly more room to account for ellipsis and rendering quirks */
+.featured-card .brief {
+  /* Inherits most from .brief, but can have specific overrides if needed */
+  font-size: 0.9em;
   min-height: calc(3 * 1.5em);
-  max-height: calc(3 * 1.5em + 1px); /* Added 1px to provide a tiny bit more room */
-  flex-shrink: 0; /* Prevent brief from shrinking */
+  max-height: calc(3 * 1.5em + 10px);
 }
 
-/* Ellipsis fade effect for featured brief (visual enhancement) */
-.featured-card .featured-brief::after {
-  content: "";
-  position: absolute;
-  bottom: 0;
-  right: 0;
-  left: 0;
-  /* Make height slightly less than a full line, so it doesn't cover the full 3rd line. */
-  /* This ensures the bottom part of the 3rd line (where ellipsis appears) is visible. */
+.featured-card .brief::after {
   height: 1.4em; /* Adjusted height to be slightly less than a full line */
-  background: linear-gradient(to top,
-    rgba(255,255,255,1) 0%,
-    rgba(255,255,255,1) 70%, /* Adjust stop to allow more visibility at bottom */
-    rgba(255,255,255,0) 100%
+  background: linear-gradient(
+    to top,
+    rgba(255, 255, 255, 1) 0%,
+    rgba(255, 255, 255, 1) 70%,
+    rgba(255, 255, 255, 0) 100%
   );
-  pointer-events: none;
-}
-.featured-card .featured-tags {
-  margin-top: 10px; /* Space between brief and tags */
-  margin-bottom: 0; /* Remove default margin-bottom */
-  flex-shrink: 0; /* Prevent tags from shrinking */
 }
 
-.featured-card .featured-meta {
+.featured-card .meta-row {
   display: flex;
   justify-content: space-between;
   align-items: center;
@@ -333,7 +331,6 @@
   word-break: break-word; /* Ensure long words break */
 }
 
-
 /* --- PrimeNG Carousel Overrides (Essential for proper display) --- */
 
 /* The wrapper around each app-article-card inside the carousel */
@@ -351,20 +348,20 @@
 
 /* Override PrimeNG's default carousel item styling to ensure responsiveness */
 :host ::ng-deep .p-carousel-item {
-    display: flex; /* Make carousel item a flex container */
-    justify-content: center; /* Center cards horizontally */
-    align-items: stretch; /* Make items stretch to fill available height of the carousel track */
-    height: auto !important; /* Allow card's height to dictate, overriding PrimeNG's potential fixed height */
-    width: 100% !important; /* Ensure it takes full width for single card display */
-    flex-basis: 100% !important; /* Critical to ensure each item occupies its full 100% slot */
-    flex-shrink: 0; /* Prevents items from shrinking */
-    flex-grow: 1; /* Allows item to grow */
+  display: flex; /* Make carousel item a flex container */
+  justify-content: center; /* Center cards horizontally */
+  align-items: stretch; /* Make items stretch to fill available height of the carousel track */
+  height: auto !important; /* Allow card's height to dictate, overriding PrimeNG's potential fixed height */
+  width: 100% !important; /* Ensure it takes full width for single card display */
+  flex-basis: 100% !important; /* Critical to ensure each item occupies its full 100% slot */
+  flex-shrink: 0; /* Prevents items from shrinking */
+  flex-grow: 1; /* Allows item to grow */
 }
 
 /* Ensure the carousel's content container itself allows flexible sizing */
 :host ::ng-deep .p-carousel-items-content {
-    display: flex;
-    align-items: stretch; /* Make items stretch to fill available height */
+  display: flex;
+  align-items: stretch; /* Make items stretch to fill available height */
 }
 
 /* PrimeNG Navigation/Indicators */
@@ -398,9 +395,9 @@
   background-color: rgba(0, 0, 0, 0.7);
 }
 
-
 /* --- Responsive adjustments for FEATURED card on smaller screens --- */
-@media (max-width: 992px) { /* Tablets and smaller laptops */
+@media (max-width: 992px) {
+  /* Tablets and smaller laptops */
   .featured-card {
     flex-direction: column; /* Stack image and text vertically */
     height: auto; /* Allow height to adjust when stacking */
@@ -421,18 +418,23 @@
     font-size: 1.5em;
   }
 
-  .featured-card .featured-brief {
+  .featured-card .brief {
     font-size: 1em;
     -webkit-line-clamp: 4; /* Allow more lines for brief on smaller featured cards */
     line-clamp: 4;
   }
-  .featured-card .featured-brief::after {
+  .featured-card .brief::after {
     height: 1.2em; /* Smaller fade area */
-    background: linear-gradient(to bottom, rgba(255,255,255,0), rgba(255,255,255,1) 50%); /* Adjust gradient direction */
+    background: linear-gradient(
+      to bottom,
+      rgba(255, 255, 255, 0),
+      rgba(255, 255, 255, 1) 50%
+    ); /* Adjust gradient direction */
   }
 }
 
-@media (max-width: 576px) { /* Mobile phones */
+@media (max-width: 576px) {
+  /* Mobile phones */
   .featured-card {
     margin: 10px; /* Add some margin around the card on very small screens */
   }
@@ -445,7 +447,7 @@
   .featured-card .title {
     font-size: 1.3em;
   }
-  .featured-card .featured-brief {
+  .featured-card .brief {
     font-size: 0.95em;
     -webkit-line-clamp: 5; /* Even more lines for brief on tiny screens */
     line-clamp: 5;
