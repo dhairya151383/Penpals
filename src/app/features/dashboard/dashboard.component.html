@@ -1,111 +1,103 @@
 <app-loading-spinner *ngIf="loading" />
 
 <div *ngIf="!loading" class="dashboard-container">
-    <header class="hero-section">
-        <div class="hero-content">
-            <h1 class="hero-title">Our Articles</h1>
-            <p class="hero-description">
-                This is a melting pot of insights, tips, and innovative ways to use Myna
-                UI, tailored for professionals who thrive on web innovation.
-            </p>
-            <div class="search-and-tags-group">
-                <div class="search-input-wrapper">
-                    <input type="search" [(ngModel)]="searchQuery" (ngModelChange)="onSearchChange($event)"
-                        placeholder="Search..." class="search-input" />
-                    <button class="search-button">
-                        <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
-                            stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
-                            class="feather feather-search">
-                            <circle cx="11" cy="11" r="8"></circle>
-                            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-                        </svg>
-                    </button>
-                </div>
-
-                <div class="tags-dropdown-container">
-                    <div class="tags-selected-display" (click)="toggleDropdown()">
-                        <ng-container *ngIf="selectedTags.length === 0">
-                            <span class="placeholder-tag">Select Tags</span>
-                        </ng-container>
-                        <ng-container *ngIf="selectedTags.length > 0">
-                            <span class="selected-tags-summary">
-                                {{ selectedTags.length }} tag{{
-                                selectedTags.length !== 1 ? 's' : ''
-                                }}
-                                selected
-                            </span>
-                        </ng-container>
-                        <svg class="dropdown-arrow" [class.rotated]="isDropdownOpen" xmlns="http://www.w3.org/2000/svg"
-                            width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor"
-                            stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                            <polyline points="6 9 12 15 18 9"></polyline>
-                        </svg>
-                    </div>
-
-                    <div class="tags-dropdown-menu" *ngIf="isDropdownOpen">
-                        <label class="tag-checkbox-item select-all-option">
-                            <input type="checkbox"
-                                [checked]="selectedTags.length === allTags.length && allTags.length > 0"
-                                [indeterminate]="selectedTags.length > 0 && selectedTags.length < allTags.length"
-                                (change)="toggleSelectAllTags($event)" />
-                            {{ selectedTags.length === allTags.length && allTags.length > 0 ? 'Deselect All' : 'Select
-                            All' }}
-                        </label>
-                        <div class="divider" *ngIf="allTags.length > 0"></div>
-
-                        <label *ngFor="let tag of allTags" class="tag-checkbox-item">
-                            <input type="checkbox" [value]="tag" [checked]="isTagSelected(tag)"
-                                (change)="onTagCheckboxChange(tag, $event)" />
-                            {{ tag }}
-                        </label>
-                        <div *ngIf="allTags.length === 0" class="no-tags-message">
-                            No tags available
-                        </div>
-                    </div>
-                </div>
-
-                <div class="sort-dropdown-container">
-                    <select [(ngModel)]="selectedSortOption" (ngModelChange)="onSortChange()" class="sort-select">
-                        <option value="latest">Sort by Latest</option>
-                        <option value="popular">Sort by Most Popular</option>
-                        <option value="titleAsc">Sort by Title (A-Z)</option>
-                    </select>
-                </div>
-            </div>
+  <header class="hero-section">
+    <div class="hero-content">
+      <h1 class="hero-title">Our Articles</h1>
+      <p class="hero-description">
+        This is a melting pot of insights, tips, and innovative ways to use Myna
+        UI, tailored for professionals who thrive on web innovation.
+      </p>
+      <div class="search-and-tags-group">
+        <div class="search-input-wrapper">
+          <input type="search" [(ngModel)]="searchQuery" (ngModelChange)="onSearchChange($event)"
+            placeholder="Search..." class="search-input" />
+          <button class="search-button">
+            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
+              stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
+              class="feather feather-search">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </button>
         </div>
-    </header>
 
-    <div class="featured-articles-section" *ngIf="featuredArticles.length > 0">
-        <h2>Featured Articles</h2>
-        <p-carousel [value]="featuredArticles" [numVisible]="1" [numScroll]="1" [circular]="true"
-            [responsiveOptions]="responsiveOptions">
-            <ng-template let-article pTemplate="item">
-                <div class="carousel-item-wrapper">
-                    <app-article-card [article]="article" [isFeatured]="true"></app-article-card>
-                </div>
-            </ng-template>
-        </p-carousel>
+        <div class="tags-dropdown-container">
+          <div class="tags-selected-display" (click)="toggleDropdown()">
+            <ng-container *ngIf="selectedTags.length === 0">
+              <span class="placeholder-tag">Select Tags</span>
+            </ng-container>
+            <ng-container *ngIf="selectedTags.length > 0">
+              <span class="selected-tags-summary">
+                {{ selectedTags.length }} tag{{
+                selectedTags.length !== 1 ? 's' : ''
+                }}
+                selected
+              </span>
+            </ng-container>
+            <svg class="dropdown-arrow" [class.rotated]="isDropdownOpen" xmlns="http://www.w3.org/2000/svg" width="20"
+              height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+              stroke-linecap="round" stroke-linejoin="round">
+              <polyline points="6 9 12 15 18 9"></polyline>
+            </svg>
+          </div>
+
+          <div class="tags-dropdown-menu" *ngIf="isDropdownOpen">
+            <label class="tag-checkbox-item select-all-option">
+              <input type="checkbox" [checked]="selectedTags.length === allTags.length && allTags.length > 0"
+                [indeterminate]="selectedTags.length > 0 && selectedTags.length < allTags.length"
+                (change)="toggleSelectAllTags($event)" />
+              {{ selectedTags.length === allTags.length && allTags.length > 0 ? 'Deselect All' : 'Select
+              All' }}
+            </label>
+            <div class="divider" *ngIf="allTags.length > 0"></div>
+
+            <label *ngFor="let tag of allTags" class="tag-checkbox-item">
+              <input type="checkbox" [value]="tag" [checked]="isTagSelected(tag)"
+                (change)="onTagCheckboxChange(tag, $event)" />
+              {{ tag }}
+            </label>
+            <div *ngIf="allTags.length === 0" class="no-tags-message">
+              No tags available
+            </div>
+          </div>
+        </div>
+
+        <div class="sort-dropdown-container">
+          <select [(ngModel)]="selectedSortOption" (ngModelChange)="onSortChange()" class="sort-select">
+            <option value="latest">Sort by Latest</option>
+            <option value="popular">Sort by Most Popular</option>
+            <option value="titleAsc">Sort by Title (A-Z)</option>
+          </select>
+        </div>
+      </div>
     </div>
-    <div class="articles-main-card">
-        <div class="articles-grid">
-            <app-article-card *ngFor="let article of displayArticles" [article]="article"></app-article-card>
-            <div *ngIf="filteredArticles.length === 0 && !loading" class="no-articles-message">
-                No articles found matching your criteria.
-            </div>
-        </div>
-        <div *ngIf="totalPages > 1" class="card-footer-pagination">
-            <button (click)="prevPage()" [disabled]="currentPage === 1" class="pagination-button">
-                Previous
-            </button>
-            <div class="page-numbers">
-                <button *ngFor="let page of pages" (click)="goToPage(page)" [class.active]="currentPage === page"
-                    class="pagination-button page-number">
-                    {{ page }}
-                </button>
-            </div>
-            <button (click)="nextPage()" [disabled]="currentPage === totalPages" class="pagination-button">
-                Next
-            </button>
-        </div>
+  </header>
+
+  <div class="featured-articles-section">
+    <app-article-list-carousel [isFeaturedCarousel]="true" headerText="Featured Articles"></app-article-list-carousel>
+  </div>
+
+  <div class="articles-main-card">
+    <div class="articles-grid">
+      <app-article-card *ngFor="let article of displayArticles" [article]="article"></app-article-card>
+      <div *ngIf="filteredArticles.length === 0 && !loading" class="no-articles-message">
+        No articles found matching your criteria.
+      </div>
     </div>
+    <div *ngIf="totalPages > 1" class="card-footer-pagination">
+      <button (click)="prevPage()" [disabled]="currentPage === 1" class="pagination-button">
+        Previous
+      </button>
+      <div class="page-numbers">
+        <button *ngFor="let page of pages" (click)="goToPage(page)" [class.active]="currentPage === page"
+          class="pagination-button page-number">
+          {{ page }}
+        </button>
+      </div>
+      <button (click)="nextPage()" [disabled]="currentPage === totalPages" class="pagination-button">
+        Next
+      </button>
+    </div>
+  </div>
 </div>

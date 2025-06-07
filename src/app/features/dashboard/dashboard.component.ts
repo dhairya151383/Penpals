@@ -2,14 +2,14 @@ import { Component, OnInit, OnDestroy, HostListener } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
 import { RouterModule } from '@angular/router';
-
 import { debounceTime, distinctUntilChanged, Subject, Subscription, combineLatest, startWith } from 'rxjs';
 import { ArticleService } from '../../core/services/article.service';
 import { AuthorService } from '../../core/services/author.service';
 import { LoadingSpinnerComponent } from '../../shared/components/loading-spinner/loading-spinner.component';
 import { Article } from '../../shared/models/article.model';
 import { ArticleCardComponent } from '../articles/article-card/article-card.component';
-import { CarouselModule } from 'primeng/carousel';
+// import { CarouselModule } from 'primeng/carousel'; // No longer needed directly in DashboardComponent
+import { ArticleListCarouselComponent } from '../articles/article-list-carousel/article-list-carousel.component';
 
 @Component({
   selector: 'app-dashboard',
@@ -20,7 +20,8 @@ import { CarouselModule } from 'primeng/carousel';
     RouterModule,
     LoadingSpinnerComponent,
     ArticleCardComponent,
-    CarouselModule,
+    // CarouselModule, // Remove CarouselModule import
+    ArticleListCarouselComponent, // Keep ArticleListCarouselComponent
   ],
   templateUrl: './dashboard.component.html',
   styleUrls: ['./dashboard.component.css'],
@@ -29,46 +30,19 @@ export class DashboardComponent implements OnInit, OnDestroy {
   allArticles: Article[] = [];
   displayArticles: Article[] = [];
   filteredArticles: Article[] = [];
-  featuredArticles: Article[] = [];
-
   allTags: string[] = [];
   selectedTags: string[] = [];
-
   loading = true;
   errorMessage: string | null = null;
-
   searchQuery = '';
   private searchSubject = new Subject<string>();
   private tagsSubject = new Subject<string[]>();
   private sortSubject = new Subject<string>();
   private subscriptions = new Subscription();
-
   isDropdownOpen = false;
-
   currentPage = 1;
   itemsPerPage = 12;
-
-  selectedSortOption: string = 'latest'; // Default sort option
-
-  // Responsive options for PrimeNG Carousel
-  responsiveOptions: any[] = [
-    {
-      breakpoint: '1024px',
-      numVisible: 3,
-      numScroll: 3
-    },
-    {
-      breakpoint: '768px',
-      numVisible: 2,
-      numScroll: 2
-    },
-    {
-      breakpoint: '560px',
-      numVisible: 1,
-      numScroll: 1
-    }
-  ];
-
+  selectedSortOption: string = 'latest';
   constructor(
     private articleService: ArticleService,
     private authorService: AuthorService
@@ -86,24 +60,12 @@ export class DashboardComponent implements OnInit, OnDestroy {
         return article;
       }));
 
-      // Filter and sort featured articles
-      this.featuredArticles = this.allArticles
-        .filter(article => article.isFeatured && article.isPublished)
-        .sort((a, b) => {
-          const dateA = a.updatedAt ? new Date(a.updatedAt) : new Date(a.publishDate || 0);
-          const dateB = b.updatedAt ? new Date(b.updatedAt) : new Date(b.publishDate || 0);
-          return dateB.getTime() - dateA.getTime(); // Sort by latest (descending)
-        })
-        .slice(0, 10); // Take a maximum of 10 articles
-
       const uniqueTags = new Set<string>();
       this.allArticles.forEach(article => {
         article.tags?.forEach(tag => uniqueTags.add(tag));
       });
       this.allTags = Array.from(uniqueTags).sort();
-
       this.setupFiltering();
-
     } catch (error) {
       console.error('Error fetching articles:', error);
       this.errorMessage = 'Failed to load articles. Please try again later.';
@@ -119,7 +81,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
   @HostListener('document:click', ['$event'])
   onClickOutside(event: Event) {
     const target = event.target as HTMLElement;
-    // Check if the click was outside the dropdown container itself
     if (this.isDropdownOpen && !target.closest('.tags-dropdown-container')) {
       this.isDropdownOpen = false;
     }
@@ -131,10 +92,8 @@ export class DashboardComponent implements OnInit, OnDestroy {
       debounceTime(300),
       distinctUntilChanged()
     );
-
     const tags$ = this.tagsSubject.pipe(startWith(this.selectedTags));
     const sort$ = this.sortSubject.pipe(startWith(this.selectedSortOption));
-
 
     this.subscriptions.add(
       combineLatest([
@@ -170,7 +129,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
     } else {
       this.selectedTags = this.selectedTags.filter(t => t !== tag);
     }
-    // Sort selected tags to maintain consistent order if needed
     this.selectedTags.sort();
     this.tagsSubject.next(this.selectedTags);
     this.currentPage = 1;
@@ -180,22 +138,16 @@ export class DashboardComponent implements OnInit, OnDestroy {
     return this.selectedTags.includes(tag);
   }
 
-  /**
-   * Toggles the selection of all tags.
-   * If all are selected, deselects all. Otherwise, selects all.
-   * @param event The change event from the checkbox.
-   */
   toggleSelectAllTags(event: Event): void {
     const checkbox = event.target as HTMLInputElement;
     if (checkbox.checked) {
-      this.selectedTags = [...this.allTags]; // Select all available tags
+      this.selectedTags = [...this.allTags];
     } else {
-      this.selectedTags = []; // Deselect all tags
+      this.selectedTags = [];
     }
-    this.tagsSubject.next(this.selectedTags); // Trigger filter update
-    this.currentPage = 1; // Reset to first page
+    this.tagsSubject.next(this.selectedTags);
+    this.currentPage = 1;
   }
-
 
   onSortChange(): void {
     this.sortSubject.next(this.selectedSortOption);
@@ -204,8 +156,6 @@ export class DashboardComponent implements OnInit, OnDestroy {
 
   applyFiltersAndPagination(): void {
     let tempArticles = [...this.allArticles];
-
-    // Exclude featured and unpublished articles from the main list display
     tempArticles = tempArticles.filter(article => !article.isFeatured && article.isPublished);
 
     if (this.searchQuery) {
@@ -215,21 +165,17 @@ export class DashboardComponent implements OnInit, OnDestroy {
           article.title.toLowerCase().includes(lowerCaseQuery) ||
           article.briefDescription.toLowerCase().includes(lowerCaseQuery) ||
           article.authorName?.toLowerCase().includes(lowerCaseQuery) ||
-          article.tags?.some((tag) => tag.toLowerCase().includes(lowerCaseQuery)) // Search also in tags
+          article.tags?.some((tag) => tag.toLowerCase().includes(lowerCaseQuery))
       );
     }
 
-    // Apply tag filter with OR logic
     if (this.selectedTags.length > 0) {
       tempArticles = tempArticles.filter((article) =>
-        // Check if the article has *any* of the selected tags
         this.selectedTags.some((selectedTag) => article.tags?.includes(selectedTag))
       );
     }
 
-    // Apply sorting
     tempArticles = this.applySorting(tempArticles);
-
     this.filteredArticles = tempArticles;
     this.updatePagination();
   }
@@ -237,24 +183,20 @@ export class DashboardComponent implements OnInit, OnDestroy {
   private applySorting(articles: Article[]): Article[] {
     switch (this.selectedSortOption) {
       case 'latest':
-        // Sort by latest publishDate or updatedAt
         return articles.sort((a, b) => {
           const dateA = a.updatedAt ? new Date(a.updatedAt) : (a.publishDate ? new Date(a.publishDate) : new Date(0));
           const dateB = b.updatedAt ? new Date(b.updatedAt) : (b.publishDate ? new Date(b.publishDate) : new Date(0));
-          return dateB.getTime() - dateA.getTime(); // Descending order
+          return dateB.getTime() - dateA.getTime();
         });
       case 'popular':
-        // Sort by likesCount in descending order
         return articles.sort((a, b) => (b.likesCount || 0) - (a.likesCount || 0));
       case 'titleAsc':
-        // Sort by title alphabetically
         return articles.sort((a, b) => a.title.localeCompare(b.title));
       default:
-        // Default to latest if no valid option is selected
         return articles.sort((a, b) => {
           const dateA = a.updatedAt ? new Date(a.updatedAt) : (a.publishDate ? new Date(a.publishDate) : new Date(0));
           const dateB = b.updatedAt ? new Date(b.updatedAt) : (b.publishDate ? new Date(b.publishDate) : new Date(0));
-          return dateB.getTime() - dateA.getTime(); // Descending order
+          return dateB.getTime() - dateA.getTime();
         });
     }
   }
