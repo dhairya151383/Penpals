@@ -3,22 +3,28 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { AuthorService } from '../../../core/services/author.service';
 import { Author } from '../../../shared/models/author.model';
-import { Article } from '../../../shared/models/article.model';
+import { Article } from '../../../shared/models/article.model'; // Keep if used elsewhere, not strictly needed for carousel
 import { AuthService } from '../../../core/services/auth.service';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
+import { ArticleListCarouselComponent } from '../../articles/article-list-carousel/article-list-carousel.component';
 
 @Component({
   selector: 'app-author-details',
   standalone: true,
-  imports: [CommonModule,RouterModule,LoadingSpinnerComponent],
+  imports: [
+    CommonModule,
+    RouterModule,
+    LoadingSpinnerComponent,
+    ArticleListCarouselComponent
+  ],
   templateUrl: './author-details.component.html',
   styleUrls: ['./author-details.component.css']
 })
 export class AuthorDetailsComponent implements OnInit {
   author: Author | null = null;
-  canEdit = false;      // add this
-  article: Article | null = null;  // add this if you use 'article' in template
+  canEdit = false;
   loading = false;
+
   constructor(
     private route: ActivatedRoute,
     private authorService: AuthorService,
@@ -26,19 +32,24 @@ export class AuthorDetailsComponent implements OnInit {
   ) {}
 
   async ngOnInit() {
+    this.loading = true;
     const id = this.route.snapshot.paramMap.get('id');
-    if (!id) return;
-    this.loading = true;  
-    this.author = await this.authorService.getById(id);
-    this.loading = false;  
-    // If you want to fetch article or set article property, do so here
-    // For example, you could fetch the article based on route or authorId if relevant
-    // Otherwise remove article references from template if unused
+    if (!id) {
+      this.loading = false;
+      return;
+    }
 
-    this.authService.user$.subscribe(user => {
-      const uid = user?.uid ?? null;
-      this.canEdit = uid === this.author?.id;
-    });
+    try {
+      this.author = await this.authorService.getById(id);
+      this.authService.user$.subscribe(user => {
+        const uid = user?.uid ?? null;
+        this.canEdit = uid === this.author?.id;
+      });
+    } catch (error) {
+      console.error('Error fetching author details:', error);
+      // Handle error, e.g., show a message to the user
+    } finally {
+      this.loading = false;
+    }
   }
 }
-

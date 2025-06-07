@@ -1,0 +1,34 @@
+<div class="article-carousel-container">
+  <div class="carousel-header">
+    <h2>{{ headerText }}</h2>
+  </div>
+
+  <ng-container *ngIf="loading">
+    <p>Loading articles...</p>
+  </ng-container>
+
+  <ng-container *ngIf="error">
+    <p class="error-message">{{ error }}</p>
+  </ng-container>
+
+  <ng-container *ngIf="!loading && !error">
+    <p-carousel
+      *ngIf="articles.length > 0"
+      [value]="articles"
+      [numVisible]="isFeaturedCard ? 1 : 3"
+      [numScroll]="isFeaturedCard ? 1 : 1"
+      [responsiveOptions]="responsiveOptions"
+      [circular]="true"
+      [autoplayInterval]="isFeaturedCard ? 7000 : 5000"
+    >
+      <ng-template let-article pTemplate="item">
+        <div class="carousel-item-wrapper">
+          <app-article-card [article]="article" [isFeatured]="isFeaturedCard"></app-article-card>
+        </div>
+      </ng-template>
+    </p-carousel>
+    <div *ngIf="articles.length === 0" class="no-articles-message">
+      <p>No articles found for the given criteria.</p>
+    </div>
+  </ng-container>
+</div>

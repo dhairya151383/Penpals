@@ -1,9 +1,16 @@
 /* author-details.component.css */
 
+/* New container to manage overall layout, allowing carousel to expand */
+.author-details-container {
+  width: 90%; /* Allows the carousel to take 90% screen width */
+  margin: 2rem auto; /* Centers the container */
+  box-sizing: border-box;
+}
+
 .author-card {
-  width: 100%;
-  max-width: 1000px;
-  margin: 2rem auto;
+  width: 100%; /* Now takes full width of author-details-container */
+  max-width: 1000px; /* Still maintains a max-width for the card itself */
+  margin: 0 auto 2rem auto; /* Centers the card and adds margin below */
   background: #ffffff;
   border-radius: 16px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
@@ -193,8 +200,18 @@
   background-color: #005f99;
 }
 
+/* New styles for the author-articles-section to make it wider */
+.author-articles-section {
+  width: 100%; /* Takes the full width of its parent (.author-details-container) */
+  margin-top: 2rem;
+}
+
 /* Responsive styles */
 @media (max-width: 768px) {
+  .author-details-container {
+    width: 95%; /* Adjust container width for smaller screens */
+  }
+
   .author-content-body {
     flex-direction: column;
     align-items: center;

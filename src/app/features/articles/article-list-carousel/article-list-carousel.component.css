@@ -1,0 +1,109 @@
+.article-carousel-container {
+  padding: 20px;
+  background-color: #f9f9f9;
+  border-radius: 10px;
+  margin-bottom: 30px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+}
+
+.carousel-header {
+  text-align: center;
+  margin-bottom: 25px;
+}
+
+.carousel-header h2 {
+  font-size: 2.5em;
+  color: #333;
+  margin-bottom: 10px;
+}
+
+.carousel-header p {
+  font-size: 1.1em;
+  color: #555;
+}
+
+.error-message {
+  color: #d32f2f;
+  text-align: center;
+  font-weight: bold;
+  margin-top: 20px;
+}
+
+.no-articles-message {
+  text-align: center;
+  color: #777;
+  font-style: italic;
+  margin-top: 20px;
+}
+
+/* Styles to ensure the article cards are properly sized within the carousel */
+.carousel-item-wrapper {
+  padding: 15px; /* Adjust padding around each card as needed */
+  height: auto; /* Allow height to be determined by content */
+  display: flex;
+  justify-content: center;
+  align-items: stretch; /* Stretch cards to fill the height if they have different content lengths */
+}
+
+/* PrimeNG Carousel Overrides (if needed beyond what you provided) */
+:host ::ng-deep .p-carousel .p-carousel-indicators {
+  margin-top: 30px;
+}
+
+:host ::ng-deep .p-carousel .p-carousel-indicator-icon {
+  background-color: #ccc;
+  width: 10px;
+  height: 10px;
+}
+
+:host ::ng-deep .p-carousel .p-carousel-indicator.p-highlight .p-carousel-indicator-icon {
+  background-color: #007bff;
+}
+
+:host ::ng-deep .p-carousel .p-carousel-next,
+:host ::ng-deep .p-carousel .p-carousel-prev {
+  background-color: rgba(0, 0, 0, 0.6);
+  color: white;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  font-size: 1.2em;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  transition: background-color 0.3s ease;
+}
+
+:host ::ng-deep .p-carousel .p-carousel-next:hover,
+:host ::ng-deep .p-carousel .p-carousel-prev:hover {
+  background-color: rgba(0, 0, 0, 0.8);
+}
+
+/* Adjustments for responsive carousel display based on `isFeaturedCard` */
+/* When showing featured cards, only one card should be visible at a time */
+:host ::ng-deep .p-carousel[numvisible="1"] .p-carousel-item {
+  flex-basis: 100% !important;
+}
+
+/* When showing regular cards, three cards visible */
+:host ::ng-deep .p-carousel[numvisible="3"] .p-carousel-item {
+  flex-basis: calc(100% / 3) !important;
+}
+
+@media (max-width: 1199px) {
+  :host ::ng-deep .p-carousel[numvisible="3"] .p-carousel-item {
+    flex-basis: calc(100% / 3) !important; /* Adjust if responsive options change this for larger breakpoints */
+  }
+}
+
+@media (max-width: 991px) {
+  :host ::ng-deep .p-carousel[numvisible="2"] .p-carousel-item {
+    flex-basis: calc(100% / 2) !important;
+  }
+}
+
+@media (max-width: 767px) {
+  :host ::ng-deep .p-carousel[numvisible="1"] .p-carousel-item {
+    flex-basis: 100% !important;
+  }
+}
