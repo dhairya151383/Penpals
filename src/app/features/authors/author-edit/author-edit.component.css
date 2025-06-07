@@ -1,5 +1,32 @@
-/* src/app/features/authors/author-edit/author-edit.component.css */
-@import '../../../shared/styles/quill-bio.css';
+
+textarea {
+  min-height: 200px; /* Set a minimum height for the textarea */
+  resize: vertical; /* Allow vertical resizing */
+}
+.bio-textarea {
+  flex-grow: 1; /* Allows the textarea to expand and fill available space */
+  height: auto; /* Ensures height is adjusted by flex-grow */
+}
+.editor-card {
+  flex: 3;
+  padding: 1.5rem 2rem 2rem; /* Adjusted padding-bottom to 10px */
+  display: flex;
+  flex-direction: column; /* Set to column to stack children */
+  border-left: 1px solid #e0e0e0;
+  overflow: hidden; /* Important for containing overflow if content exceeds */
+}
+
+.editor-card .form-group {
+  margin-bottom: 1.25rem; /* Existing margin for most form groups */
+  display: flex;
+  flex-direction: column;
+}
+.bio-form-group {
+  flex-grow: 1; /* Allow this specific form group to expand */
+  display: flex; /* Make it a flex container */
+  flex-direction: column; /* Stack its children */
+  margin-bottom: 0; /* Remove bottom margin to ensure it pushes to the card's padding */
+}
 
 .article-creation-page {
   display: flex;
@@ -22,14 +49,6 @@
   display: flex;
   flex-direction: column;
 }
-.editor-card {
-  flex: 3;
-  padding: 1.5rem 2rem;
-  display: flex;
-  flex-direction: column;
-  border-left: 1px solid #e0e0e0;
-  overflow: hidden;
-}
 .card-header h2, .card-header h3 {
   margin: 0 0 0.5rem 0;
   font-weight: 700;
@@ -41,8 +60,7 @@
   margin-bottom: 1rem;
   width: 50px;
 }
-.author-form .form-group,
-.editor-card .form-group {
+.author-form .form-group { /* Keep this as it is for other form groups */
   margin-bottom: 1.25rem;
   display: flex;
   flex-direction: column;
@@ -62,8 +80,7 @@ textarea {
   font-family: inherit;
 }
 input[type="text"]:focus,
-textarea:focus,
-quill-editor:focus-within {
+textarea:focus {
   border-color: #66bb6a;
   outline: none;
   box-shadow: 0 0 5px #81c784;

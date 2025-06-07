@@ -80,8 +80,8 @@
   flex-grow: 1;
 }
 .author-card img {
-  width: 96px;
-  height: 96px;
+  width: 200px;
+  height: 200px;
   border-radius: 50%;
   object-fit: cover;
   flex-shrink: 0;
@@ -95,7 +95,7 @@
 }
 .author-name {
   font-weight: bold;
-  font-size: 1.1rem;
+  font-size: 3rem;
   color: #333;
   text-decoration: none;
   margin-bottom: 0.25rem;
@@ -104,6 +104,7 @@
   text-decoration: underline;
 }
 .author-bio-display {
+  font-size: 1rem;
   color: #555;
   overflow: hidden;
   display: -webkit-box;
@@ -113,10 +114,7 @@
   word-break: break-word;
   flex-shrink: 0;
 }
-.author-bio-display p {
-  margin: 0;
-  padding: 0;
-}
+
 @media (max-width: 768px) {
   .author-card {
     width: 100%;

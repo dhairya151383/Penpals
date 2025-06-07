@@ -1,9 +1,7 @@
 <app-loading-spinner *ngIf="loading" />
 <div class="author-list-wrapper" *ngIf="!loading">
   <h2>All Authors</h2>
-
   <div class="author-list-card">
-
     <div class="filter-bar-card">
       <div class="filter-bar">
         <input [(ngModel)]="filterTerm" (input)="applyFilters()" placeholder="Search by name..." />
@@ -15,7 +13,6 @@
         </select>
       </div>
     </div>
-
     <div class="author-cards-container">
       <div class="author-card" *ngFor="let author of filteredAuthors">
         <div class="author-card-content"> <img *ngIf="author.avatarUrl" [src]="author.avatarUrl" alt="{{ author.name }}" />
@@ -26,6 +23,5 @@
         </div>
       </div>
     </div>
-
   </div>
 </div>

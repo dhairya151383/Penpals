@@ -7,32 +7,14 @@ import { AuthorService } from '../../../core/services/author.service';
 import { Author } from '../../../shared/models/author.model';
 import { Tag } from '../../../shared/models/tag.model';
 import { TagSelectorComponent } from '../../../shared/components/tag-selector/tag-selector.component';
-import { QuillModule } from 'ngx-quill';
+// import { QuillModule } from 'ngx-quill'; // Removed QuillModule
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
 import { UploadImageComponent } from '../../../shared/components/upload-image/upload-image.component';
-export function quillRequired(control: AbstractControl): ValidationErrors | null {
-  const value = control.value || '';
-  const text = value.replace(/<[^>]*>/g, '').trim();
-  return text.length === 0 ? { required: true } : null;
-}
-export function quillPlainTextMaxLength(maxLength: number) {
-  return (control: AbstractControl): ValidationErrors | null => {
-    const value = control.value || '';
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = value;
-    let text = tempDiv.textContent || tempDiv.innerText || '';
-    if (text.trim().length === 0) {
-      text = '';
-    } else if (text.endsWith('\n') && text.length > 0) {
-      text = text.slice(0, -1);
-    }
-    return text.length > maxLength ? { 'quillPlainTextMaxLength': { requiredLength: maxLength, actualLength: text.length } } : null;
-  };
-}
+
 @Component({
   selector: 'app-author-edit',
   standalone: true,
-  imports: [CommonModule, ReactiveFormsModule, TagSelectorComponent, QuillModule, LoadingSpinnerComponent, UploadImageComponent],
+  imports: [CommonModule, ReactiveFormsModule, TagSelectorComponent, LoadingSpinnerComponent, UploadImageComponent], // QuillModule removed
   templateUrl: './author-edit.component.html',
   styleUrls: ['./author-edit.component.css']
 })
@@ -46,33 +28,18 @@ export class AuthorEditComponent implements OnInit {
   formSubmitted = false;
   bioCharacterCount: number = 0;
   readonly bioCharacterLimit: number = 1000;
-  quillModules = {
-    toolbar: [
-      ['bold', 'italic', 'underline', 'strike'],
-      ['blockquote'],
-      [{ 'header': 1 }, { 'header': 2 }],
-      [{ 'list': 'ordered'}, { 'list': 'bullet' }],
-      [{ 'script': 'sub'}, { 'script': 'super' }],
-      [{ 'indent': '-1'}, { 'indent': '+1' }],
-      [{ 'direction': 'rtl' }],
-      [{ 'size': ['small', false, 'large', 'huge'] }],
-      [{ 'header': [1, 2, 3, 4, 5, 6, false] }],
-      [{ 'color': [] }, { 'background': [] }],
-      [{ 'font': [] }],
-      [{ 'align': [] }],
-      ['clean']
-    ]
-  };
+
   constructor(
     private fb: FormBuilder,
     private authorService: AuthorService,
     private route: ActivatedRoute,
     private router: Router
   ) { }
+
   ngOnInit() {
     this.form = this.fb.group({
       name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
-      bio: ['', [quillRequired, quillPlainTextMaxLength(this.bioCharacterLimit)]],
+      bio: ['', [Validators.required, Validators.maxLength(this.bioCharacterLimit)]], // Updated validators for textarea
       avatarUrl: ['', [Validators.pattern(/\.(jpeg|jpg|gif|png|webp)$/)]],
       socialLinks: this.fb.group({
         twitter: ['', [Validators.pattern(/^https:\/\/(www\.)?twitter\.com\/[A-Za-z0-9_]+$/)]],
@@ -80,6 +47,7 @@ export class AuthorEditComponent implements OnInit {
         facebook: ['', [Validators.pattern(/^https:\/\/(www\.)?facebook\.com\/[A-Za-z0-9_.]+$/)]],
       }),
     });
+
     this.form.valueChanges.subscribe(() => {
       console.log('--- Form Status Update ---');
       console.log('Form status:', this.form.status);
@@ -93,6 +61,7 @@ export class AuthorEditComponent implements OnInit {
       console.log('Facebook control errors:', this.facebook.errors);
       console.log('--------------------------');
     });
+
     const id = this.route.snapshot.paramMap.get('id');
     if (id) {
       this.authorService.getById(id).then(author => {
@@ -111,7 +80,7 @@ export class AuthorEditComponent implements OnInit {
           });
           this.form.get('avatarUrl')?.setValue(author.avatarUrl || '');
           if (author.bio) {
-            this.bioCharacterCount = this.getPlainTextLength(author.bio);
+            this.bioCharacterCount = author.bio.length; // Directly get length for textarea
           }
           this.form.updateValueAndValidity();
           console.log('Form status after patchValue:', this.form.status);
@@ -130,54 +99,52 @@ export class AuthorEditComponent implements OnInit {
       console.log('Form status for new author (no ID):', this.form.status);
     }
   }
+
   get name() {
     return this.form.get('name')!;
   }
+
   get bio() {
     return this.form.get('bio')!;
   }
+
   get avatarUrlControl() {
     return this.form.get('avatarUrl')!;
   }
+
   get twitter() {
     return this.form.get('socialLinks.twitter')!;
   }
+
   get linkedin() {
     return this.form.get('socialLinks.linkedin')!;
   }
+
   get facebook() {
     return this.form.get('socialLinks.facebook')!;
   }
+
   onTagChange(tags: Tag[]) {
     this.tags = tags;
   }
+
   onImageChange(newImageUrl: string | null) {
     this.avatarUrl = newImageUrl || 'assets/avatar-placeholder.png';
     this.avatarUrlControl.setValue(newImageUrl);
     this.avatarUrlControl.markAsDirty();
     this.avatarUrlControl.updateValueAndValidity();
   }
-  private getPlainTextLength(html: string): number {
-    const tempDiv = document.createElement('div');
-    tempDiv.innerHTML = html;
-    let text = tempDiv.textContent || tempDiv.innerText || '';
-    if (text.trim().length === 0) {
-      return 0;
-    }
-    if (text.length > 0 && text.endsWith('\n')) {
-      text = text.slice(0, -1);
-    }
-    return text.length;
-  }
-  onBioChanged(event: any) {
+
+  onBioChanged(event: Event) {
+    const textarea = event.target as HTMLTextAreaElement;
     const control = this.bio;
     control.markAsTouched();
-    const currentText = event.editor.getText();
-    this.bioCharacterCount = this.getPlainTextLength(currentText);
+    this.bioCharacterCount = textarea.value.length;
     control.updateValueAndValidity();
     console.log('Bio changed - Bio control errors after update:', this.bio.errors);
     console.log('Bio changed - Form status after update:', this.form.status);
   }
+
   async save() {
     this.formSubmitted = true;
     this.form.markAllAsTouched();
@@ -189,12 +156,15 @@ export class AuthorEditComponent implements OnInit {
     console.log('Attempting to save - Twitter control errors:', this.twitter.errors);
     console.log('Attempting to save - LinkedIn control errors:', this.linkedin.errors);
     console.log('Attempting to save - Facebook control errors:', this.facebook.errors);
+
     if (this.form.invalid) {
       console.log('Form is invalid, preventing save.');
       return;
     }
+
     this.loading = true;
     this.error = null;
+
     const updated: Partial<Author> = {
       name: this.form.value.name,
       bio: this.form.value.bio,
@@ -203,6 +173,7 @@ export class AuthorEditComponent implements OnInit {
       socialLinks: this.form.value.socialLinks,
       updatedAt: new Date().toISOString(),
     };
+
     try {
       await this.authorService.update(this.authorId, updated);
       console.log('Author updated successfully. Navigating...');
