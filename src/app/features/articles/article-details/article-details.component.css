@@ -1,3 +1,5 @@
+/* src/app/pages/article-details/article-details.component.css */
+
 .article-details-container {
   max-width: 900px;
   margin: 2rem auto;
@@ -12,6 +14,9 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   overflow-wrap: break-word; /* Prevent word overflow */
   word-break: break-word;
+  position: relative; /* Needed for positioning the footer if it's within */
+  display: flex;
+  flex-direction: column; /* Stack content and footer */
 }
 
 .article-thumbnail {
@@ -73,9 +78,12 @@
   line-height: 1.6;
 }
 
-.edit-actions {
+/* New style for the article card footer */
+.article-card-footer {
+  margin-top: 2rem; /* Add space above the footer */
+  padding-top: 1rem; /* Internal padding for the footer */
+  border-top: 1px solid #eee; /* Separator line */
   text-align: right;
-  margin-bottom: 1rem;
 }
 
 .edit-btn {
@@ -134,6 +142,7 @@
   border: none;
   cursor: pointer;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+  z-index: 100; /* Ensure it's above other content */
 }
 
 /* Tab View Styles */

@@ -27,7 +27,7 @@ export class AuthorEditComponent implements OnInit {
   error: string | null = null;
   formSubmitted = false;
   bioCharacterCount: number = 0;
-  readonly bioCharacterLimit: number = 1000;
+  readonly bioCharacterLimit: number = 1200;
 
   constructor(
     private fb: FormBuilder,

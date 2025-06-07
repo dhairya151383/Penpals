@@ -15,22 +15,21 @@ import { ArticleCardComponent } from '../article-card/article-card.component';
 })
 export class ArticleListCarouselComponent implements OnInit, OnChanges {
   @Input() authorId?: string;
-  @Input() isFeaturedCarousel: boolean = false; // Input to determine featured vs. regular carousel
+  @Input() isFeaturedCarousel: boolean = false;
   @Input() headerText: string = 'Articles';
+  @Input() currentArticleTags: string[] = []; // New input for current article's tags
+  @Input() currentArticleAuthorId?: string; // New input for current article's author ID
+  @Input() currentArticleId?: string; // New input for current article's ID
 
   articles: Article[] = [];
   loading: boolean = true;
   error: string | null = null;
-
-  // Define responsive options directly within this component, specific to its purpose
-  // Featured carousel usually shows 1 visible article, others can show more.
   currentResponsiveOptions: any[];
 
   constructor(
     private articleService: ArticleService,
     private authorService: AuthorService
   ) {
-    // Default responsive options for non-featured carousels
     this.currentResponsiveOptions = [
       { breakpoint: '1199px', numVisible: 3, numScroll: 3 },
       { breakpoint: '991px', numVisible: 2, numScroll: 2 },
@@ -44,8 +43,14 @@ export class ArticleListCarouselComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    if (changes['authorId'] || changes['isFeaturedCarousel']) {
-      this.updateResponsiveOptions(); // Update options if isFeaturedCarousel changes
+    if (
+      changes['authorId'] ||
+      changes['isFeaturedCarousel'] ||
+      changes['currentArticleTags'] ||
+      changes['currentArticleAuthorId'] ||
+      changes['currentArticleId']
+    ) {
+      this.updateResponsiveOptions();
       this.loadArticles();
     }
   }
@@ -70,10 +75,7 @@ export class ArticleListCarouselComponent implements OnInit, OnChanges {
     this.loading = true;
     this.error = null;
     try {
-      let fetchedArticles: Article[] = [];
       const allArticles = await this.articleService.getAll();
-
-      // Enrich articles with author names if not already present
       const articlesWithAuthors = await Promise.all(allArticles.map(async article => {
         if (article.authorId && !article.authorName) {
           const author = await this.authorService.getById(article.authorId);
@@ -82,38 +84,100 @@ export class ArticleListCarouselComponent implements OnInit, OnChanges {
         return article;
       }));
 
+      // Filter out the current article if currentArticleId is provided
+      const availableArticles = articlesWithAuthors.filter(article => article.id !== this.currentArticleId && article.isPublished);
+
       if (this.isFeaturedCarousel) {
-        // Featured article logic: filter by isFeatured and isPublished, then sort by latest date and take top 10
-        fetchedArticles = articlesWithAuthors
-          .filter(article => article.isFeatured && article.isPublished)
+        this.articles = availableArticles
+          .filter(article => article.isFeatured)
           .sort((a, b) => {
             const dateA = a.updatedAt ? new Date(a.updatedAt) : new Date(a.publishDate || 0);
             const dateB = b.updatedAt ? new Date(b.updatedAt) : new Date(b.publishDate || 0);
-            return dateB.getTime() - dateA.getTime(); // Sort by latest (descending)
+            return dateB.getTime() - dateA.getTime();
           })
           .slice(0, 10); // Take a maximum of 10 articles
       } else if (this.authorId) {
-        // Author-specific article logic: filter by authorId and sort by latest date
-        fetchedArticles = articlesWithAuthors
-          .filter(article => article.authorId === this.authorId && article.isPublished)
+        // Existing logic for author-specific articles
+        this.articles = availableArticles
+          .filter(article => article.authorId === this.authorId)
           .sort((a, b) => {
             const dateA = new Date(a.updatedAt || a.publishDate || 0);
             const dateB = new Date(b.updatedAt || b.publishDate || 0);
             return dateB.getTime() - dateA.getTime();
           });
+      } else if (this.currentArticleId && this.currentArticleTags.length > 0) {
+        // Logic for Related Articles
+        this.headerText = 'Related Articles'; // Set header text for related articles
+
+        const filteredArticles = new Set<Article>();
+
+        // 1. Filter by Author
+        if (this.currentArticleAuthorId) {
+          availableArticles
+            .filter(article => article.authorId === this.currentArticleAuthorId)
+            .forEach(article => filteredArticles.add(article));
+        }
+
+        // 2. Filter by Tags
+        if (this.currentArticleTags && this.currentArticleTags.length > 0) {
+          availableArticles
+            .filter(article =>
+              article.tags && article.tags.some(tag => this.currentArticleTags.includes(tag))
+            )
+            .forEach(article => filteredArticles.add(article));
+        }
+
+        let relatedArticles = Array.from(filteredArticles);
+
+        // 3. Sorting Filtered Articles
+        if (relatedArticles.length > 0) {
+          relatedArticles.sort((a, b) => {
+            const dateA = new Date(a.updatedAt || a.publishDate || 0);
+            const dateB = new Date(b.updatedAt || b.publishDate || 0);
+
+            // Primary Sort: Author's Latest Articles First
+            const isAByCurrentAuthor = a.authorId === this.currentArticleAuthorId;
+            const isBByCurrentAuthor = b.authorId === this.currentArticleAuthorId;
+
+            if (isAByCurrentAuthor && !isBByCurrentAuthor) return -1;
+            if (!isAByCurrentAuthor && isBByCurrentAuthor) return 1;
+
+            // Secondary Sort: Same Tags (Latest First)
+            const aHasCommonTags = a.tags && a.tags.some(tag => this.currentArticleTags.includes(tag));
+            const bHasCommonTags = b.tags && b.tags.some(tag => this.currentArticleTags.includes(tag));
+
+            if (aHasCommonTags && !bHasCommonTags) return -1;
+            if (!aHasCommonTags && bHasCommonTags) return 1;
+
+            // Sort by latest date if other criteria are equal
+            return dateB.getTime() - dateA.getTime();
+          });
+        }
+
+        // 4. Fallback: Latest Articles if no related articles found
+        if (relatedArticles.length === 0) {
+          this.headerText = 'Latest Articles'; // Update header for fallback
+          relatedArticles = availableArticles
+            .sort((a, b) => {
+              const dateA = new Date(a.updatedAt || a.publishDate || 0);
+              const dateB = new Date(b.updatedAt || b.publishDate || 0);
+              return dateB.getTime() - dateA.getTime();
+            })
+            .slice(0, 10); // Limit fallback to a reasonable number
+        }
+
+        this.articles = relatedArticles;
+
       } else {
-        // Default (non-featured, non-author specific) article logic: exclude featured and unpublished
-        fetchedArticles = articlesWithAuthors
-          .filter(article => !article.isFeatured && article.isPublished)
+        // Original logic for non-featured, non-author-specific articles (general latest)
+        this.articles = availableArticles
+          .filter(article => !article.isFeatured) // Ensure no featured articles in this general list
           .sort((a, b) => {
             const dateA = new Date(a.updatedAt || a.publishDate || 0);
             const dateB = new Date(b.updatedAt || b.publishDate || 0);
             return dateB.getTime() - dateA.getTime();
           });
       }
-
-      this.articles = fetchedArticles;
-
     } catch (err) {
       console.error('Failed to load articles:', err);
       this.error = 'Failed to load articles. Please try again later.';

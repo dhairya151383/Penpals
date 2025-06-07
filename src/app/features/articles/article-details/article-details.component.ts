@@ -1,3 +1,4 @@
+// src/app/pages/article-details/article-details.component.ts
 import { Component, OnInit } from '@angular/core';
 import { ActivatedRoute, Router } from '@angular/router';
 import { Article } from '../../../shared/models/article.model';
@@ -9,9 +10,8 @@ import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../core/services/auth.service';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
 import { ArticleDatePipe } from '../../../shared/pipes/article-date.pipe';
-import { CommentsComponent } from '../comments/comments.component'; // Keep if used elsewhere, not directly in this example
-import { User } from 'firebase/auth'; // Keep if used elsewhere
 import { CommentPanelComponent } from '../comment-panel/comment-panel.component';
+import { ArticleListCarouselComponent } from '../article-list-carousel/article-list-carousel.component';
 
 @Component({
   selector: 'app-article-details',
@@ -22,8 +22,7 @@ import { CommentPanelComponent } from '../comment-panel/comment-panel.component'
     LoadingSpinnerComponent,
     ArticleDatePipe,
     CommentPanelComponent,
-    // If using Angular Material tabs, uncomment and import MatTabsModule here
-    // MatTabsModule,
+    ArticleListCarouselComponent, 
   ],
   templateUrl: './article-details.component.html',
   styleUrls: ['./article-details.component.css'],

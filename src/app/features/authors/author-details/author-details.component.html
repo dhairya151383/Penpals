@@ -6,8 +6,8 @@
       <h1 class="author-main-title">{{ author.name }}</h1>
       <div class="author-header-nav">
         <div class="author-header-tags">
-          <ng-container *ngFor="let tag of author.tags; let last = last">
-            <span class="header-tag">{{ tag }}</span>
+          <ng-container *ngFor="let tag of author.tags; let i = index; let last = last">
+            <span class="header-tag" [ngClass]="'tag-color-' + (i % 5)">{{ tag }}</span>
             <span *ngIf="!last" class="tag-divider">|</span>
           </ng-container>
         </div>

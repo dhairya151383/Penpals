@@ -1,16 +1,13 @@
-/* author-details.component.css */
-
-/* New container to manage overall layout, allowing carousel to expand */
 .author-details-container {
-  width: 95%; /* Allows the carousel to take 90% screen width */
-  margin: 2rem auto; /* Centers the container */
+  width: 95%;
+  margin: 2rem auto;
   box-sizing: border-box;
 }
 
 .author-card {
-  width: 100%; /* Now takes full width of author-details-container */
-  max-width: 1000px; /* Still maintains a max-width for the card itself */
-  margin: 0 auto 2rem auto; /* Centers the card and adds margin below */
+  width: 100%;
+  max-width: 95%;
+  margin: 0 auto 2rem auto;
   background: #ffffff;
   border-radius: 16px;
   box-shadow: 0 8px 20px rgba(0, 0, 0, 0.1);
@@ -38,6 +35,7 @@
   width: 50px;
   height: auto;
   top: -20px;
+  transform: translateY(-50%);
 }
 .bird-top {
   left: -60px;
@@ -63,9 +61,31 @@
 .header-tag {
   color: #333;
   text-decoration: none;
-  padding: 0.5rem 0.2rem;
+  padding: 0.5rem 1rem;
   white-space: nowrap;
+  border-radius: 5px;
+  transition: color 0.3s ease; /* Changed to color transition */
 }
+.header-tag:hover {
+  background-color: #f0f0f0;
+}
+
+.author-header-tags .header-tag:nth-child(1) {
+  color: #fb8c00; /* Darker orange for text */
+}
+.author-header-tags .header-tag:nth-child(3) {
+  color: #43a047; /* Darker green for text */
+}
+.author-header-tags .header-tag:nth-child(5) {
+  color: #2196f3; /* Darker blue for text */
+}
+.author-header-tags .header-tag:nth-child(7) {
+  color: #e53935; /* Darker red for text */
+}
+.author-header-tags .header-tag:nth-child(9) {
+  color: #8e24aa; /* Darker purple for text */
+}
+
 .tag-divider {
   color: #ccc;
   font-size: 1.1rem;
@@ -84,11 +104,15 @@
 .header-social-links a:hover .social-icon {
   transform: scale(1.1);
 }
-.header-social-links a[aria-label="Twitter"] .social-icon {
-  fill: #1DA1F2; /* Ensures Twitter icon is clearly visible */
+
+.header-social-links a[aria-label="Shop"] .social-icon {
+  fill: #000;
 }
-.header-social-links a[aria-label="LinkedIn"] .social-icon {
-  fill: #0077B5;
+.header-social-links a[aria-label="Instagram"] .social-icon {
+  fill: #C13584;
+}
+.header-social-links a[aria-label="TikTok"] .social-icon {
+  fill: #000;
 }
 .header-social-links a[aria-label="Facebook"] .social-icon {
   fill: #1877F2;
@@ -130,9 +154,15 @@
   color: #333;
 }
 
+.pronouns {
+  font-size: 1.1rem;
+  color: #666;
+  font-weight: normal;
+}
+
 .author-bio {
-  font-size: 0.8rem;
-  line-height: 1;
+  font-size: 1.1rem;
+  line-height: 1.6;
   margin-bottom: 1rem;
   word-break: normal;
   overflow-wrap: break-word;
@@ -149,16 +179,16 @@
 .author-bio h1,
 .author-bio h2,
 .author-bio h3 {
-  font-size: 1.5rem;
-  margin-top: 1rem;
-  margin-bottom: 0.5rem;
+  font-size: 1.8rem;
+  margin-top: 1.2rem;
+  margin-bottom: 0.8rem;
 }
 
 .author-bio pre,
 .author-bio code {
-  font-size: 0.95rem;
+  font-size: 1rem;
   background-color: #f8f8f8;
-  padding: 0.5rem;
+  padding: 0.7rem;
   border-radius: 6px;
   overflow-x: auto;
   display: block;
@@ -186,12 +216,12 @@
   background-color: #005f99;
 }
 .author-articles-section {
-  width: 100%; /* Takes the full width of its parent (.author-details-container) */
+  width: 100%;
   margin-top: 2rem;
 }
 @media (max-width: 768px) {
   .author-details-container {
-    width: 95%; /* Adjust container width for smaller screens */
+    width: 95%;
   }
   .author-content-body {
     flex-direction: column;
@@ -209,7 +239,8 @@
   }
   .title-illustration {
     width: 30px;
-    top: -15px;
+    top: 50%;
+    transform: translateY(-50%);
   }
   .bird-top {
     left: -35px;
@@ -218,11 +249,11 @@
     right: -35px;
   }
   .author-header-nav {
-    flex-direction: column; /* Stack tags and social links vertically */
+    flex-direction: column;
     gap: 1rem;
   }
   .author-header-tags {
-    flex-wrap: wrap; /* Allow tags to wrap if too long */
+    flex-wrap: wrap;
     justify-content: center;
   }
 }
