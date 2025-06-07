@@ -1,3 +1,4 @@
+// src/app/features/authors/author-list/author-list.component.ts
 import { Component, OnInit } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
@@ -5,7 +6,6 @@ import { Author } from '../../../shared/models/author.model';
 import { AuthorService } from '../../../core/services/author.service';
 import { FormsModule } from '@angular/forms';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
-
 @Component({
   selector: 'app-author-list',
   standalone: true,
@@ -20,14 +20,12 @@ export class AuthorListComponent implements OnInit {
   sortOption = 'name-asc';
   loading = false;
   constructor(private authorService: AuthorService) { }
-
   async ngOnInit() {
-    this.loading = true;  
+    this.loading = true;
     this.authors = await this.authorService.getAll();
-    this.loading = false;  
+    this.loading = false;
     this.applyFilters();
   }
-
   getTruncatedBio(bio?: string): string {
     if (!bio) return '';
     return bio.length > 150 ? bio.slice(0, 150) + '...' : bio;

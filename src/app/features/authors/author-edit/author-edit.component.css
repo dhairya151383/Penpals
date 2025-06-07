@@ -1,4 +1,6 @@
-/* Overall page container styling */
+/* src/app/features/authors/author-edit/author-edit.component.css */
+@import '../../../shared/styles/quill-bio.css';
+
 .article-creation-page {
   display: flex;
   justify-content: center;
@@ -6,64 +8,50 @@
   color: #333;
   margin: 2rem 0;
 }
-
-/* Container for the two main cards (left form, right editor) */
 .article-creation-container {
   display: flex;
-  width: 90vw; /* Take 90% of viewport width */
+  width: 90vw;
   background: #fff;
   border-radius: 8px;
   box-shadow: 0 0 10px rgba(0,0,0,0.15);
   overflow: hidden;
 }
-
-/* Left card (form section) - takes 2/5 of the width */
 .form-card {
   flex: 2;
   padding: 1.5rem 2rem;
   display: flex;
   flex-direction: column;
 }
-
-/* Right card (editor section) - takes 3/5 of the width */
 .editor-card {
   flex: 3;
   padding: 1.5rem 2rem;
   display: flex;
   flex-direction: column;
-  border-left: 1px solid #e0e0e0; /* Separator line */
+  border-left: 1px solid #e0e0e0;
   overflow: hidden;
 }
-
-/* Shared styles for card headers */
 .card-header h2, .card-header h3 {
   margin: 0 0 0.5rem 0;
   font-weight: 700;
-  color: #2e7d32; /* Green brand color */
+  color: #2e7d32;
 }
-
 .card-header hr {
   border: none;
   border-bottom: 2px solid #2e7d32;
   margin-bottom: 1rem;
-  width: 50px; /* Short underline effect */
+  width: 50px;
 }
-
-/* Common styling for form groups (labels and inputs/components) */
 .author-form .form-group,
 .editor-card .form-group {
   margin-bottom: 1.25rem;
   display: flex;
   flex-direction: column;
 }
-
 label {
   font-weight: 600;
   margin-bottom: 0.3rem;
-  color: #2e7d32; /* Green brand color */
+  color: #2e7d32;
 }
-
-/* Styling for text inputs and textareas */
 input[type="text"],
 textarea {
   padding: 0.5rem 0.75rem;
@@ -73,52 +61,26 @@ textarea {
   transition: border-color 0.3s ease;
   font-family: inherit;
 }
-
-/* Focus styles for inputs, textareas, and Quill editor */
 input[type="text"]:focus,
 textarea:focus,
 quill-editor:focus-within {
-  border-color: #66bb6a; /* Lighter green on focus */
+  border-color: #66bb6a;
   outline: none;
-  box-shadow: 0 0 5px #81c784; /* Soft shadow on focus */
+  box-shadow: 0 0 5px #81c784;
 }
-
-/* Quill Editor Specific Styles for content wrapping and height */
-quill-editor {
-  display: block;
-  width: 100%;
-  box-sizing: border-box;
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  white-space: pre-wrap;
-}
-
-.ql-editor {
-  word-wrap: break-word;
-  overflow-wrap: break-word;
-  white-space: pre-wrap;
-  min-height: 250px; /* Minimum height for the editor */
-  max-height: 400px; /* Optional: set a max-height and add overflow-y: auto if you want a scrollbar for very long content */
-  overflow-y: auto; /* Add scrollbar if content exceeds max-height */
-}
-
-/* Checkbox group (if applicable) */
 .checkbox-group {
   flex-direction: row;
   align-items: center;
 }
-
 .checkbox-group input[type="checkbox"] {
   margin-right: 0.5rem;
   width: 18px;
   height: 18px;
 }
-
-/* Save Button Styling */
 .save-button {
-  align-self: flex-start; /* Align to the start of the flex container */
+  align-self: flex-start;
   padding: 0.6rem 1.6rem;
-  background-color: #2e7d32; /* Green button background */
+  background-color: #2e7d32;
   border: none;
   border-radius: 6px;
   color: white;
@@ -126,42 +88,34 @@ quill-editor {
   font-size: 1.1rem;
   cursor: pointer;
   transition: background-color 0.3s ease;
-  margin-top: auto; /* Pushes the button to the bottom if content is short */
+  margin-top: auto;
 }
 
 .save-button:disabled {
-  background-color: #a5d6a7; /* Lighter green when disabled */
+  background-color: #a5d6a7;
   cursor: not-allowed;
 }
 
 .save-button:hover:not(:disabled) {
-  background-color: #1b5e20; /* Darker green on hover */
+  background-color: #1b5e20;
 }
-
-/* Error message styling for individual fields */
 .error {
   margin-top: 0.25rem;
-  color: #d32f2f; /* Red for errors */
+  color: #d32f2f;
   font-size: 0.9rem;
   font-weight: 600;
 }
-
-/* Global error message styling */
 .global-error {
   margin-top: 1rem;
-  color: #b71c1c; /* Darker red for global errors */
+  color: #b71c1c;
   font-weight: 700;
   font-size: 1rem;
 }
-
-/* Loading text (if separate from spinner component) */
 .loading-text {
   text-align: center;
   font-size: 1.2rem;
   color: #2e7d32;
 }
-
-/* Pre-formatted text (e.g., for code snippets) */
 pre {
   background: #f7f7f7;
   border: 1px solid #ccc;
@@ -171,77 +125,62 @@ pre {
   overflow-x: auto;
   margin-top: 1rem;
 }
-
-/* Responsive adjustments for smaller screens */
 @media (max-width: 768px) {
   .article-creation-page {
     margin: 1rem;
   }
   .article-creation-container {
-    flex-direction: column; /* Stack vertically on small screens */
-    width: 100vw; /* Take full viewport width */
+    flex-direction: column;
+    width: 100vw;
   }
   .form-card,
   .editor-card {
-    flex: none; /* Remove flex grow */
+    flex: none;
     width: 100%;
     padding: 1rem;
   }
   .editor-card {
-    border-left: none; /* Remove left border */
-    border-top: 1px solid #e0e0e0; /* Add top border for separation */
+    border-left: none;
+    border-top: 1px solid #e0e0e0;
   }
   .save-button {
-    width: 100%; /* Make button full width on small screens */
-    align-self: stretch; /* Stretch to fill available width */
+    width: 100%;
+    align-self: stretch;
   }
 }
-
-/* Avatar upload specific styles */
 .avatar-upload {
   display: flex;
   flex-direction: column;
   align-items: center;
   margin-bottom: 1rem;
 }
-
-/* Increase the size of the upload-image component */
 .avatar-upload app-upload-image {
-  width: 200px; /* Desired width */
-  height: 200px; /* Desired height */
+  width: 200px;
+  height: 200px;
   display: flex;
   justify-content: center;
   align-items: center;
-  margin-bottom: 1rem; /* Margin below the image component */
+  margin-bottom: 1rem;
 }
-
-/* Ensure the actual image inside app-upload-image scales correctly */
 .avatar-upload app-upload-image .avatar-preview {
     width: 100%;
     height: 100%;
-    object-fit: cover; /* Cover the area, cropping if necessary */
-    border-radius: 100%; /* Make it circular */
+    object-fit: cover;
+    border-radius: 100%;
 }
-
-/* Add spacing between tag container and Save button */
 .tag-selector-container {
-  margin-bottom: 2rem; /* Increased margin to create spacing */
+  margin-bottom: 2rem;
 }
-
-/* Social fields - keeping your existing styles for these */
 .social-field {
   display: flex;
   align-items: center;
-  gap: 8px; /* Consistent gap between icon and input */
+  gap: 8px;
   margin-bottom: 12px;
 }
-
 .social-field svg {
   transition: color 0.3s ease;
   cursor: pointer;
 }
-
-/* Social media brand colors for icons */
 .social-field.twitter svg {
   color: #1DA1F2;
 }
@@ -251,16 +190,13 @@ pre {
 .social-field.facebook svg {
   color: #1877F2;
 }
-
-/* Styling for the character count message */
 .form-group .character-count {
   font-size: 0.85em;
-  color: #777; /* A subtle grey for normal state */
+  color: #777;
   margin-top: 5px;
-  text-align: right; /* Align to the right for better visual */
+  text-align: right;
 }
-
 .form-group .character-count.error {
-  color: #d9534f; /* Red color when limit is exceeded */
+  color: #d9534f;
   font-weight: bold;
 }

@@ -1,0 +1,16 @@
+quill-editor {
+  display: block;
+  width: 100%;
+  box-sizing: border-box;
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
+}
+.ql-editor {
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  white-space: pre-wrap;
+  min-height: 250px;
+  max-height: 400px;
+  overflow-y: auto;
+}
