@@ -207,8 +207,8 @@ pre {
 
 /* Increase the size of the upload-image component */
 .avatar-upload app-upload-image {
-  width: 150px; /* Desired width */
-  height: 150px; /* Desired height */
+  width: 200px; /* Desired width */
+  height: 200px; /* Desired height */
   display: flex;
   justify-content: center;
   align-items: center;

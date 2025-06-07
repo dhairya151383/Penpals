@@ -4,13 +4,12 @@ import { RouterModule } from '@angular/router';
 import { Author } from '../../../shared/models/author.model';
 import { AuthorService } from '../../../core/services/author.service';
 import { FormsModule } from '@angular/forms';
-import { TruncatePipe } from '../../../shared/pipes/truncate.pipe';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
 
 @Component({
   selector: 'app-author-list',
   standalone: true,
-  imports: [CommonModule, RouterModule, FormsModule,TruncatePipe,LoadingSpinnerComponent],
+  imports: [CommonModule, RouterModule, FormsModule,LoadingSpinnerComponent],
   templateUrl: './author-list.component.html',
   styleUrls: ['./author-list.component.css'],
 })

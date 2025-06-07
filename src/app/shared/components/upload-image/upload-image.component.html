@@ -1,44 +1,42 @@
 <div class="upload-image-wrapper" [ngClass]="{
     'profile-pic-container': type === 'profilePic',
-    'thumbnail-container': type === 'thumbnailUrl'
-  }">
+    'thumbnail-container': type === 'thumbnailUrl'}">
 
   <div class="image-display-area" [ngClass]="{
       'profile-pic-area': type === 'profilePic',
-      'thumbnail-area': type === 'thumbnailUrl'
-    }">
-
+      'thumbnail-area': type === 'thumbnailUrl'}">
     <img *ngIf="imageUrl; else placeholder" [src]="imageUrl" alt="Uploaded Image"
       [ngClass]="{
         'profile-pic-preview': type === 'profilePic',
-        'thumbnail-preview': type === 'thumbnailUrl'
-      }" />
-
+        'thumbnail-preview': type === 'thumbnailUrl'}" />
     <ng-template #placeholder>
       <div class="image-placeholder-content" [ngClass]="{
           'profile-pic-placeholder': type === 'profilePic',
-          'thumbnail-placeholder': type === 'thumbnailUrl'
-        }">
-        <span class="upload-icon">
-          🖼️
-        </span>
+          'thumbnail-placeholder': type === 'thumbnailUrl'}">
+        <span class="upload-icon">🖼️</span>
         <span class="placeholder-text">Upload Image</span>
         <span class="size-limit-text">Max 2MB</span>
       </div>
     </ng-template>
-
-  </div>
-
-  <input type="file" id="fileUploadInput" (change)="onFileSelected($event)" accept="image/*" style="display: none;" />
-
-  <div class="overlay">
-    <label for="fileUploadInput" class="upload-edit-icon" [title]="imageUrl ? 'Change Image' : 'Upload Image'">
-      ✏️
-    </label>
-
-    <button type="button" *ngIf="imageUrl" class="remove-icon" (click)="removeImage()" aria-label="Remove image" title="Remove Image">
-      &times;
-    </button>
   </div>
 
 </div>
+
+<!-- Icons placed outside the image wrapper -->
+<div class="icon-controls">
+  <label for="fileUploadInput" class="upload-edit-icon" title="Upload/Change Image" role="button" aria-label="Upload or change image">
+    <!-- Pencil/Edit SVG -->
+    <svg xmlns="http://www.w3.org/2000/svg" height="20" width="20" fill="white" viewBox="0 0 24 24">
+      <path d="M3 17.25V21h3.75L17.81 9.94l-3.75-3.75L3 17.25zM20.71 7.04a1.003 1.003 0 0 0 0-1.42L18.37 3.29a1.003 1.003 0 0 0-1.42 0l-1.83 1.83 3.75 3.75 1.84-1.83z"/>
+    </svg>
+  </label>
+
+  <button *ngIf="imageUrl" class="remove-icon" (click)="removeImage()" title="Remove Image" aria-label="Remove image">
+    <!-- X/Remove SVG -->
+    <svg xmlns="http://www.w3.org/2000/svg" height="20" width="20" fill="white" viewBox="0 0 24 24">
+      <path d="M18.3 5.71a1 1 0 00-1.41 0L12 10.59 7.11 5.7a1 1 0 10-1.41 1.41L10.59 12l-4.89 4.89a1 1 0 101.41 1.41L12 13.41l4.89 4.89a1 1 0 001.41-1.41L13.41 12l4.89-4.89a1 1 0 000-1.4z"/>
+    </svg>
+  </button>
+</div>
+
+<input type="file" id="fileUploadInput" (change)="onFileSelected($event)" accept="image/*" hidden />

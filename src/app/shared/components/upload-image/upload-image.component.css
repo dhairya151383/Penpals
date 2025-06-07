@@ -1,48 +1,43 @@
 /* Base container for the component */
 .upload-image-wrapper {
-  display: flex; /* For centering content within the wrapper */
+  display: flex;
   justify-content: center;
   align-items: center;
   overflow: hidden;
-  position: relative; /* CRUCIAL: Establishes positioning context for absolute children (.image-display-area and .overlay) */
+  position: relative;
   box-sizing: border-box;
   border-radius: 8px;
   background-color: #f9f9f9;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 
-  /* Dimensions for the wrapper itself */
-  width: 80%; /* Takes 80% of its parent's width by default */
-  max-width: 400px; /* Max width to prevent it from getting too large */
-  min-width: 200px; /* Minimum width for the entire component */
-  /* If you want an overall fixed aspect ratio for the wrapper, use padding-bottom here,
-     otherwise the height will be determined by its content.
-     For now, we'll let image-display-area define its own aspect ratio. */
+  width: 80%;
+  max-width: 400px;
+  min-width: 200px;
 }
 
-/* Specific wrapper styles for profile picture (circular) */
+/* Profile picture container */
 .profile-pic-container {
-  padding-bottom: 80%; /* Makes the wrapper a square for circular content */
-  max-width: 300px; /* Tighter max-width for circles */
+  padding-bottom: 80%;
+  max-width: 300px;
   max-height: 300px;
   min-width: 120px;
   min-height: 120px;
-  border-radius: 50%; /* Make the wrapper itself circular */
+  border-radius: 50%;
 }
 
-/* Specific wrapper styles for thumbnail (rectangular card) */
+/* Thumbnail container */
 .thumbnail-container {
-  padding-bottom: 50%; /* Example: 16:9 aspect ratio (height = 50% of width) */
-  max-width: 500px; /* Adjust max-width for rectangular card */
-  max-height: 300px; /* Adjust max-height for rectangular card */
+  padding-bottom: 50%;
+  max-width: 500px;
+  max-height: 300px;
   min-width: 180px;
   min-height: 100px;
-  border-radius: 8px; /* Make the wrapper itself rectangular */
+  border-radius: 8px;
 }
 
-
-/* Common area for image or placeholder visual - it should fill its parent's content box */
+/* Image display area */
 .image-display-area {
-  position: absolute; /* Positioned relative to .upload-image-wrapper */
+  position: absolute;
   top: 0;
   left: 0;
   width: 100%;
@@ -50,26 +45,32 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  background-color: #f0f0f0; /* Fallback background */
-  overflow: hidden; /* Ensures content respects border-radius */
+  background-color: #f0f0f0;
+  overflow: hidden;
 }
 
 .profile-pic-area {
-  border-radius: 50%; /* Ensure the image area itself is circular */
-}
-
-.profile-pic-preview {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border: 2px solid #ccc;
   border-radius: 50%;
 }
 
-/* Placeholder content (visual only now) */
+.thumbnail-area {
+  border-radius: 8px;
+}
+
+/* Image preview - 95% scaled */
+.profile-pic-preview,
+.thumbnail-preview {
+  width: 95%;
+  height: 95%;
+  object-fit: cover;
+  border-radius: inherit;
+  border: 2px solid #ccc;
+}
+
+/* Placeholder styles - also scaled to 95% */
 .image-placeholder-content {
-  width: 100%;
-  height: 100%;
+  width: 95%;
+  height: 95%;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -78,40 +79,23 @@
   text-align: center;
   background-color: #e9e9e9;
   border: 2px dashed #ccc;
-  cursor: default; /* No pointer cursor on the placeholder itself */
+  cursor: default;
+  margin: auto;
 }
 
 .profile-pic-placeholder {
   border-radius: 50%;
 }
 
-/* Styles for thumbnail image area */
-.thumbnail-area {
-  border-radius: 8px;
-}
-
-.thumbnail-preview {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  border: 1px solid #ddd;
-  border-radius: 8px;
-}
-
 .thumbnail-placeholder {
   border-radius: 8px;
 }
 
-/* Common placeholder text/icons */
+/* Placeholder icon and text */
 .upload-icon {
   font-size: 3em;
   margin-bottom: 5px;
   line-height: 1;
-}
-
-.uploading-text {
-  font-weight: bold;
-  color: #007bff;
 }
 
 .placeholder-text {
@@ -124,17 +108,17 @@
   color: #888;
 }
 
-/* Overlay for interaction icons - ABSOLUTELY POSITIONED RELATIVE TO .upload-image-wrapper */
+/* Overlay with action icons */
 .overlay {
-  position: absolute; /* Key change: Positioned relative to .upload-image-wrapper */
-  top: 10px; /* Distance from the top of .upload-image-wrapper */
-  right: 10px; /* Distance from the right of .upload-image-wrapper */
+  position: absolute;
+  top: 5px;
+  right: 5px;
   display: flex;
-  gap: 5px; /* Space between icons */
-  z-index: 20; /* Higher z-index to ensure it's on top of everything */
+  gap: 5px;
+  z-index: 20;
 }
 
-/* Edit/Upload Icon */
+/* Edit icon */
 .upload-edit-icon {
   background-color: rgba(0, 0, 0, 0.6);
   color: white;
@@ -154,7 +138,7 @@
   background-color: rgba(0, 0, 0, 0.8);
 }
 
-/* Remove Icon */
+/* Remove icon */
 .remove-icon {
   background-color: #ff4d4f;
   color: white;
@@ -177,7 +161,7 @@
   background-color: #cc0000;
 }
 
-/* Media Queries for responsiveness */
+/* Responsive styles */
 @media (max-width: 768px) {
   .profile-pic-container {
     max-width: 200px;
@@ -187,7 +171,8 @@
     max-width: 300px;
     max-height: 180px;
   }
-  .upload-edit-icon, .remove-icon {
+  .upload-edit-icon,
+  .remove-icon {
     width: 28px;
     height: 28px;
     font-size: 1em;

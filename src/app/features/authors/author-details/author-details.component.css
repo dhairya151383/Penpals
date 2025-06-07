@@ -2,7 +2,7 @@
 
 /* New container to manage overall layout, allowing carousel to expand */
 .author-details-container {
-  width: 90%; /* Allows the carousel to take 90% screen width */
+  width: 95%; /* Allows the carousel to take 90% screen width */
   margin: 2rem auto; /* Centers the container */
   box-sizing: border-box;
 }
@@ -33,23 +33,18 @@
   margin-top: 2rem;
   margin-bottom: 1rem;
 }
-
-/* Illustrations positioning (re-added based on image) */
 .title-illustration {
   position: absolute;
   width: 50px;
   height: auto;
   top: -20px;
 }
-
 .bird-top {
   left: -60px;
 }
-
 .cat-top {
   right: -60px;
 }
-
 .author-header-nav {
   display: flex;
   justify-content: center;
@@ -60,44 +55,35 @@
   font-size: 1.1rem;
   flex-wrap: wrap;
 }
-
 .author-header-tags {
   display: flex;
   align-items: center;
   gap: 0.8rem;
 }
-
 .header-tag {
   color: #333;
   text-decoration: none;
   padding: 0.5rem 0.2rem;
   white-space: nowrap;
 }
-
 .tag-divider {
   color: #ccc;
   font-size: 1.1rem;
   white-space: nowrap;
 }
-
 .header-social-links {
   display: flex;
   gap: 1rem;
   align-items: center;
 }
-
-/* Styles for the SVG social icons */
 .social-icon {
   width: 28px;
   height: 28px;
   transition: transform 0.2s ease, fill 0.3s ease;
 }
-
 .header-social-links a:hover .social-icon {
   transform: scale(1.1);
 }
-
-/* Social media brand colors for icons - apply directly to anchor's SVG fill */
 .header-social-links a[aria-label="Twitter"] .social-icon {
   fill: #1DA1F2; /* Ensures Twitter icon is clearly visible */
 }
@@ -146,7 +132,7 @@
 
 .author-bio {
   font-size: 0.8rem;
-  line-height: 1.4;
+  line-height: 1;
   margin-bottom: 1rem;
   word-break: normal;
   overflow-wrap: break-word;
@@ -199,24 +185,18 @@
 .edit-button:hover {
   background-color: #005f99;
 }
-
-/* New styles for the author-articles-section to make it wider */
 .author-articles-section {
   width: 100%; /* Takes the full width of its parent (.author-details-container) */
   margin-top: 2rem;
 }
-
-/* Responsive styles */
 @media (max-width: 768px) {
   .author-details-container {
     width: 95%; /* Adjust container width for smaller screens */
   }
-
   .author-content-body {
     flex-direction: column;
     align-items: center;
   }
-
   .author-left, .author-right {
     width: 100%;
     text-align: center;
@@ -224,29 +204,23 @@
   .author-subtitle {
     font-size: 1.6rem;
   }
-
   .author-main-title {
     font-size: 2.5rem;
   }
-
   .title-illustration {
     width: 30px;
     top: -15px;
   }
-
   .bird-top {
     left: -35px;
   }
-
   .cat-top {
     right: -35px;
   }
-
   .author-header-nav {
     flex-direction: column; /* Stack tags and social links vertically */
     gap: 1rem;
   }
-
   .author-header-tags {
     flex-wrap: wrap; /* Allow tags to wrap if too long */
     justify-content: center;

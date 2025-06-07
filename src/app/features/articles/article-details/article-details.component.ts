@@ -9,8 +9,8 @@ import { CommonModule } from '@angular/common';
 import { AuthService } from '../../../core/services/auth.service';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
 import { ArticleDatePipe } from '../../../shared/pipes/article-date.pipe';
-import { CommentsComponent } from '../comments/comments.component';
-import { User } from 'firebase/auth';
+import { CommentsComponent } from '../comments/comments.component'; // Keep if used elsewhere, not directly in this example
+import { User } from 'firebase/auth'; // Keep if used elsewhere
 import { CommentPanelComponent } from '../comment-panel/comment-panel.component';
 
 @Component({
@@ -21,7 +21,9 @@ import { CommentPanelComponent } from '../comment-panel/comment-panel.component'
     CommonModule,
     LoadingSpinnerComponent,
     ArticleDatePipe,
-    CommentPanelComponent
+    CommentPanelComponent,
+    // If using Angular Material tabs, uncomment and import MatTabsModule here
+    // MatTabsModule,
   ],
   templateUrl: './article-details.component.html',
   styleUrls: ['./article-details.component.css'],
@@ -32,6 +34,7 @@ export class ArticleDetailsComponent implements OnInit {
   canEdit = false;
   loading = true;
   showComments = false;
+  selectedTab: 'overview' | 'content' | 'author' = 'overview'; // Added for tab view
 
   constructor(
     private route: ActivatedRoute,
@@ -63,6 +66,9 @@ export class ArticleDetailsComponent implements OnInit {
     } finally {
       this.loading = false;
     }
+  }
+  selectTab(tab: 'overview' | 'content' | 'author'): void {
+    this.selectedTab = tab;
   }
 
   goToEdit() {

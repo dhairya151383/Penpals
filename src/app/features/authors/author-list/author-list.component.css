@@ -11,7 +11,7 @@
 }
 
 .author-list-card {
-  width: 90%;
+  width: 100%;
   background: #fff;
   border-radius: 16px;
   padding: 2rem;
@@ -48,28 +48,44 @@
   border: 1px solid #ccc;
 }
 
-/* Author cards area */
 .author-cards-container {
-  width: 90%;
+  width: 100%;
   display: flex;
   flex-wrap: wrap;
   gap: 1.5rem;
-  justify-content: center;
+  justify-content: flex-start; /* Align cards to the start */
+  /* Added to ensure children within the container can stretch to equal height */
+  align-items: stretch;
 }
 
 .author-card {
-  width: 100%;
+  width: 100%; /* Two cards per row with gap */
+  min-height: 200px; /* Adjust as needed based on your content and design */
   background: #f9f9f9;
   border-radius: 12px;
   padding: 1rem;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
-  flex-direction: column;
-  align-items: left;
+  display: flex; /* Use flexbox for image and info layout */
+  flex-direction: row; /* Ensure image and info are in a row */
+  align-items: flex-start; /* Align items to the top */
+  gap: 1rem; /* Space between image and text */
   transition: transform 0.2s ease;
+  /* To ensure uniform height when align-items: stretch is on parent */
+  display: flex;
+  flex-direction: column; /* Changed to column to make space for image and bio */
+  justify-content: space-between; /* Distribute space vertically */
 }
 
 .author-card:hover {
   transform: translateY(-4px);
+}
+
+.author-card-content {
+  display: flex;
+  flex-direction: row; /* Image and info are side-by-side */
+  align-items: flex-start;
+  gap: 1rem;
+  flex-grow: 1; /* Allows this content area to take available space */
 }
 
 .author-card img {
@@ -77,11 +93,15 @@
   height: 96px;
   border-radius: 50%;
   object-fit: cover;
-  margin-bottom: 1rem;
+  flex-shrink: 0; /* Prevent image from shrinking */
 }
 
 .author-info {
-  text-align: center;
+  display: flex;
+  flex-direction: column;
+  text-align: left; /* Align text to the left */
+  overflow: hidden; /* Important for ellipsis if bio content is too wide */
+  flex-grow: 1; /* Allow author info to take available space */
 }
 
 .author-name {
@@ -89,21 +109,32 @@
   font-size: 1.1rem;
   color: #333;
   text-decoration: none;
+  margin-bottom: 0.25rem; /* Space between name and bio */
 }
 
 .author-name:hover {
   text-decoration: underline;
 }
 
-.author-bio {
-  margin-top: 0.5rem;
+.author-bio-display {
   color: #555;
-  font-size: 0.95rem;
-  line-height: 1.4;
   overflow: hidden;
   display: -webkit-box;
   -webkit-box-orient: vertical;
-  -webkit-line-clamp: 5;
-  line-clamp: 5;
+  -webkit-line-clamp: 4; /* Limit to 4 lines */
+  line-clamp: 4; /* Standard property for line clamping */
+  word-break: break-word; /* Ensure long words break */
+  flex-shrink: 0; /* Prevents the bio from shrinking if space is tight */
 }
 
+.author-bio-display p {
+  margin: 0; /* Remove default margins from paragraphs within the bio display */
+  padding: 0;
+}
+
+
+@media (max-width: 768px) {
+  .author-card {
+    width: 100%; /* Stack cards on smaller screens */
+  }
+}
