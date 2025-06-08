@@ -1,25 +1,24 @@
-/* src/app/pages/article-details/article-details.component.css */
 
 .article-page-layout {
-  display: flex; /* Use flexbox for the main layout */
-  gap: 2rem; /* Space between sidebar and main content */
-  max-width: 1200px; /* Adjust max-width as needed for the wider layout */
+  display: flex;
+  gap: 2rem;
+  max-width: 1200px;
   margin: 2rem auto;
   padding: 1rem;
-  align-items: flex-start; /* Align items to the top */
+  align-items: flex-start;
 }
 
 .author-sidebar {
-  flex: 0 0 25%; /* Fixed width of 25% */
-  min-width: 200px; /* Minimum width to prevent squishing on smaller screens */
+  flex: 0 0 25%;
+  min-width: 200px;
   background: #fff;
   padding: 1.5rem;
   border-radius: 16px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   text-align: center;
-  position: sticky; /* Make it sticky relative to its scroll container */
-  top: 2rem; /* Stick when its top edge is 2rem from the top of the viewport */
-  align-self: flex-start; /* Important for sticky inside flex containers */
+  position: sticky;
+  top: 2rem;
+  align-self: flex-start;
    overflow-y: visible;
 }
 
@@ -37,12 +36,12 @@
   border-radius: 50%;
   object-fit: cover;
   border: 0 solid #00796b;
-  margin: 0 auto 0; /* Center and add margin below */
-  display: block; /* Ensure margin auto works */
+  margin: 0 auto 0;
+  display: block;
 }
 
 .following-button {
-  background-color: #007bff; /* Example: Blue button */
+  background-color: #007bff;
   color: white;
   padding: 8px 15px;
   border: none;
@@ -67,9 +66,9 @@
   font-size: 1.1em;
   font-weight: bold;
   color: #333;
-  text-align: left; /* Align header text to the left */
+  text-align: left;
   margin-bottom: 10px;
-  border-top: 1px solid #eee; /* Separator */
+  border-top: 1px solid #eee;
   padding-top: 15px;
 }
 
@@ -77,21 +76,21 @@
   font-size: 0.9em;
   line-height: 1.6;
   color: #555;
-  text-align: left; /* Align bio text to the left */
+  text-align: left;
   margin-bottom: 1.5rem;
 }
 
 .author-social-links {
   display: flex;
-  justify-content: center; /* Center social icons */
-  gap: 15px; /* Space between social icons */
+  justify-content: center;
+  gap: 15px;
   margin-top: 1rem;
 }
 
 .author-social-links .social-icon {
   width: 24px;
   height: 24px;
-  fill: #666; /* Default icon color */
+  fill: #666;
   transition: fill 0.3s ease;
 }
 .author-social-links a[aria-label="Twitter"] .social-icon {
@@ -105,8 +104,8 @@
 }
 
 .article-details-content {
-  flex: 1; /* Takes remaining space (75%) */
-  min-width: 0; /* Allow content to shrink */
+  flex: 1;
+  min-width: 0;
 }
 
 .article-card {
@@ -200,8 +199,6 @@
 .edit-btn:hover {
   background-color: #004d40;
 }
-
-/* These styles were for the old author tab, now less relevant but kept for potential future use or other author displays */
 .author-info {
   display: flex;
   align-items: center;
@@ -246,8 +243,6 @@
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
   z-index: 100;
 }
-
-/* Tab View Styles (now only for Overview and Content) */
 .tabs {
   display: flex;
   justify-content: center;
@@ -280,14 +275,10 @@
   padding: 1.5rem 0;
 }
 
-/* Author Tab Specific Styles - Now largely replaced by .author-sidebar */
-/* Some styles from the old .author-details-tab are re-used/adapted for .author-profile-card */
 .author-details-tab {
   /* This block is now unused, consider removing if no other part of your app uses it */
   display: none; /* Hide if not needed for backward compatibility or other views */
 }
-
-/* Existing social link styles, may need adjustments for new layout */
 .social-field {
   display: flex;
   align-items: center;
@@ -300,7 +291,6 @@
   cursor: pointer;
 }
 
-/* Social media brand colors for icons */
 .social-field.twitter svg {
   color: #1DA1F2;
 }
@@ -310,8 +300,6 @@
 .social-field.facebook svg {
   color: #1877F2;
 }
-
-/* Responsive adjustments for smaller screens */
 @media (max-width: 768px) {
   .article-page-layout {
     flex-direction: column; /* Stack items vertically on small screens */
@@ -319,7 +307,6 @@
   }
 
   .author-sidebar {
-    /* No sticky on mobile, just static */
     position: static; /* Remove sticky position */
     width: 100%; /* Take full width */
     order: -1; /* Place at the top */
