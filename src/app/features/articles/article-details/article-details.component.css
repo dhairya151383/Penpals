@@ -1,10 +1,112 @@
 /* src/app/pages/article-details/article-details.component.css */
 
-.article-details-container {
-  max-width: 900px;
+.article-page-layout {
+  display: flex; /* Use flexbox for the main layout */
+  gap: 2rem; /* Space between sidebar and main content */
+  max-width: 1200px; /* Adjust max-width as needed for the wider layout */
   margin: 2rem auto;
   padding: 1rem;
-  overflow-x: hidden; /* Prevent horizontal overflow */
+  align-items: flex-start; /* Align items to the top */
+}
+
+.author-sidebar {
+  flex: 0 0 25%; /* Fixed width of 25% */
+  min-width: 200px; /* Minimum width to prevent squishing on smaller screens */
+  background: #fff;
+  padding: 1.5rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  text-align: center;
+  position: sticky; /* Make it sticky relative to its scroll container */
+  top: 2rem; /* Stick when its top edge is 2rem from the top of the viewport */
+  align-self: flex-start; /* Important for sticky inside flex containers */
+   overflow-y: visible;
+}
+
+
+.author-profile-card h3 {
+  font-size: 1.5rem;
+  margin-top: 0.5rem;
+  margin-bottom: 0.5rem;
+  color: #333;
+}
+
+.author-avatar-large {
+  width: 200px;
+  height: 200px;
+  border-radius: 50%;
+  object-fit: cover;
+  border: 0 solid #00796b;
+  margin: 0 auto 0; /* Center and add margin below */
+  display: block; /* Ensure margin auto works */
+}
+
+.following-button {
+  background-color: #007bff; /* Example: Blue button */
+  color: white;
+  padding: 8px 15px;
+  border: none;
+  border-radius: 20px;
+  cursor: pointer;
+  font-size: 0.9em;
+  margin-bottom: 10px;
+  transition: background-color 0.3s ease;
+}
+
+.following-button:hover {
+  background-color: #0056b3;
+}
+
+.follow-recommendations-text {
+  font-size: 0.8em;
+  color: #777;
+  margin-bottom: 1.5rem;
+}
+
+.about-author-header {
+  font-size: 1.1em;
+  font-weight: bold;
+  color: #333;
+  text-align: left; /* Align header text to the left */
+  margin-bottom: 10px;
+  border-top: 1px solid #eee; /* Separator */
+  padding-top: 15px;
+}
+
+.author-bio {
+  font-size: 0.9em;
+  line-height: 1.6;
+  color: #555;
+  text-align: left; /* Align bio text to the left */
+  margin-bottom: 1.5rem;
+}
+
+.author-social-links {
+  display: flex;
+  justify-content: center; /* Center social icons */
+  gap: 15px; /* Space between social icons */
+  margin-top: 1rem;
+}
+
+.author-social-links .social-icon {
+  width: 24px;
+  height: 24px;
+  fill: #666; /* Default icon color */
+  transition: fill 0.3s ease;
+}
+.author-social-links a[aria-label="Twitter"] .social-icon {
+  fill: #1DA1F2;
+}
+.author-social-links a[aria-label="LinkedIn"] .social-icon {
+  fill: #0077B5;
+}
+.author-social-links a[aria-label="Facebook"] .social-icon {
+  fill: #1877F2;
+}
+
+.article-details-content {
+  flex: 1; /* Takes remaining space (75%) */
+  min-width: 0; /* Allow content to shrink */
 }
 
 .article-card {
@@ -14,9 +116,9 @@
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   overflow-wrap: break-word; /* Prevent word overflow */
   word-break: break-word;
-  position: relative; /* Needed for positioning the footer if it's within */
+  position: relative;
   display: flex;
-  flex-direction: column; /* Stack content and footer */
+  flex-direction: column;
 }
 
 .article-thumbnail {
@@ -26,14 +128,14 @@
   object-fit: cover;
 }
 
-.article-main-title { /* New style for the main article title */
+.article-main-title {
   font-size: 2.5rem;
   margin-bottom: 1.5rem;
   text-align: center;
   color: #333;
 }
 
-.article-title { /* Kept for potential sub-titles or other uses within tabs if needed */
+.article-title {
   font-size: 2rem;
   margin-bottom: 0.5rem;
 }
@@ -68,7 +170,7 @@
   color: #333;
   overflow-wrap: break-word;
   word-break: break-word;
-  padding-top: 1rem; /* Add some padding above the content */
+  padding-top: 1rem;
 }
 
 .article-brief-description {
@@ -78,11 +180,10 @@
   line-height: 1.6;
 }
 
-/* New style for the article card footer */
 .article-card-footer {
-  margin-top: 2rem; /* Add space above the footer */
-  padding-top: 1rem; /* Internal padding for the footer */
-  border-top: 1px solid #eee; /* Separator line */
+  margin-top: 2rem;
+  padding-top: 1rem;
+  border-top: 1px solid #eee;
   text-align: right;
 }
 
@@ -100,6 +201,7 @@
   background-color: #004d40;
 }
 
+/* These styles were for the old author tab, now less relevant but kept for potential future use or other author displays */
 .author-info {
   display: flex;
   align-items: center;
@@ -142,10 +244,10 @@
   border: none;
   cursor: pointer;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
-  z-index: 100; /* Ensure it's above other content */
+  z-index: 100;
 }
 
-/* Tab View Styles */
+/* Tab View Styles (now only for Overview and Content) */
 .tabs {
   display: flex;
   justify-content: center;
@@ -178,59 +280,18 @@
   padding: 1.5rem 0;
 }
 
-/* Author Tab Specific Styles */
+/* Author Tab Specific Styles - Now largely replaced by .author-sidebar */
+/* Some styles from the old .author-details-tab are re-used/adapted for .author-profile-card */
 .author-details-tab {
-  padding: 1rem;
-  background-color: #f9f9f9;
-  border-radius: 8px;
-  margin-top: 1rem;
+  /* This block is now unused, consider removing if no other part of your app uses it */
+  display: none; /* Hide if not needed for backward compatibility or other views */
 }
 
-.author-details-tab h2 {
-  font-size: 1.8rem;
-  margin-bottom: 1rem;
-  color: #333;
-  text-align: center;
-}
-
-.author-profile {
-  display: flex;
-  align-items: center;
-  gap: 1.5rem;
-  margin-top: 1.5rem;
-  flex-wrap: wrap; /* Allow wrapping on smaller screens */
-}
-
-.author-avatar-large {
-  width: 120px;
-  height: 120px;
-  border-radius: 50%;
-  object-fit: cover;
-  border: 4px solid #00796b;
-  flex-shrink: 0; /* Prevent shrinking on smaller screens */
-}
-
-.author-bio-section {
-  flex-grow: 1;
-}
-
-.author-bio-section h3 {
-  font-size: 1.6rem;
-  margin-bottom: 0.5rem;
-  color: #00796b;
-}
-
-.author-bio-section p {
-  font-size: 1rem;
-  line-height: 1.6;
-  color: #555;
-  margin-bottom: 1rem;
-}
-
+/* Existing social link styles, may need adjustments for new layout */
 .social-field {
   display: flex;
   align-items: center;
-  gap: 8px; /* Consistent gap between icon and input */
+  gap: 8px;
   margin-bottom: 12px;
 }
 
@@ -248,4 +309,26 @@
 }
 .social-field.facebook svg {
   color: #1877F2;
+}
+
+/* Responsive adjustments for smaller screens */
+@media (max-width: 768px) {
+  .article-page-layout {
+    flex-direction: column; /* Stack items vertically on small screens */
+    gap: 1.5rem;
+  }
+
+  .author-sidebar {
+    /* No sticky on mobile, just static */
+    position: static; /* Remove sticky position */
+    width: 100%; /* Take full width */
+    order: -1; /* Place at the top */
+    margin-bottom: 1.5rem;
+    max-height: none; /* Remove fixed height on mobile */
+    overflow-y: visible; /* Allow content to overflow normally */
+  }
+
+  .article-details-content {
+    width: 100%; /* Take full width */
+  }
 }

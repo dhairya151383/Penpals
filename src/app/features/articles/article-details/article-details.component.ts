@@ -22,7 +22,7 @@ import { ArticleListCarouselComponent } from '../article-list-carousel/article-l
     LoadingSpinnerComponent,
     ArticleDatePipe,
     CommentPanelComponent,
-    ArticleListCarouselComponent, 
+    ArticleListCarouselComponent,
   ],
   templateUrl: './article-details.component.html',
   styleUrls: ['./article-details.component.css'],
@@ -33,7 +33,7 @@ export class ArticleDetailsComponent implements OnInit {
   canEdit = false;
   loading = true;
   showComments = false;
-  selectedTab: 'overview' | 'content' | 'author' = 'overview'; // Added for tab view
+  selectedTab: 'overview' | 'content' = 'overview'; // Removed 'author' from here
 
   constructor(
     private route: ActivatedRoute,
@@ -66,7 +66,8 @@ export class ArticleDetailsComponent implements OnInit {
       this.loading = false;
     }
   }
-  selectTab(tab: 'overview' | 'content' | 'author'): void {
+  // Updated selectTab to only handle 'overview' and 'content'
+  selectTab(tab: 'overview' | 'content'): void {
     this.selectedTab = tab;
   }
 
