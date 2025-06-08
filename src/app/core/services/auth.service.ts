@@ -24,12 +24,15 @@ export class AuthService {
   user$: Observable<User | null>;
   authReady$ = new BehaviorSubject<boolean>(false);
   private firestore: Firestore;
-  private readonly defaultAvatarUrl = 'assets/images/defaultAvatar.jpg';
+  // Define specific default avatar URLs
+  private readonly defaultMaleAvatarUrl = 'assets/images/maleAvatar.jpg';
+  private readonly defaultFemaleAvatarUrl = 'assets/images/femaleAvatar.jpg';
+  private readonly defaultGenericAvatarUrl = 'assets/images/defaultAvatar.jpg';
 
   constructor(
     private firebaseService: FirebaseService,
     private authorService: AuthorService,
-    private router:Router
+    private router: Router
   ) {
     this.firestore = firebaseService.firestore;
 
@@ -48,7 +51,10 @@ export class AuthService {
     try {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(this.firebaseService.auth, provider);
-      await this.saveUserData(result.user, undefined, 'google', 'user');
+      // For Google sign-in, we typically don't get gender directly.
+      // You might infer it from other data or keep 'unknown' or 'defaultGenericAvatarUrl'.
+      // For this example, we'll use 'unknown' for gender and the generic avatar.
+      await this.saveUserData(result.user, undefined, 'google', 'user', undefined, 'unknown');
     } catch (error) {
       console.error('Google Sign-In Error:', error);
       throw error;
@@ -70,14 +76,18 @@ export class AuthService {
     password: string,
     username: string,
     role: string,
-    displayName: string
+    displayName: string,
+    gender: string // Gender is now a required parameter
   ): Promise<User | null> {
     try {
       const result = await createUserWithEmailAndPassword(this.firebaseService.auth, email, password);
       await updateProfile(result.user, { displayName });
-      await this.saveUserData(result.user, username, 'email', role, displayName);
+      // Pass gender to saveUserData
+      await this.saveUserData(result.user, username, 'email', role, displayName, gender);
+
       if (role === 'author') {
-        const avatarUrl = result.user.photoURL || this.defaultAvatarUrl;
+        // When an author registers, determine their avatar based on gender if no photoURL exists
+        const avatarUrl = result.user.photoURL || this.getAvatarUrlByGender(gender);
         const authorData: Author = {
           id: result.user.uid,
           name: displayName,
@@ -99,9 +109,19 @@ export class AuthService {
     } catch (error) {
       console.error('Sign-Out Error:', error);
       throw error;
-    }
-    finally{
+    } finally {
       this.router.navigate(['/login']);
+    }
+  }
+
+  // Helper method to get avatar URL based on gender
+  private getAvatarUrlByGender(gender: string): string {
+    if (gender === 'male') {
+      return this.defaultMaleAvatarUrl;
+    } else if (gender === 'female') {
+      return this.defaultFemaleAvatarUrl;
+    } else {
+      return this.defaultGenericAvatarUrl; // Fallback
     }
   }
 
@@ -110,7 +130,8 @@ export class AuthService {
     username?: string,
     provider: string = 'google',
     role: string = 'user',
-    displayName?: string
+    displayName?: string,
+    gender: string = 'unknown' // Ensure gender is always passed, default to 'unknown'
   ) {
     const roles: { admin: boolean; user: boolean; author?: boolean } = {
       admin: false,
@@ -123,15 +144,19 @@ export class AuthService {
       roles[role] = true;
     }
 
+    // Determine the photoURL based on the provided user photoURL, otherwise by gender
+    const finalPhotoURL = user.photoURL || this.getAvatarUrlByGender(gender);
+
     const userData: Users = {
       uid: user.uid,
       email: user.email || '',
       username: username || user.displayName || user.email?.split('@')[0] || 'anonymous',
+      gender, // Assign the gender here
       roles,
       createdAt: new Date().toISOString(),
       profile: {
         displayName: displayName || user.displayName || username || 'Anonymous User',
-        photoURL: user.photoURL || this.defaultAvatarUrl,
+        photoURL: finalPhotoURL, // Use the determined finalPhotoURL
       },
       provider,
     };

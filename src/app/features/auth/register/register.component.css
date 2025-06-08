@@ -115,28 +115,42 @@ select:focus {
 }
 
 .input-error {
-  border-color: #e74c3c !important;
+  border-color: #e74c3c !important; /* Specific error border color */
 }
 
-/* --- Input Row: firstName + lastName side by side --- */
+/* --- Input Row: Mr/Mrs/Miss + First Name side by side --- */
 .input-row {
   display: flex;
   gap: 1rem;
-  margin-bottom: 1.5rem;
+  margin-bottom: 1rem;
 }
 
-.input-row input {
-  flex: 1 1 50%;
-  margin-bottom: 0;
-  /* handled by input-row */
+.input-row select {
+  flex: 0 35%; /* Title dropdown takes 20% width */
+  margin-bottom: 0; /* Remove default margin for elements within this flex row */
+  -webkit-appearance: none;
+  -moz-appearance: none;
+  appearance: none;
+  background-image: url('data:image/svg+xml;charset=US-ASCII,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20width%3D%22292.4%22%20height%3D%22292.4%22%3E%3Cpath%20fill%3D%22%23000000%22%20d%3D%22M287%2C197.989L146.202%2C57.189L5.4%2C197.989L0.2%2C192.789L146.202%2C46.789L292.2%2C192.789L287%2C197.989z%22%2F%3E%3C%2Fsvg%3E');
+  background-repeat: no-repeat;
+  background-position: right 0.7em top 50%;
+  background-size: 0.65em auto;
+  padding-right: 2.5em; /* Space for the custom arrow */
 }
+
+.input-row input[formcontrolname="firstName"] {
+  flex: 0 0 65%; /* First Name input takes 80% width */
+  margin-bottom: 0; /* Remove default margin for elements within this flex row */
+}
+
 
 /* --- Error Text --- */
 .error-text {
   color: #e74c3c;
   font-size: 0.85rem;
-  margin-top: -1rem;
+  margin-top: -1rem; /* Adjust to pull error text closer to the field */
   margin-bottom: 1rem;
+  min-height: 18px; /* Ensure consistent spacing even if no error is present */
 }
 
 /* --- Error and Success Boxes --- */
@@ -240,7 +254,7 @@ select:focus {
   height: 20px;
 }
 
-/* --- Responsive --- */
+/* --- Responsive Adjustments --- */
 @media (max-width: 900px) {
   .register-container {
     flex-direction: column;
@@ -260,27 +274,19 @@ select:focus {
     max-width: 100%;
   }
 
+  /* Stack Mr/Mrs/Miss dropdown and First Name input on small screens */
   .input-row {
     flex-direction: column;
   }
 
-  .input-row input {
-    width: 100%;
+  .input-row select,
+  .input-row input[formcontrolname="firstName"] {
+    flex: 0 0 100%; /* Full width when stacked */
+    margin-bottom: 1.2rem; /* Add spacing between stacked elements */
   }
-}
 
-.input-error {
-  border-color: #d9534f;
-  /* red border */
-}
-
-.error-text {
-  color: #d9534f;
-  font-size: 0.875rem;
-  margin-top: 4px;
-  min-height: 18px;
-}
-
-.input-group {
-  margin-bottom: 16px;
+  /* Restore margin-top for error text after stacked inputs */
+  .error-text {
+    margin-top: 4px; /* Default margin for error text when fields are not in input-row or stacked */
+  }
 }

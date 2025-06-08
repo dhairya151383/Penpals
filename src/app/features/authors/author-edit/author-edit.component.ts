@@ -21,7 +21,7 @@ import { UploadImageComponent } from '../../../shared/components/upload-image/up
 export class AuthorEditComponent implements OnInit {
   form!: FormGroup;
   tags: Tag[] = [];
-  avatarUrl: string = 'assets/avatar-placeholder.png';
+  avatarUrl: string = 'assets/images/defaultAvatar.jpg';
   authorId!: string;
   loading = true;
   error: string | null = null;
@@ -129,7 +129,7 @@ export class AuthorEditComponent implements OnInit {
   }
 
   onImageChange(newImageUrl: string | null) {
-    this.avatarUrl = newImageUrl || 'assets/avatar-placeholder.png';
+    this.avatarUrl = newImageUrl || 'assets/images/defaultAvatar.jpg';
     this.avatarUrlControl.setValue(newImageUrl);
     this.avatarUrlControl.markAsDirty();
     this.avatarUrlControl.updateValueAndValidity();

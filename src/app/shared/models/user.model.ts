@@ -2,6 +2,7 @@ export interface Users {
   uid: string;
   email: string;
   username: string;
+  gender: string;
   roles: {
     admin: boolean;
     user: boolean;

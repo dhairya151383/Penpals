@@ -1,14 +1,12 @@
 import { Component, OnInit } from '@angular/core';
-import {
-  CommonModule
-} from '@angular/common';
+import { CommonModule } from '@angular/common';
 import {
   ReactiveFormsModule,
   FormGroup,
   FormBuilder,
   Validators,
   AbstractControl,
-  ValidationErrors
+  ValidationErrors,
 } from '@angular/forms';
 import { AuthService } from '../../../core/services/auth.service';
 import { Router, RouterLink } from '@angular/router';
@@ -46,11 +44,12 @@ export class RegisterComponent implements OnInit {
     private fb: FormBuilder,
     private authService: AuthService,
     private router: Router
-  ) { }
+  ) {}
 
   ngOnInit(): void {
     this.registerForm = this.fb.group(
       {
+        title: ['Mr', Validators.required], // Add title with default 'Mr' and required
         firstName: ['', Validators.required],
         lastName: [''],
         email: ['', [Validators.required, Validators.email]],
@@ -73,16 +72,22 @@ export class RegisterComponent implements OnInit {
 
     if (this.registerForm.valid) {
       const {
+        title, // Destructure title
         firstName,
         lastName,
         email,
         password,
         role
       } = this.registerForm.value;
+
+      // Determine gender based on title
+      const gender = title === 'Mr' ? 'male' : 'female';
+
       const displayName = (firstName.trim() + (lastName ? ' ' + lastName.trim() : '')).trim();
       const username = firstName.trim();
       try {
-        await this.authService.registerWithEmail(email, password, username, role, displayName);
+        // Pass gender to registerWithEmail
+        await this.authService.registerWithEmail(email, password, username, role, displayName, gender);
         this.successMessage = 'Registration successful! Redirecting to dashboard...';
         setTimeout(() => {
           this.router.navigate(['/dashboard']);
