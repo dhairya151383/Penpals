@@ -6,7 +6,14 @@
     <button (click)="postComment()" [disabled]="!newComment.trim() || !userId">Submit</button>
   </div>
 
-  <div class="comment" *ngFor="let comment of displayedComments">
+  <div class="sort-options">
+    <span>Sort by:</span>
+    <button (click)="sortComments('newest')" [class.active]="currentSort === 'newest'">Newest</button>
+    <button (click)="sortComments('oldest')" [class.active]="currentSort === 'oldest'">Oldest</button>
+    <button (click)="sortComments('mostLiked')" [class.active]="currentSort === 'mostLiked'">Most Liked</button>
+  </div>
+
+  <div class="comment" *ngFor="let comment of displayedTopLevelComments">
     <div class="comment-header">
       <img *ngIf="comment.userAvatarUrl" [src]="comment.userAvatarUrl" class="avatar" />
       <strong>{{ comment.userName }}</strong>
@@ -34,7 +41,9 @@
       <span (click)="toggleReply(comment.id)">Reply</span>
       <span *ngIf="canModifyComment(comment)" (click)="enableEdit(comment)">Edit</span>
       <span *ngIf="canModifyComment(comment)" (click)="deleteComment(comment.id)">Delete</span>
-      <span (click)="toggleReplies(comment.id)">View Replies</span>
+      <span *ngIf="getReplies(comment.id).length > 0" (click)="toggleReplies(comment.id)">
+        {{ showReplies[comment.id] ? 'Hide Replies' : 'View Replies (' + getReplies(comment.id).length + ')' }}
+      </span>
     </div>
 
     <div *ngIf="replyingTo === comment.id" class="reply-box">
@@ -50,7 +59,16 @@
           <span class="timestamp">{{ timeAgo(reply.createdAt) }}</span>
         </div>
 
-        <p>{{ reply.content }}</p>
+        <ng-container *ngIf="editingCommentId !== reply.id; else editReplyForm">
+          <p>{{ reply.content }}</p>
+        </ng-container>
+
+        <ng-template #editReplyForm>
+          <textarea [(ngModel)]="editContent" rows="2"></textarea>
+          <button (click)="saveEdit(reply.id)">Save</button>
+          <button (click)="editingCommentId = null">Cancel</button>
+        </ng-template>
+
         <div class="comment-actions">
           <span
             (click)="likeComment(reply)"

@@ -1,3 +1,4 @@
+// src/app/features/articles/comments/comments.component.ts
 import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { CommentService } from '../../../core/services/comment.service';
 import { Comment } from '../../../shared/models/comment.model';
@@ -20,8 +21,8 @@ import { AuthService, AppUser } from '../../../core/services/auth.service'; // I
 export class CommentsComponent implements OnInit, OnDestroy {
   @Input() articleId!: string;
 
-  allComments: Comment[] = [];
-  displayedComments: Comment[] = [];
+  allComments: Comment[] = []; // Stores ALL comments from the real-time listener (top-level and replies)
+  displayedTopLevelComments: Comment[] = []; // Stores only top-level comments for current view (filtered, sorted, paginated)
   newComment = '';
   replyingTo: string | null = null;
   replyText: { [key: string]: string } = {};
@@ -29,7 +30,7 @@ export class CommentsComponent implements OnInit, OnDestroy {
   userId: string | null = null;
   userName: string = '';
   userAvatarUrl: string = '';
-  isAdmin: boolean = false; // New property to track admin status
+  isAdmin: boolean = false;
 
   showReplies: { [key: string]: boolean } = {};
   editingCommentId: string | null = null;
@@ -37,10 +38,11 @@ export class CommentsComponent implements OnInit, OnDestroy {
   hasMore = true;
   pageSize = 5;
   loadingAuthAndComments = true;
+  currentSort: 'newest' | 'oldest' | 'mostLiked' = 'newest'; // Default sort
 
   private realTimeCommentsSubscription: Subscription | undefined;
   private authSubscription: Subscription | undefined;
-  private lastVisibleCommentId: string | null = null;
+  private currentDisplayedCount = 0; // Tracks how many top-level comments are currently shown
 
   constructor(
     private commentService: CommentService,
@@ -50,23 +52,27 @@ export class CommentsComponent implements OnInit, OnDestroy {
   async ngOnInit() {
     this.authSubscription = combineLatest([
       this.authService.authReady$.pipe(filter(isReady => isReady)),
-      this.authService.user$ // This now emits AppUser | null
+      this.authService.user$
     ]).subscribe(([authReady, user]) => {
       if (user) {
         this.userId = user.uid;
         this.userName = user.displayName ?? 'Anonymous';
         this.userAvatarUrl = user.photoURL ?? '';
-        this.isAdmin = (user as AppUser).roles?.admin === true; // Set isAdmin based on AppUser roles
+        this.isAdmin = (user as AppUser).roles?.admin === true;
       } else {
         this.userId = null;
         this.userName = 'Anonymous';
         this.userAvatarUrl = '';
-        this.isAdmin = false; // Not an admin if no user
+        this.isAdmin = false;
       }
 
       if (!this.realTimeCommentsSubscription) {
         this.setupRealTimeCommentsListener();
       }
+      this.loadingAuthAndComments = false; // Auth is ready, comments can now attempt to load
+    }, (error) => {
+      console.error("CommentsComponent: Auth subscription error:", error);
+      this.loadingAuthAndComments = false;
     });
   }
 
@@ -81,87 +87,69 @@ export class CommentsComponent implements OnInit, OnDestroy {
 
   private setupRealTimeCommentsListener() {
     this.realTimeCommentsSubscription = this.commentService.getComments(this.articleId)
-      .pipe(
-        map(comments => {
-          return comments.sort((a, b) => {
-            const timeA = (a.createdAt instanceof Timestamp) ? a.createdAt.toMillis() : 0;
-            const timeB = (b.createdAt instanceof Timestamp) ? b.createdAt.toMillis() : 0;
-            return timeB - timeA;
-          });
-        })
-      )
       .subscribe(
         (fetchedComments: Comment[]) => {
           this.allComments = fetchedComments;
-          this.loadMore(true); // Always refresh the displayed comments when new data comes in
-          this.loadingAuthAndComments = false;
+          this.updateDisplayedComments(); // Update the view based on all comments
         },
         (error) => {
           console.error("CommentsComponent: Error fetching real-time comments:", error);
-          this.loadingAuthAndComments = false;
         }
       );
-
-    this.loadMore(); // Initial load of top-level comments for pagination
   }
 
-  async loadMore(refresh: boolean = false) {
-    try {
-      const currentTopLevelComments = this.allComments.filter(comment => comment.parentId === null)
-        .sort((a, b) => {
-          const timeA = (a.createdAt instanceof Timestamp) ? a.createdAt.toMillis() : 0;
-          const timeB = (b.createdAt instanceof Timestamp) ? b.createdAt.toMillis() : 0;
-          return timeB - timeA;
-        });
+  private updateDisplayedComments() {
+    // 1. Filter for top-level comments
+    let topLevelComments = this.allComments.filter(comment => comment.parentId === null);
 
-      if (refresh) {
-        const currentDisplayedCount = this.displayedComments.length;
-        this.displayedComments = currentTopLevelComments.slice(0, Math.max(this.pageSize, currentDisplayedCount));
-
-        if (this.displayedComments.length > 0) {
-          this.lastVisibleCommentId = this.displayedComments[this.displayedComments.length - 1].id;
-        } else {
-          this.lastVisibleCommentId = null;
-        }
-
-        this.hasMore = currentTopLevelComments.length > this.displayedComments.length;
-        return;
+    // 2. Sort them based on current sort order
+    topLevelComments.sort((a, b) => {
+      if (this.currentSort === 'newest') {
+        const timeA = (a.createdAt instanceof Timestamp) ? a.createdAt.toMillis() : 0;
+        const timeB = (b.createdAt instanceof Timestamp) ? b.createdAt.toMillis() : 0;
+        return timeB - timeA; // Newest first
+      } else if (this.currentSort === 'oldest') {
+        const timeA = (a.createdAt instanceof Timestamp) ? a.createdAt.toMillis() : 0;
+        const timeB = (b.createdAt instanceof Timestamp) ? b.createdAt.toMillis() : 0;
+        return timeA - timeB; // Oldest first
+      } else if (this.currentSort === 'mostLiked') {
+        return b.likes - a.likes; // Most liked first
       }
+      return 0;
+    });
 
-      this.loadingAuthAndComments = true;
-      const moreTopLevelComments = await this.commentService.loadMoreComments(this.articleId, this.pageSize, this.lastVisibleCommentId);
-      const newUniqueComments = moreTopLevelComments.filter(
-        comment => !this.displayedComments.some(dc => dc.id === comment.id)
-      );
-
-      this.displayedComments = [...this.displayedComments, ...newUniqueComments]
-        .sort((a, b) => {
-          const timeA = (a.createdAt instanceof Timestamp) ? a.createdAt.toMillis() : 0;
-          const timeB = (b.createdAt instanceof Timestamp) ? b.createdAt.toMillis() : 0;
-          return timeB - timeA;
-        });
-
-      this.hasMore = moreTopLevelComments.length === this.pageSize;
-
-      if (this.displayedComments.length > 0) {
-        this.lastVisibleCommentId = this.displayedComments[this.displayedComments.length - 1].id;
-      } else {
-        this.lastVisibleCommentId = null;
-      }
-    } catch (error) {
-      console.error('CommentsComponent: Error in loadMore:', error);
-    } finally {
-      this.loadingAuthAndComments = false;
+    // 3. Apply client-side pagination
+    // Initialize currentDisplayedCount if it's the first load or after a sort change
+    if (this.currentDisplayedCount === 0 || this.currentDisplayedCount < this.pageSize) {
+      this.currentDisplayedCount = this.pageSize;
     }
+    // If comments are deleted, ensure currentDisplayedCount doesn't exceed total top-level comments
+    if (this.currentDisplayedCount > topLevelComments.length) {
+      this.currentDisplayedCount = topLevelComments.length;
+    }
+
+
+    this.displayedTopLevelComments = topLevelComments.slice(0, this.currentDisplayedCount);
+    this.hasMore = topLevelComments.length > this.displayedTopLevelComments.length;
   }
 
-  // New helper function to determine if a comment can be edited/deleted
+  loadMore() {
+    this.currentDisplayedCount += this.pageSize;
+    this.updateDisplayedComments(); // Re-calculate based on increased count
+  }
+
+  sortComments(sortBy: 'newest' | 'oldest' | 'mostLiked') {
+    this.currentSort = sortBy;
+    this.currentDisplayedCount = this.pageSize; // Reset display count for new sort
+    this.updateDisplayedComments(); // Re-calculate and display
+  }
+
+  // Helper function to determine if a comment can be edited/deleted
   canModifyComment(comment: Comment): boolean {
     return this.isAdmin || comment.userId === this.userId;
   }
 
   enableEdit(comment: Comment) {
-    // Only allow edit if the user has permission
     if (this.canModifyComment(comment)) {
       this.editingCommentId = comment.id;
       this.editContent = comment.content;
@@ -178,6 +166,7 @@ export class CommentsComponent implements OnInit, OnDestroy {
     }
     await this.commentService.editComment(commentId, this.editContent);
     this.editingCommentId = null;
+    // Real-time listener will update displayed comments
   }
 
   async deleteComment(commentId: string) {
@@ -190,6 +179,7 @@ export class CommentsComponent implements OnInit, OnDestroy {
     if (confirm('Are you sure you want to delete this comment and all its replies?')) {
       try {
         await this.commentService.deleteComment(commentId);
+        // Real-time listener will update displayed comments
       } catch (error) {
         console.error('CommentsComponent: Error deleting comment:', error);
       }
@@ -202,7 +192,6 @@ export class CommentsComponent implements OnInit, OnDestroy {
 
   async postComment() {
     if (!this.userId) {
-      // Consider showing a toast notification or redirecting to login
       console.warn('CommentsComponent: User not logged in to post comments.');
       return;
     }
@@ -210,6 +199,7 @@ export class CommentsComponent implements OnInit, OnDestroy {
       try {
         await this.commentService.addComment(this.articleId, this.newComment, this.userId, this.userName, this.userAvatarUrl);
         this.newComment = '';
+        // Real-time listener will trigger updateDisplayedComments
       } catch (error) {
         console.error('CommentsComponent: Error posting comment:', error);
       }
@@ -218,7 +208,6 @@ export class CommentsComponent implements OnInit, OnDestroy {
 
   async postReply(parentId: string) {
     if (!this.userId) {
-      // Consider showing a toast notification or redirecting to login
       console.warn('CommentsComponent: User not logged in to post replies.');
       return;
     }
@@ -229,11 +218,13 @@ export class CommentsComponent implements OnInit, OnDestroy {
         this.replyText[parentId] = '';
         this.replyingTo = null;
         this.showReplies[parentId] = true; // Automatically open replies after posting
+        // Real-time listener will trigger updateDisplayedComments
       } catch (error) {
         console.error('CommentsComponent: Error posting reply:', error);
       }
     }
   }
+
   toggleReply(commentId: string) {
     this.replyingTo = this.replyingTo === commentId ? null : commentId;
   }
@@ -244,6 +235,7 @@ export class CommentsComponent implements OnInit, OnDestroy {
       return;
     }
     await this.commentService.toggleLikeComment(comment.id, this.userId);
+    // Real-time listener will update the likes
   }
 
   hasUserLiked(comment: Comment): boolean {
@@ -251,11 +243,12 @@ export class CommentsComponent implements OnInit, OnDestroy {
   }
 
   getReplies(parentId: string) {
+    // Replies are always sorted oldest first, directly from allComments
     return this.allComments.filter(c => c.parentId === parentId)
       .sort((a, b) => {
         const timeA = (a.createdAt instanceof Timestamp) ? a.createdAt.toMillis() : 0;
         const timeB = (b.createdAt instanceof Timestamp) ? b.createdAt.toMillis() : 0;
-        return timeA - timeB; // Replies usually sorted oldest first
+        return timeA - timeB;
       });
   }
 
@@ -267,6 +260,6 @@ export class CommentsComponent implements OnInit, OnDestroy {
     if (seconds < 60) return 'just now';
     if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
     if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
-    return `${Math.floor(seconds / 86400)}d ago`;
+    return `${Math.floor(seconds / 86400)}d ago`; // Corrected 'd ago'
   }
 }

@@ -45,7 +45,9 @@ export class CommentService {
 
   private listenToComments(articleId: string, subject: BehaviorSubject<Comment[]>) {
     const commentRef = collection(this.firebase.firestore, 'comments');
-    const q = query(commentRef, where('articleId', '==', articleId), orderBy('createdAt', 'desc'));
+    // Listen to all comments for the article, both top-level and replies
+    // No specific order is applied here as component will sort based on user preference
+    const q = query(commentRef, where('articleId', '==', articleId));
 
     onSnapshot(q, (snapshot) => {
       const comments: Comment[] = [];
@@ -82,11 +84,11 @@ export class CommentService {
     }
   }
 
-  // Modified likeComment method to handle unique likes/unlikes
   async toggleLikeComment(commentId: string, userId: string) {
     const commentDocRef = doc(this.firebase.firestore, 'comments', commentId);
 
     try {
+      // Use getDoc instead of getDocs with a query for a single document
       const commentSnapshot = await getDocs(query(collection(this.firebase.firestore, 'comments'), where('id', '==', commentId)));
 
       if (commentSnapshot.empty) {
@@ -147,19 +149,32 @@ export class CommentService {
     }
   }
 
-  async loadMoreComments(articleId: string, pageSize = 5, lastVisibleCommentId: string | null = null): Promise<Comment[]> {
+  // This method is now effectively not used by CommentsComponent for its main display,
+  // as the component handles client-side filtering/sorting/pagination from allComments.
+  // It remains available if other parts of the app require server-side paginated top-level comments.
+  async loadMoreComments(articleId: string, pageSize = 5, lastVisibleCommentId: string | null = null, sortBy: 'newest' | 'oldest' | 'mostLiked' = 'newest'): Promise<Comment[]> {
     const commentRef = collection(this.firebase.firestore, 'comments');
-    let q = query(
+    let q;
+    let orderField: string = 'createdAt';
+    let orderDirection: 'asc' | 'desc' = 'desc';
+
+    if (sortBy === 'oldest') {
+      orderDirection = 'asc';
+    } else if (sortBy === 'mostLiked') {
+      orderField = 'likes';
+      orderDirection = 'desc';
+    }
+
+    q = query(
       commentRef,
       where('articleId', '==', articleId),
-      where('parentId', '==', null),
-      orderBy('createdAt', 'desc'),
+      where('parentId', '==', null), // Only fetch top-level comments
+      orderBy(orderField, orderDirection),
       limit(pageSize)
     );
 
     let lastVisibleDoc: QueryDocumentSnapshot<DocumentData> | null = null;
     if (lastVisibleCommentId) {
-      // Fetch the last visible document itself to use with startAfter
       const lastDocQuery = query(commentRef, where('id', '==', lastVisibleCommentId), limit(1));
       const docSnapshot = await getDocs(lastDocQuery);
       if (!docSnapshot.empty) {
@@ -181,11 +196,21 @@ export class CommentService {
   }
 
   async deleteComment(commentId: string) {
-    const docRef = doc(this.firebase.firestore, 'comments', commentId);
+    const commentRef = collection(this.firebase.firestore, 'comments');
+    const commentDocRef = doc(commentRef, commentId);
+
     try {
-      await deleteDoc(docRef);
+      // Delete the comment itself
+      await deleteDoc(commentDocRef);
+
+      // Delete all replies associated with this comment
+      const repliesQuery = query(commentRef, where('parentId', '==', commentId));
+      const replySnapshot = await getDocs(repliesQuery);
+      const deletePromises = replySnapshot.docs.map(replyDoc => deleteDoc(replyDoc.ref));
+      await Promise.all(deletePromises);
+
     } catch (error) {
-      console.error('CommentService: Error deleting comment:', error);
+      console.error('CommentService: Error deleting comment and its replies:', error);
       throw error;
     }
   }

@@ -1,3 +1,5 @@
+/* src/app/features/articles/comments/comments.component.css */
+
 .comments-container {
   padding: 0px; /* Removed initial padding, as comment-panel provides it */
   padding-bottom: 20px; /* Keep bottom padding for overall look */
@@ -36,6 +38,35 @@
 .comment-input button:disabled {
   background-color: #cccccc;
   cursor: not-allowed;
+}
+
+.sort-options {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 20px;
+  font-size: 0.9em;
+  color: #555;
+}
+
+.sort-options button {
+  background-color: #f0f0f0;
+  color: #333;
+  border: 1px solid #ddd;
+  padding: 8px 12px;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.sort-options button:hover {
+  background-color: #e0e0e0;
+}
+
+.sort-options button.active {
+  background-color: #007bff;
+  color: white;
+  border-color: #007bff;
 }
 
 .comment {
@@ -183,6 +214,6 @@ button:last-child {
 }
 
 .comment-actions span.disabled-like {
-    cursor: not-allowed;
-    opacity: 0.6;
+  cursor: not-allowed;
+  opacity: 0.6;
 }
