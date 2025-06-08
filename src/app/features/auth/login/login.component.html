@@ -22,7 +22,8 @@
           [class.invalid]="loginForm.get('email')?.invalid && loginForm.get('email')?.touched"
         />
         <div class="error" *ngIf="loginForm.get('email')?.invalid && loginForm.get('email')?.touched">
-          Please enter a valid email.
+          <span *ngIf="loginForm.get('email')?.hasError('required')">Email is required.</span>
+          <span *ngIf="loginForm.get('email')?.hasError('email')">Please enter a valid email address.</span>
         </div>
       </div>
 
@@ -36,11 +37,11 @@
           [class.invalid]="loginForm.get('password')?.invalid && loginForm.get('password')?.touched"
         />
         <div class="error" *ngIf="loginForm.get('password')?.invalid && loginForm.get('password')?.touched">
-          Password is required.
+          <span *ngIf="loginForm.get('password')?.hasError('required')">Password is required.</span>
         </div>
       </div>
 
-      <button type="submit" [disabled]="isLoading">
+      <button type="submit" [disabled]="isLoading || loginForm.invalid">
         <ng-container *ngIf="!isLoading; else loading">Sign in</ng-container>
       </button>
       <ng-template #loading>
@@ -51,7 +52,7 @@
         <span>or</span>
       </div>
 
-      <button type="button" class="google-btn" (click)="signInWithGoogle()">
+      <button type="button" class="google-btn" (click)="signInWithGoogle()" [disabled]="isLoading">
         <img [src]="'assets/icons/google.svg'" alt="Google Icon" />
         Sign in with Google
       </button>

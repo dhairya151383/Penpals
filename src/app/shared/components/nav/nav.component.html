@@ -3,7 +3,7 @@
     <a routerLink="/dashboard" class="logo">Dashboard</a>
     <div class="nav-links">
       <a routerLink="/authors" class="nav-link">Authors</a>
-      <a routerLink="/create-article" class="nav-link" *ngIf="(authService.user$ | async)">Create Post</a>
+      <a routerLink="/create-article" class="nav-link" *ngIf="canCreateOrEdit$ | async">Create Post</a>
 
       <ng-container *ngIf="(authService.user$ | async) as user; else loginButton">
         <span class="welcome-text">Welcome, {{ user.displayName || user.email }}</span>

@@ -11,8 +11,9 @@
       <div class="search-and-tags-group">
         <div class="search-input-wrapper">
           <input type="search" [(ngModel)]="searchQuery" (ngModelChange)="onSearchChange($event)"
-            placeholder="Search..." class="search-input" />
-          <button class="search-button">
+            placeholder="Search by title, description, author, or tags..." class="search-input"
+            aria-label="Search articles" />
+          <button class="search-button" aria-label="Perform search">
             <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none"
               stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"
               class="feather feather-search">
@@ -23,16 +24,15 @@
         </div>
 
         <div class="tags-dropdown-container">
-          <div class="tags-selected-display" (click)="toggleDropdown()">
+          <div class="tags-selected-display" (click)="toggleDropdown()"
+            [class.active]="isDropdownOpen" aria-haspopup="true" [attr.aria-expanded]="isDropdownOpen"
+            aria-controls="tagsDropdownMenu">
             <ng-container *ngIf="selectedTags.length === 0">
               <span class="placeholder-tag">Select Tags</span>
             </ng-container>
             <ng-container *ngIf="selectedTags.length > 0">
               <span class="selected-tags-summary">
-                {{ selectedTags.length }} tag{{
-                selectedTags.length !== 1 ? 's' : ''
-                }}
-                selected
+                {{ selectedTags.length }} tag{{ selectedTags.length !== 1 ? 's' : '' }} selected
               </span>
             </ng-container>
             <svg class="dropdown-arrow" [class.rotated]="isDropdownOpen" xmlns="http://www.w3.org/2000/svg" width="20"
@@ -42,29 +42,30 @@
             </svg>
           </div>
 
-          <div class="tags-dropdown-menu" *ngIf="isDropdownOpen">
+          <div class="tags-dropdown-menu" *ngIf="isDropdownOpen" id="tagsDropdownMenu" role="menu">
             <label class="tag-checkbox-item select-all-option">
-              <input type="checkbox" [checked]="selectedTags.length === allTags.length && allTags.length > 0"
+              <input type="checkbox"
+                [checked]="selectedTags.length === allTags.length && allTags.length > 0"
                 [indeterminate]="selectedTags.length > 0 && selectedTags.length < allTags.length"
-                (change)="toggleSelectAllTags($event)" />
-              {{ selectedTags.length === allTags.length && allTags.length > 0 ? 'Deselect All' : 'Select
-              All' }}
+                (change)="toggleSelectAllTags($event)" aria-label="Select all tags" />
+              {{ selectedTags.length === allTags.length && allTags.length > 0 ? 'Deselect All' : 'Select All' }}
             </label>
             <div class="divider" *ngIf="allTags.length > 0"></div>
 
             <label *ngFor="let tag of allTags" class="tag-checkbox-item">
               <input type="checkbox" [value]="tag" [checked]="isTagSelected(tag)"
-                (change)="onTagCheckboxChange(tag, $event)" />
+                (change)="onTagCheckboxChange(tag, $event)" [attr.aria-label]="'Select tag ' + tag" />
               {{ tag }}
             </label>
             <div *ngIf="allTags.length === 0" class="no-tags-message">
-              No tags available
+              No tags available.
             </div>
           </div>
         </div>
 
         <div class="sort-dropdown-container">
-          <select [(ngModel)]="selectedSortOption" (ngModelChange)="onSortChange()" class="sort-select">
+          <select [(ngModel)]="selectedSortOption" (ngModelChange)="onSortChange()" class="sort-select"
+            aria-label="Sort articles by">
             <option value="latest">Sort by Latest</option>
             <option value="popular">Sort by Most Popular</option>
             <option value="titleAsc">Sort by Title (A-Z)</option>
@@ -74,6 +75,11 @@
     </div>
   </header>
 
+  <div *ngIf="errorMessage" class="error-banner">
+    <p>{{ errorMessage }}</p>
+    <button (click)="loadArticles()" class="retry-button">Retry</button>
+  </div>
+
   <div class="featured-articles-section">
     <app-article-list-carousel [cardsToShow]="1" [isFeaturedCarousel]="true" headerText="Featured Articles"></app-article-list-carousel>
   </div>
@@ -81,21 +87,22 @@
   <div class="articles-main-card">
     <div class="articles-grid">
       <app-article-card *ngFor="let article of displayArticles" [article]="article"></app-article-card>
-      <div *ngIf="filteredArticles.length === 0 && !loading" class="no-articles-message">
+      <div *ngIf="!loading && filteredArticles.length === 0 && !errorMessage" class="no-articles-message">
         No articles found matching your criteria.
       </div>
     </div>
+
     <div *ngIf="totalPages > 1" class="card-footer-pagination">
-      <button (click)="prevPage()" [disabled]="currentPage === 1" class="pagination-button">
+      <button (click)="prevPage()" [disabled]="currentPage === 1" class="pagination-button" aria-label="Previous page">
         Previous
       </button>
       <div class="page-numbers">
         <button *ngFor="let page of pages" (click)="goToPage(page)" [class.active]="currentPage === page"
-          class="pagination-button page-number">
+          class="pagination-button page-number" [attr.aria-label]="'Go to page ' + page">
           {{ page }}
         </button>
       </div>
-      <button (click)="nextPage()" [disabled]="currentPage === totalPages" class="pagination-button">
+      <button (click)="nextPage()" [disabled]="currentPage === totalPages" class="pagination-button" aria-label="Next page">
         Next
       </button>
     </div>

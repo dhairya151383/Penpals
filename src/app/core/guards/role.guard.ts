@@ -18,8 +18,8 @@ export class RoleGuard implements CanActivate {
 
   canActivate(route: ActivatedRouteSnapshot): Observable<boolean> {
     const expectedRole = route.data['expectedRole'] as string;
-    const allowSelfEdit = route.data['allowSelfEdit'] === true;
-    const routeId = route.paramMap.get('id');
+    const allowSelfEdit = route.data['allowSelfEdit'] === true; // This is for authors editing their own profile
+    const routeId = route.paramMap.get('id'); // ID from the route, e.g., author ID for editing
 
     return combineLatest([
       this.authService.authReady$,
@@ -34,11 +34,6 @@ export class RoleGuard implements CanActivate {
           return of(false);
         }
 
-        // ✅ Allow self-edit if applicable
-        if (allowSelfEdit && routeId && routeId === user.uid) {
-          return of(true);
-        }
-
         const userDocRef = doc(this.firestore, `users/${user.uid}`);
         return from(getDoc(userDocRef)).pipe(
           map(docSnap => {
@@ -47,21 +42,35 @@ export class RoleGuard implements CanActivate {
 
             // ❌ No roles found → access denied
             if (!roles) {
+              this.router.navigate(['/']); // Redirect to a safe page or dashboard
               return false;
             }
 
-            // ✅ Admins always allowed
+            // ✅ Admins always allowed, regardless of expected role or self-edit
+            // This check should ideally come first after user login and role retrieval
             if (roles.admin) {
               return true;
             }
 
-            // ✅ Check for expected role
-            if (roles[expectedRole as keyof typeof roles]) {
+            // ✅ Allow self-edit if applicable (e.g., author editing their own profile)
+            // This is checked only if the user is NOT an admin
+            if (allowSelfEdit && routeId && routeId === user.uid) {
+                // Ensure the user also has the expected role if self-edit is intended for specific roles
+                // For example, an author editing their own profile
+                if (roles[expectedRole as keyof typeof roles]) {
+                    return true;
+                }
+            }
+
+
+            // ✅ Check for expected role (for non-admin users)
+            if (expectedRole && roles[expectedRole as keyof typeof roles]) {
               return true;
             }
 
-            // ❌ Role missing → access denied
-            console.warn('Access Denied: User lacks role:', expectedRole);
+            // ❌ Role missing and not admin → access denied
+            console.warn('Access Denied: User lacks role:', expectedRole || 'general access');
+            this.router.navigate(['/']); // Redirect to a safe page or dashboard
             return false;
           })
         );
@@ -69,4 +78,3 @@ export class RoleGuard implements CanActivate {
     );
   }
 }
-

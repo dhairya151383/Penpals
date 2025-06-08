@@ -32,8 +32,8 @@
         <span [ngClass]="{'liked-icon': hasUserLiked(comment)}">👍</span> {{ comment.likes }}
       </span>
       <span (click)="toggleReply(comment.id)">Reply</span>
-      <span *ngIf="comment.userId === userId" (click)="enableEdit(comment)">Edit</span>
-      <span *ngIf="comment.userId === userId" (click)="deleteComment(comment.id)">Delete</span>
+      <span *ngIf="canModifyComment(comment)" (click)="enableEdit(comment)">Edit</span>
+      <span *ngIf="canModifyComment(comment)" (click)="deleteComment(comment.id)">Delete</span>
       <span (click)="toggleReplies(comment.id)">View Replies</span>
     </div>
 
@@ -60,8 +60,8 @@
             <span [ngClass]="{'liked-icon': hasUserLiked(reply)}">👍</span> {{ reply.likes }}
           </span>
           <span (click)="toggleReply(reply.id)">Reply</span>
-          <span *ngIf="reply.userId === userId" (click)="enableEdit(reply)">Edit</span>
-          <span *ngIf="reply.userId === userId" (click)="deleteComment(reply.id)">Delete</span>
+          <span *ngIf="canModifyComment(reply)" (click)="enableEdit(reply)">Edit</span>
+          <span *ngIf="canModifyComment(reply)" (click)="deleteComment(reply.id)">Delete</span>
         </div>
 
         <div *ngIf="replyingTo === reply.id" class="reply-box">

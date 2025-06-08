@@ -1,120 +1,122 @@
 <app-loading-spinner *ngIf="loading" />
 
-<form [formGroup]="form" (ngSubmit)="save()" class="article-creation-page" *ngIf="!loading && !error">
-  <div class="article-creation-container">
-    <div class="form-card">
-      <div class="card-header">
-        <h2>Edit Author</h2>
-        <hr />
-      </div>
-
-      <div class="article-form">
-        <div class="form-group avatar-upload">
-          <app-upload-image
-            [type]="'profilePic'"
-            [imageUrl]="avatarUrl"
-            (imageChange)="onImageChange($event)"
-          ></app-upload-image>
-          <div class="error" *ngIf="(formSubmitted || avatarUrlControl.touched || avatarUrlControl.dirty) && avatarUrlControl.hasError('pattern')">
-            Please enter a valid image URL (jpeg, jpg, gif, png, webp).
-          </div>
-        </div>
-
-        <div class="form-group">
-          <label for="name">Name</label>
-          <input id="name" type="text" formControlName="name" />
-          <div class="error" *ngIf="(formSubmitted || name.touched || name.dirty) && name.hasError('required')">
-            Name is required.
-          </div>
-          <div class="error" *ngIf="(formSubmitted || name.touched || name.dirty) && name.hasError('minlength')">
-            Name must be at least 2 characters long.
-          </div>
-          <div class="error" *ngIf="(formSubmitted || name.touched || name.dirty) && name.hasError('maxlength')">
-            Name cannot exceed 50 characters.
-          </div>
-        </div>
-
-        <div class="form-group tag-selector-container">
-          <label>Tags</label>
-          <app-tag-selector
-            [selectedTags]="tags"
-            (selectedTagsChange)="onTagChange($event)"
-            [tagType]="'author'"
-            [filterOnly]="false"
-          ></app-tag-selector>
-        </div>
-
-        <button type="submit" class="save-button" [disabled]="form.invalid || loading">Save</button>
-      </div>
-    </div>
-
-    <div class="editor-card">
-      <div class="card-header">
-        <h3>Author Details</h3>
-        <hr />
-      </div>
-
-      <div formGroupName="socialLinks" class="form-group">
-        <label>Social Links</label>
-
-        <div class="social-field twitter">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-label="Twitter icon" role="img">
-            <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.799-1.574 2.162-2.722-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.594 0 .509.055 1.003.155 1.481-5.399-.27-10.169-2.868-13.376-6.848-.547.934-.863 2.015-.863 3.161 0 2.246 1.14 4.254 2.873 5.429-.846-.026-1.644-.26-2.348-.647v.081c0 3.135 2.224 5.766 5.141 6.363-.428.113-.884.172-1.357.172-.335 0-.65-.035-.96-.092.819 2.564 3.171 4.444 5.955 4.494-2.204 1.73-4.99 2.766-8.02 2.766-.525 0-1.04-.03-1.547-.091 2.844 1.83 6.208 2.897 9.883 2.897 11.836 0 18.307-9.873 18.307-18.307 0-.278-.006-.557-.019-.836.858-.618 1.6-1.394 2.189-2.278z" />
-          </svg>
-          <input formControlName="twitter" placeholder="Twitter URL" />
-          <div class="error" *ngIf="(formSubmitted || twitter.touched || twitter.dirty) && twitter.hasError('pattern')">
-            Please enter a valid Twitter URL (e.g., https://twitter.com/username).
-          </div>
-        </div>
-
-        <div class="social-field linkedin">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-label="LinkedIn icon" role="img">
-            <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.761 0 5-2.239 5-5v-14c0-2.761-2.239-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
-          </svg>
-          <input formControlName="linkedin" placeholder="LinkedIn URL" />
-          <div class="error" *ngIf="(formSubmitted || linkedin.touched || linkedin.dirty) && linkedin.hasError('pattern')">
-            Please enter a valid LinkedIn URL (e.g., https://www.linkedin.com/in/username).
-          </div>
-        </div>
-
-        <div class="social-field facebook">
-          <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-label="Facebook icon" role="img">
-            <path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.909c0-1.09.272-1.909 1.909-1.909h2.091v-3h-3.159c-3.121 0-4.841 1.716-4.841 4.669v2.331z" />
-          </svg>
-          <input formControlName="facebook" placeholder="Facebook URL" />
-          <div class="error" *ngIf="(formSubmitted || facebook.touched || facebook.dirty) && facebook.hasError('pattern')">
-            Please enter a valid Facebook URL (e.g., https://www.facebook.com/username).
-          </div>
-        </div>
-      </div>
-
-      <div class="form-group bio-form-group">
-        <label for="bio">Bio</label>
-        <textarea
-          id="bio"
-          formControlName="bio"
-          rows="10"
-          [attr.maxlength]="bioCharacterLimit"
-          (input)="onBioChanged($event)"
-          class="bio-textarea"
-        ></textarea>
-        <div class="character-count" [class.error]="bioCharacterCount > bioCharacterLimit">
-          {{ bioCharacterCount }} / {{ bioCharacterLimit }} characters
-        </div>
-        <div class="error" *ngIf="(formSubmitted || bio.touched || bio.dirty) && bio.hasError('required')">
-          Bio is required.
-        </div>
-        <div class="error" *ngIf="(formSubmitted || bio.touched || bio.dirty) && bio.hasError('maxlength')">
-          Bio cannot exceed {{ bioCharacterLimit }} characters.
-        </div>
-      </div>
-
-      <div class="global-error" *ngIf="error">{{ error }}</div>
-    </div>
+<div *ngIf="!loading">
+  <div *ngIf="error" class="global-error-banner">
+    <p>{{ error }}</p>
+    <button class="close-error-button" (click)="error = null">✖</button>
   </div>
-</form>
 
-<ng-template #loadingTpl>
-  <app-loading-spinner *ngIf="loading" />
-  <p class="error" *ngIf="error">{{ error }}</p>
-</ng-template>
+  <form [formGroup]="form" (ngSubmit)="save()" class="article-creation-page">
+    <div class="article-creation-container">
+      <div class="form-card">
+        <div class="card-header">
+          <h2>Edit Author</h2>
+          <hr />
+        </div>
+
+        <div class="article-form">
+          <div class="form-group avatar-upload">
+            <app-upload-image
+              [type]="'profilePic'"
+              [imageUrl]="avatarUrl"
+              (imageChange)="onImageChange($event)"
+            ></app-upload-image>
+            <div class="error" *ngIf="(formSubmitted || avatarUrlControl.touched) && avatarUrlControl.hasError('pattern')">
+              Please enter a valid image URL (jpeg, jpg, gif, png, webp).
+            </div>
+            </div>
+
+          <div class="form-group">
+            <label for="name">Name</label>
+            <input id="name" type="text" formControlName="name" />
+            <div class="error" *ngIf="(formSubmitted || name.touched) && name.hasError('required')">
+              Name is required.
+            </div>
+            <div class="error" *ngIf="(formSubmitted || name.touched) && name.hasError('minlength')">
+              Name must be at least 2 characters long.
+            </div>
+            <div class="error" *ngIf="(formSubmitted || name.touched) && name.hasError('maxlength')">
+              Name cannot exceed 50 characters.
+            </div>
+          </div>
+
+          <div class="form-group tag-selector-container">
+            <label>Tags</label>
+            <app-tag-selector
+              [selectedTags]="tags"
+              (selectedTagsChange)="onTagChange($event)"
+              [tagType]="'author'"
+              [filterOnly]="false"
+            ></app-tag-selector>
+            </div>
+
+          <button type="submit" class="save-button" [disabled]="form.invalid || loading">
+            Save
+          </button>
+        </div>
+      </div>
+
+      <div class="editor-card">
+        <div class="card-header">
+          <h3>Author Details</h3>
+          <hr />
+        </div>
+
+        <div [formGroup]="socialLinksGroup" class="form-group social-links-group">
+          <label>Social Links</label>
+
+          <div class="social-field twitter">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-label="Twitter icon" role="img">
+              <path d="M24 4.557c-.883.392-1.832.656-2.828.775 1.017-.609 1.799-1.574 2.162-2.722-.951.564-2.005.974-3.127 1.195-.897-.957-2.178-1.555-3.594-1.555-3.594 0 .509.055 1.003.155 1.481-5.399-.27-10.169-2.868-13.376-6.848-.547.934-.863 2.015-.863 3.161 0 2.246 1.14 4.254 2.873 5.429-.846-.026-1.644-.26-2.348-.647v.081c0 3.135 2.224 5.766 5.141 6.363-.428.113-.884.172-1.357.172-.335 0-.65-.035-.96-.092.819 2.564 3.171 4.444 5.955 4.494-2.204 1.73-4.99 2.766-8.02 2.766-.525 0-1.04-.03-1.547-.091 2.844 1.83 6.208 2.897 9.883 2.897 11.836 0 18.307-9.873 18.307-18.307 0-.278-.006-.557-.019-.836.858-.618 1.6-1.394 2.189-2.278z" />
+            </svg>
+            <input formControlName="twitter" placeholder="Twitter URL" />
+            <div class="error" *ngIf="(formSubmitted || twitter.touched) && twitter.hasError('pattern')">
+              Please enter a valid Twitter URL (e.g., https://twitter.com/username).
+            </div>
+          </div>
+
+          <div class="social-field linkedin">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-label="LinkedIn icon" role="img">
+              <path d="M19 0h-14c-2.761 0-5 2.239-5 5v14c0 2.761 2.239 5 5 5h14c2.761 0 5-2.239 5-5v-14c0-2.761-2.239-5-5-5zm-11 19h-3v-11h3v11zm-1.5-12.268c-.966 0-1.75-.79-1.75-1.764s.784-1.764 1.75-1.764 1.75.79 1.75 1.764-.783 1.764-1.75 1.764zm13.5 12.268h-3v-5.604c0-3.368-4-3.113-4 0v5.604h-3v-11h3v1.765c1.396-2.586 7-2.777 7 2.476v6.759z" />
+            </svg>
+            <input formControlName="linkedin" placeholder="LinkedIn URL" />
+            <div class="error" *ngIf="(formSubmitted || linkedin.touched) && linkedin.hasError('pattern')">
+              Please enter a valid LinkedIn URL (e.g., https://www.linkedin.com/in/username).
+            </div>
+          </div>
+
+          <div class="social-field facebook">
+            <svg xmlns="http://www.w3.org/2000/svg" width="24" height="24" viewBox="0 0 24 24" fill="currentColor" aria-label="Facebook icon" role="img">
+              <path d="M9 8h-3v4h3v12h5v-12h3.642l.358-4h-4v-1.909c0-1.09.272-1.909 1.909-1.909h2.091v-3h-3.159c-3.121 0-4.841 1.716-4.841 4.669v2.331z" />
+            </svg>
+            <input formControlName="facebook" placeholder="Facebook URL" />
+            <div class="error" *ngIf="(formSubmitted || facebook.touched) && facebook.hasError('pattern')">
+              Please enter a valid Facebook URL (e.g., https://www.facebook.com/username).
+            </div>
+          </div>
+        </div>
+
+        <div class="form-group bio-form-group">
+          <label for="bio">Bio</label>
+          <textarea
+            id="bio"
+            formControlName="bio"
+            rows="10"
+            [attr.maxlength]="bioCharacterLimit"
+            (input)="onBioChanged($event)"
+            class="bio-textarea"
+          ></textarea>
+          <div class="character-count" [class.error]="bioCharacterCount > bioCharacterLimit">
+            {{ bioCharacterCount }} / {{ bioCharacterLimit }} characters
+          </div>
+          <div class="error" *ngIf="(formSubmitted || bio.touched) && bio.hasError('required')">
+            Bio is required.
+          </div>
+          <div class="error" *ngIf="(formSubmitted || bio.touched) && bio.hasError('maxlength')">
+            Bio cannot exceed {{ bioCharacterLimit }} characters.
+          </div>
+        </div>
+      </div>
+    </div>
+  </form>
+</div>

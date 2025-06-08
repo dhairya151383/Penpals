@@ -3,28 +3,39 @@ import {
   signInWithPopup,
   GoogleAuthProvider,
   signOut,
-  User,
+  User, // Keep User for Firebase original type
   updateProfile,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   onAuthStateChanged,
 } from '@angular/fire/auth';
-import { Observable, BehaviorSubject } from 'rxjs';
-import { Firestore, doc, setDoc } from '@angular/fire/firestore';
-import { Users } from './../../shared/models/user.model';
+import { Observable, BehaviorSubject, from, of } from 'rxjs'; // Import 'from' and 'of'
+import { Firestore, doc, setDoc, getDoc } from '@angular/fire/firestore'; // Import 'getDoc'
+import { switchMap, map } from 'rxjs/operators'; // Import 'switchMap' and 'map'
+
+import { Users } from './../../shared/models/user.model'; // Your custom Users model
 import { FirebaseService } from '../services/firebase.service';
 import { AuthorService } from './author.service';
 import { Author } from '../../shared/models/author.model';
 import { Router } from '@angular/router';
 
+// --- Define the AppUser interface ---
+// This extends the Firebase User interface with your custom 'roles' property.
+export interface AppUser extends User {
+  roles?: {
+    admin?: boolean;
+    user?: boolean;
+    author?: boolean;
+  };
+}
+
 @Injectable({
   providedIn: 'root',
 })
 export class AuthService {
-  user$: Observable<User | null>;
+  user$: Observable<AppUser | null>; // Change type to AppUser | null
   authReady$ = new BehaviorSubject<boolean>(false);
   private firestore: Firestore;
-  // Define specific default avatar URLs
   private readonly defaultMaleAvatarUrl = 'assets/images/maleAvatar.jpg';
   private readonly defaultFemaleAvatarUrl = 'assets/images/femaleAvatar.jpg';
   private readonly defaultGenericAvatarUrl = 'assets/images/defaultAvatar.jpg';
@@ -36,12 +47,33 @@ export class AuthService {
   ) {
     this.firestore = firebaseService.firestore;
 
-    this.user$ = new Observable((subscriber) => {
+    // --- Modify user$ to include roles from Firestore ---
+    this.user$ = new Observable<User | null>((subscriber) => {
+      // Listen for Firebase auth state changes
       return onAuthStateChanged(this.firebaseService.auth, (user) => {
         subscriber.next(user);
       });
-    });
+    }).pipe(
+      // Use switchMap to fetch user roles from Firestore when auth state changes
+      switchMap(user => {
+        if (user) {
+          const userDocRef = doc(this.firestore, `users/${user.uid}`);
+          // Convert the Firestore getDoc Promise to an Observable using 'from'
+          return from(getDoc(userDocRef)).pipe(
+            map(docSnap => {
+              const userData = docSnap.data() as Users | undefined;
+              // Merge the roles from Firestore data into the Firebase User object
+              return { ...user, roles: userData?.roles } as AppUser;
+            })
+          );
+        } else {
+          // If no user is logged in, emit null
+          return of(null);
+        }
+      })
+    );
 
+    // Set authReady$ to true once Firebase Auth is initialized
     onAuthStateChanged(this.firebaseService.auth, () => {
       this.authReady$.next(true);
     });
@@ -51,9 +83,6 @@ export class AuthService {
     try {
       const provider = new GoogleAuthProvider();
       const result = await signInWithPopup(this.firebaseService.auth, provider);
-      // For Google sign-in, we typically don't get gender directly.
-      // You might infer it from other data or keep 'unknown' or 'defaultGenericAvatarUrl'.
-      // For this example, we'll use 'unknown' for gender and the generic avatar.
       await this.saveUserData(result.user, undefined, 'google', 'user', undefined, 'unknown');
     } catch (error) {
       console.error('Google Sign-In Error:', error);
@@ -77,16 +106,14 @@ export class AuthService {
     username: string,
     role: string,
     displayName: string,
-    gender: string // Gender is now a required parameter
+    gender: string
   ): Promise<User | null> {
     try {
       const result = await createUserWithEmailAndPassword(this.firebaseService.auth, email, password);
       await updateProfile(result.user, { displayName });
-      // Pass gender to saveUserData
       await this.saveUserData(result.user, username, 'email', role, displayName, gender);
 
       if (role === 'author') {
-        // When an author registers, determine their avatar based on gender if no photoURL exists
         const avatarUrl = result.user.photoURL || this.getAvatarUrlByGender(gender);
         const authorData: Author = {
           id: result.user.uid,
@@ -114,14 +141,13 @@ export class AuthService {
     }
   }
 
-  // Helper method to get avatar URL based on gender
   private getAvatarUrlByGender(gender: string): string {
     if (gender === 'male') {
       return this.defaultMaleAvatarUrl;
     } else if (gender === 'female') {
       return this.defaultFemaleAvatarUrl;
     } else {
-      return this.defaultGenericAvatarUrl; // Fallback
+      return this.defaultGenericAvatarUrl;
     }
   }
 
@@ -131,7 +157,7 @@ export class AuthService {
     provider: string = 'google',
     role: string = 'user',
     displayName?: string,
-    gender: string = 'unknown' // Ensure gender is always passed, default to 'unknown'
+    gender: string = 'unknown'
   ) {
     const roles: { admin: boolean; user: boolean; author?: boolean } = {
       admin: false,
@@ -144,19 +170,18 @@ export class AuthService {
       roles[role] = true;
     }
 
-    // Determine the photoURL based on the provided user photoURL, otherwise by gender
     const finalPhotoURL = user.photoURL || this.getAvatarUrlByGender(gender);
 
     const userData: Users = {
       uid: user.uid,
       email: user.email || '',
       username: username || user.displayName || user.email?.split('@')[0] || 'anonymous',
-      gender, // Assign the gender here
+      gender,
       roles,
       createdAt: new Date().toISOString(),
       profile: {
         displayName: displayName || user.displayName || username || 'Anonymous User',
-        photoURL: finalPhotoURL, // Use the determined finalPhotoURL
+        photoURL: finalPhotoURL,
       },
       provider,
     };

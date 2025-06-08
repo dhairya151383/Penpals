@@ -22,8 +22,8 @@ export class ArticleListCarouselComponent implements OnInit, OnChanges {
   @Input() currentArticleId?: string;
   @Input() cardsToShow: number = 3;
   @Input() showCardTags: boolean = true;
-  @Input() filterPublished: boolean = true; 
-  @Input() noArticle: boolean = false;
+  @Input() filterPublished: boolean = true;
+  @Input() noArticle: boolean = false; // This input now dictates if ALL articles (published/unpublished) are considered
 
   articles: Article[] = [];
   loading: boolean = true;
@@ -43,17 +43,18 @@ export class ArticleListCarouselComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
+    // Re-load articles if any relevant input changes
     if (
       changes['authorId'] ||
       changes['isFeaturedCarousel'] ||
-      changes['headerText'] || // Added headerText to trigger reload on change
+      changes['headerText'] ||
       changes['currentArticleTags'] ||
       changes['currentArticleAuthorId'] ||
       changes['currentArticleId'] ||
       changes['cardsToShow'] ||
       changes['showCardTags'] ||
-      changes['filterPublished']||
-      changes['noArticle']
+      changes['filterPublished'] ||
+      changes['noArticle'] // Ensure this also triggers reload
     ) {
       this.updateResponsiveOptions();
       this.loadArticles();
@@ -62,7 +63,7 @@ export class ArticleListCarouselComponent implements OnInit, OnChanges {
 
   private updateResponsiveOptions(): void {
     const numVisible = this.cardsToShow;
-    const numScroll = this.cardsToShow === 1 ? 1 : 1;
+    const numScroll = this.cardsToShow === 1 ? 1 : 1; // Always scroll one by default for simplicity
 
     this.currentResponsiveOptions = [
       { breakpoint: '1199px', numVisible: numVisible, numScroll: numScroll },
@@ -84,22 +85,28 @@ export class ArticleListCarouselComponent implements OnInit, OnChanges {
         return article;
       }));
 
-      // --- CRUCIAL CHANGE HERE ---
-      const availableArticles = articlesWithAuthors.filter(article => {
-        // Exclude the current article being viewed
-        if (article.id === this.currentArticleId) {
+      // --- CRUCIAL FILTERING LOGIC ---
+      let filteredArticles: Article[] = articlesWithAuthors.filter(article => {
+        // Exclude the current article being viewed if `currentArticleId` is provided
+        if (this.currentArticleId && article.id === this.currentArticleId) {
           return false;
         }
 
-        // Apply the filterPublished logic correctly:
+        // If 'noArticle' is true, it means we want ALL articles, regardless of published status.
+        // This effectively overrides the 'filterPublished' input.
+        if (this.noArticle) {
+          return true;
+        }
+
+        // Otherwise, apply the 'filterPublished' logic:
         // If filterPublished is TRUE, only include articles where isPublished is TRUE.
         // If filterPublished is FALSE, only include articles where isPublished is FALSE.
         return this.filterPublished === article.isPublished;
       });
-      // --- END CRUCIAL CHANGE ---
+      // --- END CRUCIAL FILTERING LOGIC ---
 
       if (this.isFeaturedCarousel) {
-        this.articles = availableArticles
+        this.articles = filteredArticles
           .filter(article => article.isFeatured)
           .sort((a, b) => {
             const dateA = a.updatedAt ? new Date(a.updatedAt) : new Date(a.publishDate || 0);
@@ -108,8 +115,8 @@ export class ArticleListCarouselComponent implements OnInit, OnChanges {
           })
           .slice(0, 10);
       } else if (this.authorId) {
-        // When authorId is present, we filter by author AND apply the already determined published status
-        this.articles = availableArticles
+        // When authorId is present, filter by author from the already filtered set
+        this.articles = filteredArticles
           .filter(article => article.authorId === this.authorId)
           .sort((a, b) => {
             const dateA = new Date(a.updatedAt || a.publishDate || 0);
@@ -119,62 +126,68 @@ export class ArticleListCarouselComponent implements OnInit, OnChanges {
       } else if (this.currentArticleId && this.currentArticleTags.length > 0) {
         this.headerText = 'Related Articles';
 
-        const filteredArticles = new Set<Article>(); // Renamed from relatedCandidates for clarity
+        const relatedCandidates = new Set<Article>();
 
+        // Add articles by the same author
         if (this.currentArticleAuthorId) {
-          availableArticles
+          filteredArticles
             .filter(article => article.authorId === this.currentArticleAuthorId)
-            .forEach(article => filteredArticles.add(article));
+            .forEach(article => relatedCandidates.add(article));
         }
 
+        // Add articles with common tags
         if (this.currentArticleTags && this.currentArticleTags.length > 0) {
-          availableArticles
+          filteredArticles
             .filter(article =>
               article.tags && article.tags.some(tag => this.currentArticleTags.includes(tag))
             )
-            .forEach(article => filteredArticles.add(article));
+            .forEach(article => relatedCandidates.add(article));
         }
 
-        let relatedArticles = Array.from(filteredArticles);
+        let finalRelatedArticles = Array.from(relatedCandidates);
 
-        if (relatedArticles.length > 0) {
-          relatedArticles.sort((a, b) => {
+        // Sort related articles: same author first, then common tags, then by date
+        if (finalRelatedArticles.length > 0) {
+          finalRelatedArticles.sort((a, b) => {
             const dateA = new Date(a.updatedAt || a.publishDate || 0);
             const dateB = new Date(b.updatedAt || b.publishDate || 0);
 
             const isAByCurrentAuthor = a.authorId === this.currentArticleAuthorId;
             const isBByCurrentAuthor = b.authorId === this.currentArticleAuthorId;
 
+            // Prioritize articles by the same author
             if (isAByCurrentAuthor && !isBByCurrentAuthor) return -1;
             if (!isAByCurrentAuthor && isBByCurrentAuthor) return 1;
 
             const aHasCommonTags = a.tags && a.tags.some(tag => this.currentArticleTags.includes(tag));
             const bHasCommonTags = b.tags && b.tags.some(tag => this.currentArticleTags.includes(tag));
 
+            // Prioritize articles with common tags
             if (aHasCommonTags && !bHasCommonTags) return -1;
             if (!aHasCommonTags && bHasCommonTags) return 1;
 
+            // Fallback to sorting by date (latest first)
             return dateB.getTime() - dateA.getTime();
           });
         }
 
-        if (relatedArticles.length === 0) {
+        // If no related articles are found, fallback to latest published articles
+        if (finalRelatedArticles.length === 0) {
           this.headerText = 'Latest Articles';
-          // Fallback to latest articles if no related ones found, ensuring they respect the filterPublished state
-          relatedArticles = availableArticles
+          finalRelatedArticles = filteredArticles // Use filteredArticles to respect `noArticle` or `filterPublished`
             .sort((a, b) => {
               const dateA = new Date(a.updatedAt || a.publishDate || 0);
               const dateB = new Date(b.updatedAt || b.publishDate || 0);
               return dateB.getTime() - dateA.getTime();
             })
-            .slice(0, 10);
+            .slice(0, 10); // Limit fallback to 10 articles
         }
 
-        this.articles = relatedArticles;
+        this.articles = finalRelatedArticles;
 
       } else {
         // Default case: show non-featured articles, respecting the published status
-        this.articles = availableArticles
+        this.articles = filteredArticles
           .filter(article => !article.isFeatured)
           .sort((a, b) => {
             const dateA = new Date(a.updatedAt || a.publishDate || 0);

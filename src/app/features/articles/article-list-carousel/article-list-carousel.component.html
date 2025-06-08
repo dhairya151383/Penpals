@@ -15,7 +15,9 @@
     <p-carousel
       *ngIf="articles.length > 0"
       [value]="articles"
-      [numVisible]="cardsToShow" [numScroll]="cardsToShow === 1 ? 1 : 1" [responsiveOptions]="currentResponsiveOptions"
+      [numVisible]="cardsToShow"
+      [numScroll]="cardsToShow === 1 ? 1 : 1"
+      [responsiveOptions]="currentResponsiveOptions"
       [circular]="true"
       [autoplayInterval]="isFeaturedCarousel ? 7000 : 5000"
     >
@@ -27,6 +29,9 @@
     </p-carousel>
     <div *ngIf="articles.length === 0 && !noArticle" class="no-articles-message">
       <p>No articles found for the given criteria.</p>
+    </div>
+    <div *ngIf="articles.length === 0 && noArticle" class="no-articles-message">
+      <p>No articles (published or unpublished) found.</p>
     </div>
   </ng-container>
 </div>

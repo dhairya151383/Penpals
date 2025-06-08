@@ -1,13 +1,13 @@
-import { Component, OnInit, OnDestroy } from '@angular/core'; // Add OnDestroy
+import { Component, OnInit, OnDestroy } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { AuthorService } from '../../../core/services/author.service';
 import { Author } from '../../../shared/models/author.model';
-import { AuthService } from '../../../core/services/auth.service';
+import { AuthService, AppUser } from '../../../core/services/auth.service'; // Import AppUser
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
 import { ArticleListCarouselComponent } from '../../articles/article-list-carousel/article-list-carousel.component';
-import { Observable, combineLatest, from, Subscription } from 'rxjs'; // Import necessary RxJS
-import { switchMap, tap, filter, map, catchError } from 'rxjs/operators'; // Import operators
+import { Observable, combineLatest, from, Subscription, of } from 'rxjs'; // Import 'of'
+import { switchMap, tap, filter, map, catchError } from 'rxjs/operators';
 
 @Component({
   selector: 'app-author-details',
@@ -21,11 +21,11 @@ import { switchMap, tap, filter, map, catchError } from 'rxjs/operators'; // Imp
   templateUrl: './author-details.component.html',
   styleUrls: ['./author-details.component.css']
 })
-export class AuthorDetailsComponent implements OnInit, OnDestroy { // Implement OnDestroy
+export class AuthorDetailsComponent implements OnInit, OnDestroy {
   author: Author | null = null;
   canEdit = false;
-  loading = true; // Set to true initially, will be set to false by observable
-  private subscriptions = new Subscription(); // To manage subscriptions
+  loading = true;
+  private subscriptions = new Subscription();
 
   constructor(
     private route: ActivatedRoute,
@@ -34,42 +34,73 @@ export class AuthorDetailsComponent implements OnInit, OnDestroy { // Implement 
   ) {}
 
   ngOnInit() {
-    this.loading = true; // Ensure loading is true when starting to fetch
+    this.loading = true;
 
     const authorId$ = this.route.paramMap.pipe(
       map(params => params.get('id')),
-      filter(id => !!id) // Only proceed if id exists
+      filter(id => !!id)
     );
 
     this.subscriptions.add(
       combineLatest([
         authorId$.pipe(
-          switchMap(id => from(this.authorService.getById(id!))) // Convert Promise to Observable
+          switchMap(id => from(this.authorService.getById(id!)).pipe(
+            catchError(err => {
+              console.error('Error fetching author:', err);
+              // Handle specific error (e.g., author not found)
+              // Maybe navigate to a 404 page or display a message
+              this.author = null; // Ensure author is null on error
+              return of(null); // Return observable of null to continue combineLatest
+            })
+          ))
         ),
         this.authService.user$.pipe(
           filter(user => this.authService.authReady$.value), // Ensure auth state is ready
-          map(user => user?.uid ?? null) // Get the UID
+          // No map to UID here, we need the whole user object to check roles
+          catchError(err => {
+            console.error('Error fetching auth user:', err);
+            return of(null); // Return observable of null to continue combineLatest
+          })
         )
       ]).pipe(
-        tap(([author, currentUserId]) => {
+        tap(([author, appUser]) => { // Renamed user to appUser for clarity as it's AppUser type
           this.author = author;
-          this.canEdit = currentUserId === author?.id;
-          this.loading = false; // Set loading to false once all data is available
-           console.log('Author ID:', author?.id);
-      console.log('Logged-in User UID:', currentUserId);
-      console.log('Can Edit (author.id === user.uid):', this.canEdit);
+
+          // Determine canEdit logic
+          const currentUserId = appUser?.uid ?? null;
+          const isAdmin = (appUser as AppUser)?.roles?.admin === true; // Check admin role
+
+          // An author can edit their own profile OR if the user is an admin
+          this.canEdit = (currentUserId !== null && currentUserId === author?.id) || isAdmin;
+
+          this.loading = false; // Data is loaded (or an error occurred and we handled it)
+
+          // Debugging logs (can be removed in production)
+          console.log('Author ID:', author?.id);
+          console.log('Logged-in User UID:', currentUserId);
+          console.log('Is Admin:', isAdmin);
+          console.log('Can Edit (author.id === user.uid || isAdmin):', this.canEdit);
         }),
         catchError(error => {
-          console.error('Error fetching author details or user:', error);
+          // This outer catchError is for errors occurring within the combineLatest pipeline itself,
+          // less likely if inner catchErrors are handled, but good for robustness.
+          console.error('Error in combineLatest stream:', error);
           this.loading = false;
-          // Optionally show an error message to the user
           return []; // Return an empty observable to complete the stream
         })
-      ).subscribe() // Subscribe to initiate the data flow
+      ).subscribe(
+        () => {
+          // Optional: handle successful emission if needed, though tap usually suffices
+        },
+        (error) => {
+          // Handle subscription-level errors if any were not caught by catchError operators
+          console.error('Subscription error in AuthorDetailsComponent:', error);
+        }
+      )
     );
   }
 
   ngOnDestroy(): void {
-    this.subscriptions.unsubscribe(); // Unsubscribe to prevent memory leaks
+    this.subscriptions.unsubscribe();
   }
 }

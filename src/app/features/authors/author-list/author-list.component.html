@@ -1,11 +1,27 @@
 <app-loading-spinner *ngIf="loading" />
+
 <div class="author-list-wrapper" *ngIf="!loading">
   <h2>All Authors</h2>
+
+  <div *ngIf="error" class="error-message">
+    <p>{{ error }}</p>
+    <button (click)="ngOnInit()">Retry Loading</button>
+  </div>
+
   <div class="author-list-card">
     <div class="filter-bar-card">
       <div class="filter-bar">
-        <input [(ngModel)]="filterTerm" (input)="applyFilters()" placeholder="Search by name..." />
-        <select [(ngModel)]="sortOption" (change)="applyFilters()">
+        <input
+          [(ngModel)]="filterTerm"
+          (input)="applyFilters()"
+          placeholder="Search by name..."
+          aria-label="Search authors by name"
+        />
+        <select
+          [(ngModel)]="sortOption"
+          (change)="applyFilters()"
+          aria-label="Sort authors by"
+        >
           <option value="name-asc">Sort by Name (A-Z)</option>
           <option value="name-desc">Sort by Name (Z-A)</option>
           <option value="date-newest">Newest</option>
@@ -13,12 +29,30 @@
         </select>
       </div>
     </div>
+
     <div class="author-cards-container">
+      <div *ngIf="filteredAuthors.length === 0 && !loading && !error" class="no-authors-message">
+        <p>No authors found matching your criteria.</p>
+      </div>
+
       <div class="author-card" *ngFor="let author of filteredAuthors">
-        <div class="author-card-content"> <img *ngIf="author.avatarUrl" [src]="author.avatarUrl" alt="{{ author.name }}" />
-            <div class="author-info">
-              <a [routerLink]="['/author', author.id]" class="author-name">{{ author.name }}</a>
-              <div *ngIf="author.bio" class="author-bio-display" [innerHTML]="author.bio"></div>
+        <div class="author-card-content">
+          <img
+            *ngIf="author.avatarUrl"
+            [src]="author.avatarUrl"
+            alt="{{ author.name }}'s avatar"
+            class="author-avatar"
+          />
+          <img
+            *ngIf="!author.avatarUrl"
+            src="assets/images/defaultAvatar.jpg"
+            alt="Default avatar"
+            class="author-avatar default"
+          />
+
+          <div class="author-info">
+            <a [routerLink]="['/author', author.id]" class="author-name">{{ author.name }}</a>
+            <div *ngIf="author.bio" class="author-bio-display" [innerHTML]="getTruncatedBio(author.bio)"></div>
             </div>
         </div>
       </div>

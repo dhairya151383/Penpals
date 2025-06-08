@@ -15,119 +15,67 @@
       </p>
 
       <form [formGroup]="registerForm" (ngSubmit)="onRegister()" novalidate>
-        <div class="input-row">
-          <select formControlName="title" [class.input-error]="
-              registerForm.get('title')?.invalid &&
-              registerForm.get('title')?.touched
-            ">
-            <option value="Mr">Mr</option>
-            <option value="Mrs/Miss">Mrs/Miss</option>
-          </select>
+        <div class="input-group">
+          <div class="input-row">
+            <select formControlName="title" [class.input-error]="f['title'].invalid && f['title'].touched">
+              <option value="" disabled selected>Select Title</option> <option value="Mr">Mr</option>
+              <option value="Mrs/Miss">Mrs/Miss</option>
+            </select>
 
-          <input type="text" placeholder="First Name" formControlName="firstName" [class.input-error]="
-              registerForm.get('firstName')?.invalid &&
-              registerForm.get('firstName')?.touched
-            " />
-        </div>
-        <div *ngIf="
-            registerForm.get('title')?.errors &&
-            registerForm.get('title')?.touched
-          " class="error-text">
-          <small *ngIf="registerForm.get('title')?.errors?.['required']">
-            Title is required.
-          </small>
-        </div>
-        <div *ngIf="
-            registerForm.get('firstName')?.errors &&
-            registerForm.get('firstName')?.touched
-          " class="error-text">
-          <small *ngIf="registerForm.get('firstName')?.errors?.['required']">
-            First name is required.
-          </small>
+            <input type="text" placeholder="First Name" formControlName="firstName"
+              [class.input-error]="f['firstName'].invalid && f['firstName'].touched" />
+          </div>
+          <div class="error-container">
+            <div class="error-text" *ngIf="f['title'].invalid && f['title'].touched">
+              <small *ngIf="f['title'].hasError('required')">Title is required.</small>
+            </div>
+            <div class="error-text" *ngIf="f['firstName'].invalid && f['firstName'].touched">
+              <small *ngIf="f['firstName'].hasError('required')">First name is required.</small>
+            </div>
+          </div>
         </div>
 
+        <div class="input-group">
+          <input type="text" placeholder="Last Name (optional)" formControlName="lastName"
+            [class.input-error]="f['lastName'].invalid && f['lastName'].touched" />
+          </div>
 
-        <div class="input-row">
-          <input type="text" placeholder="Last Name (optional)" formControlName="lastName" [class.input-error]="
-              registerForm.get('lastName')?.invalid &&
-              registerForm.get('lastName')?.touched
-            " />
-        </div>
-        <div>
-          <input type="email" placeholder="Email" formControlName="email" [class.input-error]="
-              registerForm.get('email')?.invalid &&
-              registerForm.get('email')?.touched
-            " />
-        </div>
-        <div *ngIf="
-            registerForm.get('email')?.errors &&
-            registerForm.get('email')?.touched
-          " class="error-text">
-          <small *ngIf="registerForm.get('email')?.errors?.['required']">
-            Email is required.
-          </small>
-          <small *ngIf="registerForm.get('email')?.errors?.['email']">
-            Please enter a valid email.
-          </small>
+        <div class="input-group">
+          <input type="email" placeholder="Email" formControlName="email"
+            [class.input-error]="f['email'].invalid && f['email'].touched" />
+          <div class="error-text" *ngIf="f['email'].invalid && f['email'].touched">
+            <small *ngIf="f['email'].hasError('required')">Email is required.</small>
+            <small *ngIf="f['email'].hasError('email')">Please enter a valid email address.</small>
+          </div>
         </div>
 
-        <div>
-          <input type="password" placeholder="Enter your password" formControlName="password" [class.input-error]="
-              registerForm.get('password')?.invalid &&
-              registerForm.get('password')?.touched
-            " />
-        </div>
-        <div *ngIf="
-            registerForm.get('password')?.errors &&
-            registerForm.get('password')?.touched
-          " class="error-text">
-          <small *ngIf="registerForm.get('password')?.errors?.['required']">
-            Password is required.
-          </small>
-          <small *ngIf="registerForm.get('password')?.errors?.['minlength']">
-            Password must be at least 6 characters.
-          </small>
+        <div class="input-group">
+          <input type="password" placeholder="Enter your password" formControlName="password"
+            [class.input-error]="f['password'].invalid && f['password'].touched" />
+          <div class="error-text" *ngIf="f['password'].invalid && f['password'].touched">
+            <small *ngIf="f['password'].hasError('required')">Password is required.</small>
+            <small *ngIf="f['password'].hasError('minlength')">Password must be at least 6 characters.</small>
+          </div>
         </div>
 
-        <div>
-          <input type="password" placeholder="Confirm password" formControlName="confirmPassword" [class.input-error]="
-              (registerForm.get('confirmPassword')?.invalid &&
-                registerForm.get('confirmPassword')?.touched) ||
-              registerForm.errors?.['passwordMismatch']
-            " />
-        </div>
-        <div *ngIf="
-            (registerForm.get('confirmPassword')?.errors &&
-              registerForm.get('confirmPassword')?.touched) ||
-            (registerForm.errors?.['passwordMismatch'] &&
-              registerForm.get('confirmPassword')?.touched)
-          " class="error-text">
-          <small *ngIf="registerForm.get('confirmPassword')?.errors?.['required']">
-            Confirm password is required.
-          </small>
-          <small *ngIf="registerForm.errors?.['passwordMismatch']">
-            Passwords do not match.
-          </small>
+        <div class="input-group">
+          <input type="password" placeholder="Confirm password" formControlName="confirmPassword"
+            [class.input-error]="f['confirmPassword'].invalid && f['confirmPassword'].touched || registerForm.hasError('passwordMismatch') && f['confirmPassword'].touched" />
+          <div class="error-text" *ngIf="f['confirmPassword'].invalid && f['confirmPassword'].touched || registerForm.hasError('passwordMismatch') && f['confirmPassword'].touched">
+            <small *ngIf="f['confirmPassword'].hasError('required')">Confirm password is required.</small>
+            <small *ngIf="registerForm.hasError('passwordMismatch')">Passwords do not match.</small>
+          </div>
         </div>
 
-        <div>
-          <select formControlName="role" [class.input-error]="
-              registerForm.get('role')?.invalid &&
-              registerForm.get('role')?.touched
-            ">
-            <option value="" disabled>Select Role</option>
+        <div class="input-group">
+          <select formControlName="role" [class.input-error]="f['role'].invalid && f['role'].touched">
+            <option value="" disabled selected>Select Role</option>
             <option value="user">User</option>
-            <option value="admin">Admin</option>
             <option value="author">Author</option>
-          </select>
-        </div>
-        <div *ngIf="
-            registerForm.get('role')?.errors &&
-            registerForm.get('role')?.touched
-          " class="error-text">
-          <small *ngIf="registerForm.get('role')?.errors?.['required']">
-            Please select a role.
-          </small>
+            </select>
+          <div class="error-text" *ngIf="f['role'].invalid && f['role'].touched">
+            <small *ngIf="f['role'].hasError('required')">Please select a role.</small>
+          </div>
         </div>
 
         <div *ngIf="errorMessage" class="error-box">
