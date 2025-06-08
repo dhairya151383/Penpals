@@ -22,6 +22,7 @@ export class ArticleListCarouselComponent implements OnInit, OnChanges {
   @Input() currentArticleId?: string;
   @Input() cardsToShow: number = 3;
   @Input() showCardTags: boolean = true;
+  @Input() filterPublished: boolean = true; // Default: show only published
 
   articles: Article[] = [];
   loading: boolean = true;
@@ -44,11 +45,13 @@ export class ArticleListCarouselComponent implements OnInit, OnChanges {
     if (
       changes['authorId'] ||
       changes['isFeaturedCarousel'] ||
+      changes['headerText'] || // Added headerText to trigger reload on change
       changes['currentArticleTags'] ||
       changes['currentArticleAuthorId'] ||
       changes['currentArticleId'] ||
       changes['cardsToShow'] ||
-      changes['showCardTags']
+      changes['showCardTags'] ||
+      changes['filterPublished']
     ) {
       this.updateResponsiveOptions();
       this.loadArticles();
@@ -57,12 +60,12 @@ export class ArticleListCarouselComponent implements OnInit, OnChanges {
 
   private updateResponsiveOptions(): void {
     const numVisible = this.cardsToShow;
-    const numScroll = this.cardsToShow === 1 ? 1 : 1; // Scroll one at a time for multiple cards, always 1 for single
+    const numScroll = this.cardsToShow === 1 ? 1 : 1;
 
     this.currentResponsiveOptions = [
       { breakpoint: '1199px', numVisible: numVisible, numScroll: numScroll },
-      { breakpoint: '991px', numVisible: Math.min(numVisible, 2), numScroll: numScroll }, // Show max 2 on medium screens
-      { breakpoint: '767px', numVisible: 1, numScroll: 1 } // Always show 1 on small screens
+      { breakpoint: '991px', numVisible: Math.min(numVisible, 2), numScroll: numScroll },
+      { breakpoint: '767px', numVisible: 1, numScroll: 1 }
     ];
   }
 
@@ -79,7 +82,19 @@ export class ArticleListCarouselComponent implements OnInit, OnChanges {
         return article;
       }));
 
-      const availableArticles = articlesWithAuthors.filter(article => article.id !== this.currentArticleId && article.isPublished);
+      // --- CRUCIAL CHANGE HERE ---
+      const availableArticles = articlesWithAuthors.filter(article => {
+        // Exclude the current article being viewed
+        if (article.id === this.currentArticleId) {
+          return false;
+        }
+
+        // Apply the filterPublished logic correctly:
+        // If filterPublished is TRUE, only include articles where isPublished is TRUE.
+        // If filterPublished is FALSE, only include articles where isPublished is FALSE.
+        return this.filterPublished === article.isPublished;
+      });
+      // --- END CRUCIAL CHANGE ---
 
       if (this.isFeaturedCarousel) {
         this.articles = availableArticles
@@ -91,6 +106,7 @@ export class ArticleListCarouselComponent implements OnInit, OnChanges {
           })
           .slice(0, 10);
       } else if (this.authorId) {
+        // When authorId is present, we filter by author AND apply the already determined published status
         this.articles = availableArticles
           .filter(article => article.authorId === this.authorId)
           .sort((a, b) => {
@@ -101,7 +117,7 @@ export class ArticleListCarouselComponent implements OnInit, OnChanges {
       } else if (this.currentArticleId && this.currentArticleTags.length > 0) {
         this.headerText = 'Related Articles';
 
-        const filteredArticles = new Set<Article>();
+        const filteredArticles = new Set<Article>(); // Renamed from relatedCandidates for clarity
 
         if (this.currentArticleAuthorId) {
           availableArticles
@@ -142,6 +158,7 @@ export class ArticleListCarouselComponent implements OnInit, OnChanges {
 
         if (relatedArticles.length === 0) {
           this.headerText = 'Latest Articles';
+          // Fallback to latest articles if no related ones found, ensuring they respect the filterPublished state
           relatedArticles = availableArticles
             .sort((a, b) => {
               const dateA = new Date(a.updatedAt || a.publishDate || 0);
@@ -154,6 +171,7 @@ export class ArticleListCarouselComponent implements OnInit, OnChanges {
         this.articles = relatedArticles;
 
       } else {
+        // Default case: show non-featured articles, respecting the published status
         this.articles = availableArticles
           .filter(article => !article.isFeatured)
           .sort((a, b) => {

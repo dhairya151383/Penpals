@@ -57,8 +57,25 @@
 
   <hr>
 
-  <div class="author-articles-section">
-    <app-article-list-carousel [authorId]="author.id" [isFeaturedCarousel]="false" [showCardTags]="false" [cardsToShow]=2
-      headerText="More Articles by This Author"></app-article-list-carousel>
+  <div class="author-articles-carousels-wrapper" [class.full-width-single-carousel]="!canEdit">
+    <div class="author-articles-section" [class.half-width]="canEdit" [class.full-width]="!canEdit">
+      <app-article-list-carousel
+        [authorId]="author.id"
+        [isFeaturedCarousel]="false"
+        [showCardTags]="false"
+        [cardsToShow]="2"
+        headerText="Already Displayed Articles"
+        [filterPublished]="true"> </app-article-list-carousel>
+    </div>
+
+    <div *ngIf="canEdit" class="author-articles-section second-carousel half-width">
+      <app-article-list-carousel
+        [authorId]="author.id"
+        [filterPublished]="false" 
+        [isFeaturedCarousel]="false"
+        [showCardTags]="false"
+        [cardsToShow]="2"
+        headerText="Saved Drafts"> </app-article-list-carousel>
+    </div>
   </div>
 </div>

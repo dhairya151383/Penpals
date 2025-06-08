@@ -30,6 +30,7 @@
   margin-top: 2rem;
   margin-bottom: 1rem;
 }
+
 .title-illustration {
   position: absolute;
   width: 50px;
@@ -37,12 +38,15 @@
   top: -20px;
   transform: translateY(-50%);
 }
+
 .bird-top {
   left: -60px;
 }
+
 .cat-top {
   right: -60px;
 }
+
 .author-header-nav {
   display: flex;
   justify-content: center;
@@ -53,37 +57,44 @@
   font-size: 1.1rem;
   flex-wrap: wrap;
 }
+
 .author-header-tags {
   display: flex;
   align-items: center;
   gap: 0.8rem;
 }
+
 .header-tag {
   color: #333;
   text-decoration: none;
   padding: 0.5rem 1rem;
   white-space: nowrap;
   border-radius: 5px;
-  transition: color 0.3s ease; /* Changed to color transition */
+  transition: color 0.3s ease;
 }
+
 .header-tag:hover {
   background-color: #f0f0f0;
 }
 
 .author-header-tags .header-tag:nth-child(1) {
-  color: #fb8c00; /* Darker orange for text */
+  color: #fb8c00;
 }
+
 .author-header-tags .header-tag:nth-child(3) {
-  color: #43a047; /* Darker green for text */
+  color: #43a047;
 }
+
 .author-header-tags .header-tag:nth-child(5) {
-  color: #2196f3; /* Darker blue for text */
+  color: #2196f3;
 }
+
 .author-header-tags .header-tag:nth-child(7) {
-  color: #e53935; /* Darker red for text */
+  color: #e53935;
 }
+
 .author-header-tags .header-tag:nth-child(9) {
-  color: #8e24aa; /* Darker purple for text */
+  color: #8e24aa;
 }
 
 .tag-divider {
@@ -91,16 +102,19 @@
   font-size: 1.1rem;
   white-space: nowrap;
 }
+
 .header-social-links {
   display: flex;
   gap: 1rem;
   align-items: center;
 }
+
 .social-icon {
   width: 28px;
   height: 28px;
   transition: transform 0.2s ease, fill 0.3s ease;
 }
+
 .header-social-links a:hover .social-icon {
   transform: scale(1.1);
 }
@@ -108,12 +122,15 @@
 .header-social-links a[aria-label="Shop"] .social-icon {
   fill: #000;
 }
+
 .header-social-links a[aria-label="Instagram"] .social-icon {
   fill: #C13584;
 }
+
 .header-social-links a[aria-label="TikTok"] .social-icon {
   fill: #000;
 }
+
 .header-social-links a[aria-label="Facebook"] .social-icon {
   fill: #1877F2;
 }
@@ -176,6 +193,7 @@
   overflow-wrap: break-word;
   box-sizing: border-box;
 }
+
 .author-bio h1,
 .author-bio h2,
 .author-bio h3 {
@@ -215,10 +233,44 @@
 .edit-button:hover {
   background-color: #005f99;
 }
-.author-articles-section {
-  width: 100%;
+
+/* New/Modified CSS for Carousels */
+.author-articles-carousels-wrapper {
+  display: flex;
+  flex-wrap: wrap; /* Allows wrapping on smaller screens */
+  justify-content: center; /* Center items when they wrap */
+  gap: 2rem; /* Space between carousels */
   margin-top: 2rem;
 }
+
+.author-articles-section {
+  flex-grow: 1; /* Allows sections to grow */
+  flex-shrink: 0; /* Prevents sections from shrinking too much */
+  min-width: 300px; /* Minimum width before wrapping */
+  box-sizing: border-box;
+}
+
+/* Classes for dynamic width based on canEdit */
+.half-width {
+  width: calc(50% - 1rem); /* 50% minus half the gap */
+}
+
+.full-width {
+  width: 100%;
+}
+
+@media (max-width: 992px) {
+  .author-articles-carousels-wrapper {
+    flex-direction: column; /* Stack carousels vertically on smaller screens */
+    gap: 1.5rem;
+  }
+
+  .author-articles-section.half-width,
+  .author-articles-section.full-width {
+    width: 100%; /* Make them full width on small screens */
+  }
+}
+
 @media (max-width: 768px) {
   .author-details-container {
     width: 95%;
