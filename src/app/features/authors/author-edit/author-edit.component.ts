@@ -7,7 +7,6 @@ import { AuthorService } from '../../../core/services/author.service';
 import { Author } from '../../../shared/models/author.model';
 import { Tag } from '../../../shared/models/tag.model';
 import { TagSelectorComponent } from '../../../shared/components/tag-selector/tag-selector.component';
-// import { QuillModule } from 'ngx-quill'; // Removed QuillModule
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
 import { UploadImageComponent } from '../../../shared/components/upload-image/upload-image.component';
 

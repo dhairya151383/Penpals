@@ -3,7 +3,6 @@ import { CommonModule } from '@angular/common';
 import { ActivatedRoute, RouterModule } from '@angular/router';
 import { AuthorService } from '../../../core/services/author.service';
 import { Author } from '../../../shared/models/author.model';
-import { Article } from '../../../shared/models/article.model'; // Keep if used elsewhere, not strictly needed for carousel
 import { AuthService } from '../../../core/services/auth.service';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
 import { ArticleListCarouselComponent } from '../../articles/article-list-carousel/article-list-carousel.component';

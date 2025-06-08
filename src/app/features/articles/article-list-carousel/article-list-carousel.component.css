@@ -36,16 +36,41 @@
   margin-top: 20px;
 }
 
-/* Styles to ensure the article cards are properly sized within the carousel */
+/* This wrapper adds spacing around each individual article card */
 .carousel-item-wrapper {
-  padding: 15px; /* Adjust padding around each card as needed */
-  height: auto; /* Allow height to be determined by content */
-  display: flex;
-  justify-content: center;
-  align-items: stretch; /* Stretch cards to fill the height if they have different content lengths */
+  padding: 15px; /* Consistent padding around each card */
+  height: 100%; /* Makes the wrapper take full height of the p-carousel-item */
+  box-sizing: border-box; /* Include padding in element's total width and height */
+  display: flex; /* Makes this a flex container for the article card */
+  /* REMOVE justify-content: center; here. If you want cards centered, let `width: 100%` and `flex-grow: 1` work first. */
+  align-items: stretch; /* Ensures the article card fills the full height of the wrapper */
+  flex-grow: 1; /* IMPORTANT: Ensures this wrapper takes all available horizontal space within its parent carousel item */
+  flex-shrink: 0; /* Prevents shrinking */
+  width: 100%; /* Explicitly set width to 100% here as well */
+  max-width: 100%; /* Ensure no max-width is limiting it */
 }
 
-/* PrimeNG Carousel Overrides (if needed beyond what you provided) */
+/* PrimeNG Carousel Overrides - Crucial for consistent sizing */
+
+/* Ensures the entire row of items acts as a flex container and stretches all items to the tallest one's height */
+:host ::ng-deep .p-carousel-items-content {
+  display: flex;
+  align-items: stretch; /* Makes all direct children (.p-carousel-item) in the current view row stretch to the height of the tallest one */
+  flex-wrap: nowrap; /* Ensure items stay in a single line for the carousel */
+  width: 100%;
+}
+
+:host ::ng-deep .p-carousel .p-carousel-item {
+  display: flex;
+  align-items: stretch; /* Vertically stretches the .carousel-item-wrapper */
+  flex-grow: 1; /* IMPORTANT: Allow p-carousel-item to grow and fill its space */
+  flex-shrink: 0; /* Prevent p-carousel-item from shrinking */
+  flex-basis: 0; /* Ensures it sizes based on flex-grow, not content */
+  width: 100% !important; /* Force width to 100% if PrimeNG's calculations are off */
+  max-width: none !important; /* Ensure no max-width limits the item's width */
+}
+
+/* Standard PrimeNG carousel navigation/indicator styles */
 :host ::ng-deep .p-carousel .p-carousel-indicators {
   margin-top: 30px;
 }
@@ -77,33 +102,4 @@
 :host ::ng-deep .p-carousel .p-carousel-next:hover,
 :host ::ng-deep .p-carousel .p-carousel-prev:hover {
   background-color: rgba(0, 0, 0, 0.8);
-}
-
-/* Adjustments for responsive carousel display based on `isFeaturedCard` */
-/* When showing featured cards, only one card should be visible at a time */
-:host ::ng-deep .p-carousel[numvisible="1"] .p-carousel-item {
-  flex-basis: 100% !important;
-}
-
-/* When showing regular cards, three cards visible */
-:host ::ng-deep .p-carousel[numvisible="3"] .p-carousel-item {
-  flex-basis: calc(100% / 3) !important;
-}
-
-@media (max-width: 1199px) {
-  :host ::ng-deep .p-carousel[numvisible="3"] .p-carousel-item {
-    flex-basis: calc(100% / 3) !important; /* Adjust if responsive options change this for larger breakpoints */
-  }
-}
-
-@media (max-width: 991px) {
-  :host ::ng-deep .p-carousel[numvisible="2"] .p-carousel-item {
-    flex-basis: calc(100% / 2) !important;
-  }
-}
-
-@media (max-width: 767px) {
-  :host ::ng-deep .p-carousel[numvisible="1"] .p-carousel-item {
-    flex-basis: 100% !important;
-  }
 }

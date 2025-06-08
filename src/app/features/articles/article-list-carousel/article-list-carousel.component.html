@@ -15,9 +15,8 @@
     <p-carousel
       *ngIf="articles.length > 0"
       [value]="articles"
-      [numVisible]="isFeaturedCarousel ? 1 : 3"
-      [numScroll]="isFeaturedCarousel ? 1 : 1"
-      [responsiveOptions]="currentResponsiveOptions" [circular]="true"
+      [numVisible]="cardsToShow" [numScroll]="cardsToShow === 1 ? 1 : 1" [responsiveOptions]="currentResponsiveOptions"
+      [circular]="true"
       [autoplayInterval]="isFeaturedCarousel ? 7000 : 5000"
     >
       <ng-template let-article pTemplate="item">
