@@ -22,7 +22,8 @@ export class ArticleListCarouselComponent implements OnInit, OnChanges {
   @Input() currentArticleId?: string;
   @Input() cardsToShow: number = 3;
   @Input() showCardTags: boolean = true;
-  @Input() filterPublished: boolean = true; // Default: show only published
+  @Input() filterPublished: boolean = true; 
+  @Input() noArticle: boolean = false;
 
   articles: Article[] = [];
   loading: boolean = true;
@@ -51,7 +52,8 @@ export class ArticleListCarouselComponent implements OnInit, OnChanges {
       changes['currentArticleId'] ||
       changes['cardsToShow'] ||
       changes['showCardTags'] ||
-      changes['filterPublished']
+      changes['filterPublished']||
+      changes['noArticle']
     ) {
       this.updateResponsiveOptions();
       this.loadArticles();

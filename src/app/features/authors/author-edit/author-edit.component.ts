@@ -176,7 +176,7 @@ export class AuthorEditComponent implements OnInit {
     try {
       await this.authorService.update(this.authorId, updated);
       console.log('Author updated successfully. Navigating...');
-      this.router.navigate(['/authors', this.authorId]);
+      this.router.navigate(['/author', this.authorId]);
     } catch (err) {
       console.error('Failed to update author:', err);
       this.error = 'Failed to save changes. Please try again.';

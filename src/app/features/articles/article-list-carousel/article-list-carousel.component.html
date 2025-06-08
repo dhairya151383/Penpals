@@ -25,7 +25,7 @@
         </div>
       </ng-template>
     </p-carousel>
-    <div *ngIf="articles.length === 0" class="no-articles-message">
+    <div *ngIf="articles.length === 0 && !noArticle" class="no-articles-message">
       <p>No articles found for the given criteria.</p>
     </div>
   </ng-container>

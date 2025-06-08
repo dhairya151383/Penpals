@@ -319,3 +319,12 @@
     width: 100%; /* Take full width */
   }
 }
+.author-name-clickable {
+  cursor: pointer;
+  color: #00796b; /* Or any color that indicates it's a link */
+  text-decoration: underline;
+}
+
+.author-name-clickable:hover {
+  color: #004d40; /* Darker shade on hover */
+}

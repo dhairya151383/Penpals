@@ -17,7 +17,7 @@
       <div class="author-card" *ngFor="let author of filteredAuthors">
         <div class="author-card-content"> <img *ngIf="author.avatarUrl" [src]="author.avatarUrl" alt="{{ author.name }}" />
             <div class="author-info">
-              <a [routerLink]="['/authors', author.id]" class="author-name">{{ author.name }}</a>
+              <a [routerLink]="['/author', author.id]" class="author-name">{{ author.name }}</a>
               <div *ngIf="author.bio" class="author-bio-display" [innerHTML]="author.bio"></div>
             </div>
         </div>

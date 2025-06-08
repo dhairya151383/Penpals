@@ -33,7 +33,7 @@ export class ArticleDetailsComponent implements OnInit {
   canEdit = false;
   loading = true;
   showComments = false;
-  selectedTab: 'overview' | 'content' = 'overview'; // Removed 'author' from here
+  selectedTab: 'overview' | 'content' = 'overview';
 
   constructor(
     private route: ActivatedRoute,
@@ -66,7 +66,7 @@ export class ArticleDetailsComponent implements OnInit {
       this.loading = false;
     }
   }
-  // Updated selectTab to only handle 'overview' and 'content'
+
   selectTab(tab: 'overview' | 'content'): void {
     this.selectedTab = tab;
   }
@@ -74,6 +74,13 @@ export class ArticleDetailsComponent implements OnInit {
   goToEdit() {
     if (this.article?.id) {
       this.router.navigate(['/edit-article', this.article.id]);
+    }
+  }
+
+  // --- New method for author details navigation ---
+  goToAuthorDetails(authorId: string | undefined): void {
+    if (authorId) {
+      this.router.navigate(['/author', authorId]);
     }
   }
 }

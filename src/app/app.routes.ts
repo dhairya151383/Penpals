@@ -26,8 +26,7 @@ export const routes: Routes = [
       {
         path: 'dashboard',
         loadComponent: () => import('./features/dashboard/dashboard.component').then(m => m.DashboardComponent)
-      },
-
+      },  
       {
         path: 'articles/:id',
         loadComponent: () => import('./features/articles/article-details/article-details.component').then(m => m.ArticleDetailsComponent)
@@ -44,16 +43,18 @@ export const routes: Routes = [
         canActivate: [RoleGuard],
         data: { expectedRole: 'author' }
       },
+
+      // --- AUTHORS ROUTES ---
       {
         path: 'authors',
         loadComponent: () => import('./features/authors/author-list/author-list.component').then(m => m.AuthorListComponent)
       },
       {
-        path: 'authors/:id',
+        path: 'author/:id',
         loadComponent: () => import('./features/authors/author-details/author-details.component').then(m => m.AuthorDetailsComponent)
       },
       {
-        path: 'authors/edit/:id',
+        path: 'author/edit/:id',
         loadComponent: () => import('./features/authors/author-edit/author-edit.component').then(m => m.AuthorEditComponent),
         canActivate: [RoleGuard],
         data: { expectedRole: 'author' }

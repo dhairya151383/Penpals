@@ -8,33 +8,54 @@
         *ngIf="author.avatarUrl"
         [src]="author.avatarUrl"
         alt="Author Avatar"
-        class="author-avatar-large"/>
-      <h3>{{ author.name }}</h3>
+        class="author-avatar-large"
+      />
+      <h3 class="author-name-clickable" (click)="goToAuthorDetails(author.id)">
+        {{ author.name }}
+      </h3>
       <p *ngIf="author.bio" class="author-bio" [innerHTML]="author.bio"></p>
     </div>
   </div>
 
   <div class="article-details-content">
     <div class="article-card">
-      <img *ngIf="article.thumbnailUrl" [src]="article.thumbnailUrl" alt="Article image" class="article-thumbnail" />
+      <img
+        *ngIf="article.thumbnailUrl"
+        [src]="article.thumbnailUrl"
+        alt="Article image"
+        class="article-thumbnail"
+      />
 
       <h1 class="article-main-title">{{ article.title }}</h1>
 
       <div class="tabs">
-        <button class="tab-button" [class.active]="selectedTab === 'overview'" (click)="selectTab('overview')">
+        <button
+          class="tab-button"
+          [class.active]="selectedTab === 'overview'"
+          (click)="selectTab('overview')"
+        >
           Overview
         </button>
-        <button class="tab-button" [class.active]="selectedTab === 'content'" (click)="selectTab('content')">
+        <button
+          class="tab-button"
+          [class.active]="selectedTab === 'content'"
+          (click)="selectTab('content')"
+        >
           Content
         </button>
-        </div>
+      </div>
 
       <div class="tab-content">
         <div *ngIf="selectedTab === 'overview'">
           <div class="article-meta">
             <p class="article-author">
-              By <strong>{{ author?.name }}</strong> on
-              {{ article | articleDate | date : 'mediumDate' }}
+              By
+              <strong
+                class="author-name-clickable"
+                (click)="goToAuthorDetails(author?.id)"
+                >{{ author?.name }}</strong
+              >
+              on {{ article | articleDate | date : 'mediumDate' }}
             </p>
             <p class="article-info">
               <span *ngIf="article.likesCount"> | 👍 {{ article.likesCount }} likes</span>
@@ -43,12 +64,18 @@
           </div>
 
           <div *ngIf="article.tags?.length" class="article-tags">
-            <span *ngFor="let tag of article.tags" class="tag-chip">#{{ tag }}</span>
+            <span *ngFor="let tag of article.tags" class="tag-chip"
+              >#{{ tag }}</span
+            >
           </div>
           <p class="article-brief-description">{{ article.briefDescription }}</p>
         </div>
 
-        <div *ngIf="selectedTab === 'content'" class="article-content" [innerHTML]="article.content"></div>
+        <div
+          *ngIf="selectedTab === 'content'"
+          class="article-content"
+          [innerHTML]="article.content"
+        ></div>
       </div>
     </div>
 
@@ -57,7 +84,9 @@
     </div>
 
     <ng-container *ngIf="article?.id as articleId">
-      <button class="show-comments-btn" (click)="showComments = true">💬 Add a comment</button>
+      <button class="show-comments-btn" (click)="showComments = true">
+        💬 Add a comment
+      </button>
     </ng-container>
   </div>
 </div>
