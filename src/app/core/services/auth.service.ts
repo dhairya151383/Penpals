@@ -1,26 +1,26 @@
+// src/app/core/services/auth.service.ts
 import { Injectable } from '@angular/core';
 import {
   signInWithPopup,
   GoogleAuthProvider,
   signOut,
-  User, // Keep User for Firebase original type
+  User,
   updateProfile,
   createUserWithEmailAndPassword,
   signInWithEmailAndPassword,
   onAuthStateChanged,
 } from '@angular/fire/auth';
-import { Observable, BehaviorSubject, from, of } from 'rxjs'; // Import 'from' and 'of'
-import { Firestore, doc, setDoc, getDoc } from '@angular/fire/firestore'; // Import 'getDoc'
-import { switchMap, map } from 'rxjs/operators'; // Import 'switchMap' and 'map'
+import { Observable, BehaviorSubject, from, of } from 'rxjs';
+import { doc, setDoc, getDoc } from '@angular/fire/firestore';
+import { switchMap, map } from 'rxjs/operators';
 
-import { Users } from './../../shared/models/user.model'; // Your custom Users model
+import { Users } from './../../shared/models/user.model';
 import { FirebaseService } from '../services/firebase.service';
 import { AuthorService } from './author.service';
 import { Author } from '../../shared/models/author.model';
 import { Router } from '@angular/router';
 
 // --- Define the AppUser interface ---
-// This extends the Firebase User interface with your custom 'roles' property.
 export interface AppUser extends User {
   roles?: {
     admin?: boolean;
@@ -33,9 +33,10 @@ export interface AppUser extends User {
   providedIn: 'root',
 })
 export class AuthService {
-  user$: Observable<AppUser | null>; // Change type to AppUser | null
+  user$: Observable<AppUser | null>;
   authReady$ = new BehaviorSubject<boolean>(false);
-  private firestore: Firestore;
+  // REMOVE THIS LINE: private firestore: Firestore;
+
   private readonly defaultMaleAvatarUrl = 'assets/images/maleAvatar.jpg';
   private readonly defaultFemaleAvatarUrl = 'assets/images/femaleAvatar.jpg';
   private readonly defaultGenericAvatarUrl = 'assets/images/defaultAvatar.jpg';
@@ -45,7 +46,7 @@ export class AuthService {
     private authorService: AuthorService,
     private router: Router
   ) {
-    this.firestore = firebaseService.firestore;
+    // REMOVE THIS LINE: this.firestore = firebaseService.firestore;
 
     // --- Modify user$ to include roles from Firestore ---
     this.user$ = new Observable<User | null>((subscriber) => {
@@ -57,7 +58,7 @@ export class AuthService {
       // Use switchMap to fetch user roles from Firestore when auth state changes
       switchMap(user => {
         if (user) {
-          const userDocRef = doc(this.firestore, `users/${user.uid}`);
+          const userDocRef = doc(this.firebaseService.firestore, `users/${user.uid}`);
           // Convert the Firestore getDoc Promise to an Observable using 'from'
           return from(getDoc(userDocRef)).pipe(
             map(docSnap => {
@@ -148,7 +149,7 @@ export class AuthService {
       return this.defaultFemaleAvatarUrl;
     } else {
       return this.defaultGenericAvatarUrl;
-    }
+   }
   }
 
   private async saveUserData(
@@ -186,7 +187,7 @@ export class AuthService {
       provider,
     };
 
-    const userRef = doc(this.firestore, 'users', user.uid);
+    const userRef = doc(this.firebaseService.firestore, 'users', user.uid);
     await setDoc(userRef, userData, { merge: true });
   }
 }

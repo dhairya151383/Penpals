@@ -23,8 +23,7 @@ export class ArticleListCarouselComponent implements OnInit, OnChanges {
   @Input() cardsToShow: number = 3;
   @Input() showCardTags: boolean = true;
   @Input() filterPublished: boolean = true;
-  @Input() noArticle: boolean = false; // This input now dictates if ALL articles (published/unpublished) are considered
-
+  @Input() noArticle: boolean = false; 
   articles: Article[] = [];
   loading: boolean = true;
   error: string | null = null;
@@ -43,7 +42,6 @@ export class ArticleListCarouselComponent implements OnInit, OnChanges {
   }
 
   ngOnChanges(changes: SimpleChanges): void {
-    // Re-load articles if any relevant input changes
     if (
       changes['authorId'] ||
       changes['isFeaturedCarousel'] ||
@@ -63,7 +61,7 @@ export class ArticleListCarouselComponent implements OnInit, OnChanges {
 
   private updateResponsiveOptions(): void {
     const numVisible = this.cardsToShow;
-    const numScroll = this.cardsToShow === 1 ? 1 : 1; // Always scroll one by default for simplicity
+    const numScroll = this.cardsToShow === 1 ? 1 : 1;
 
     this.currentResponsiveOptions = [
       { breakpoint: '1199px', numVisible: numVisible, numScroll: numScroll },
@@ -92,15 +90,10 @@ export class ArticleListCarouselComponent implements OnInit, OnChanges {
           return false;
         }
 
-        // If 'noArticle' is true, it means we want ALL articles, regardless of published status.
-        // This effectively overrides the 'filterPublished' input.
         if (this.noArticle) {
           return true;
         }
 
-        // Otherwise, apply the 'filterPublished' logic:
-        // If filterPublished is TRUE, only include articles where isPublished is TRUE.
-        // If filterPublished is FALSE, only include articles where isPublished is FALSE.
         return this.filterPublished === article.isPublished;
       });
       // --- END CRUCIAL FILTERING LOGIC ---
