@@ -21,6 +21,7 @@ export class ArticleListCarouselComponent implements OnInit, OnChanges {
   @Input() currentArticleAuthorId?: string;
   @Input() currentArticleId?: string;
   @Input() cardsToShow: number = 3;
+  @Input() showCardTags: boolean = true;
 
   articles: Article[] = [];
   loading: boolean = true;
@@ -46,7 +47,8 @@ export class ArticleListCarouselComponent implements OnInit, OnChanges {
       changes['currentArticleTags'] ||
       changes['currentArticleAuthorId'] ||
       changes['currentArticleId'] ||
-      changes['cardsToShow'] // Add cardsToShow to trigger update
+      changes['cardsToShow'] ||
+      changes['showCardTags']
     ) {
       this.updateResponsiveOptions();
       this.loadArticles();

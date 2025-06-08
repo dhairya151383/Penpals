@@ -7,12 +7,16 @@
     />
   </div>
   <div class="content">
-    <div class="tags-container regular-tags-container"> <span *ngFor="let tag of article.tags" class="tag regular-tag">{{ tag }}</span> </div>
+    <ng-container *ngIf="showTags">
+      <div class="tags-wrapper regular-tags-wrapper">
+        <span *ngFor="let tag of article.tags" class="tag regular-tag">{{ tag }}</span>
+      </div>
+    </ng-container>
     <a
       [routerLink]="['/articles', article.id]"
       [state]="{ article: article }"
       class="title"
-    >{{ article.title }}</a
+      >{{ article.title }}</a
     >
     <p class="brief">{{ article.briefDescription }}</p>
     <div class="meta-row">
@@ -37,7 +41,11 @@
     <div class="text-content">
       <a [routerLink]="['/articles', article.id]" [state]="{ article: article }" class="title">{{ article.title }}</a>
       <p class="brief featured-brief">{{ article.briefDescription }}</p>
-      <div class="tags-container featured-tags-container"> <span *ngFor="let tag of article.tags" class="tag featured-tag">{{ tag }}</span> </div>
+      <ng-container *ngIf="showTags">
+        <div class="tags-wrapper featured-tags-wrapper">
+          <span *ngFor="let tag of article.tags" class="tag featured-tag">{{ tag }}</span>
+        </div>
+      </ng-container>
       <div class="meta-row featured-meta">
         <div class="author-info">
           <img src="assets/images/defaultAvatar.jpg" alt="Author Avatar" class="author-avatar">

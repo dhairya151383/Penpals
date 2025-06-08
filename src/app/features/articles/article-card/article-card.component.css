@@ -1,110 +1,75 @@
-/*
- * Styles for the ArticleCardComponent.
- * This component displays individual article cards, with variations for
- * regular and featured articles, ensuring consistent sizing and layout
- * within its parent containers (e.g., carousel items).
- */
-
-/*
- * :host styles target the custom Angular component's root element itself.
- * This is crucial for ensuring the component instance (e.g., <app-article-card>)
- * properly fills the space provided by its parent (e.g., .carousel-item-wrapper).
- */
 :host {
-  display: flex;          /* Make the host element a flex container */
-  flex-direction: column; /* Stack content vertically within the host */
-  width: 100%;            /* IMPORTANT: Ensure host element takes full available width */
-  height: 100%;           /* IMPORTANT: Ensure host element takes full available height */
-  flex-grow: 1;           /* Allow the host element to grow and fill available space */
-  flex-shrink: 0;         /* Prevent the host element from shrinking below its content */
-  box-sizing: border-box; /* Include padding/border in the element's total width/height */
-  margin: 0;              /* Reset any default margins to prevent layout shifts */
-  padding: 0;             /* Reset any default padding to prevent double padding */
-  min-width: 0;           /* Essential for flex items to correctly handle overflow */
-  max-width: none;        /* Ensure no max-width is preventing the host from expanding */
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  flex-grow: 1;
+  flex-shrink: 0;
+  box-sizing: border-box;
+  margin: 0;
+  padding: 0;
+  min-width: 0;
+  max-width: none;
 }
 
-/* --- Base Card Styles (applies to both regular and featured cards, unless overridden) --- */
-/*
- * This '.card' class is applied to the main wrapper div inside
- * article-card.component.html. It directly inherits from the :host element's sizing.
- */
 .card {
-  display: flex;          /* Make the card a flex container */
-  flex-direction: column; /* Stack content (thumbnail, content area) vertically */
+  display: flex;
+  flex-direction: column;
   background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
-  overflow: hidden;       /* Ensures content like images don't spill out */
+  overflow: hidden;
   transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
-  width: 100%;            /* IMPORTANT: Card div fills the width of its host (:host) */
-  height: 100%;           /* IMPORTANT: Card div fills the height of its host (:host) */
-  flex-grow: 1;           /* Allows the card div to grow and fill available space within its host */
-  flex-shrink: 0;         /* Prevents the card div from shrinking */
-  min-width: 0;           /* Allows content like long titles to wrap within the card */
-  max-width: none;        /* Ensure no max-width is limiting the card's expansion */
-  box-sizing: border-box; /* Ensure padding/border are included in width/height */
+  width: 100%;
+  height: 100%;
+  flex-grow: 1;
+  flex-shrink: 0;
+  min-width: 0;
+  max-width: none;
+  box-sizing: border-box;
 }
 
 .card:hover {
-  transform: translateY(-5px); /* Subtle lift effect on hover */
-  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15); /* Enhanced shadow on hover */
+  transform: translateY(-5px);
+  box-shadow: 0 8px 20px rgba(0, 0, 0, 0.15);
 }
 
-/* Thumbnail image container */
 .thumbnail-container {
-  width: 100%;            /* Thumbnail container fills card's width */
-  height: 200px;          /* Fixed height for regular card thumbnails */
+  width: 100%;
+  height: 200px;
   overflow: hidden;
-  flex-shrink: 0;         /* Prevents thumbnail from shrinking when vertical space is tight */
+  flex-shrink: 0;
 }
 
 .thumbnail {
   width: 100%;
   height: 100%;
-  object-fit: cover;     /* Ensures image covers the container without distortion */
+  object-fit: cover;
   transition: transform 0.3s ease;
 }
 
 .card:hover .thumbnail {
-  transform: scale(1.05); /* Zoom effect on thumbnail on card hover */
+  transform: scale(1.05);
 }
 
-/* Main content area of the card (excluding the thumbnail) */
 .content {
-  padding: 15px 20px;     /* Internal padding for text content */
-  display: flex;          /* Make content area a flex container */
-  flex-direction: column; /* Stack elements within content vertically */
-  flex-grow: 1;           /* IMPORTANT: Allows content area to grow and take all available vertical space below the thumbnail */
-  justify-content: space-between; /* Crucial: Distributes space between direct children (tags, title, brief, meta-row) to push meta-row to bottom */
-  min-height: 0;          /* Allows content to shrink if necessary without overflow issues */
-}
-
-/* Container for article tags */
-.tags-container {
-  margin-bottom: 0;
+  padding: 15px 20px;
   display: flex;
-  flex-wrap: wrap;        /* Allows tags to wrap to next line */
-  gap: 5px;               /* Space between individual tags */
-  flex-shrink: 0;         /* Prevents tags container from shrinking */
+  flex-direction: column;
+  flex-grow: 1;
+  justify-content: space-between;
+  min-height: 0;
 }
 
-/* Individual tag styling */
 .tag {
   border-radius: 20px;
   font-weight: 500;
-  white-space: nowrap;    /* Prevents tags from breaking lines unnecessarily */
+  white-space: nowrap;
   border: 1px solid;
-  flex-shrink: 0;         /* Prevents individual tags from shrinking */
-  display: inline-flex;   /* Allows text and aligns items vertically */
+  flex-shrink: 0;
+  display: inline-flex;
   align-items: center;
-}
-
-/* --- Regular Card Specific Tags Styles --- */
-.regular-tags-container {
-  height: 75px;           /* Fixed height for consistent tag display (approx. 2 lines of tags) */
-  overflow: hidden;       /* Hides any tags that exceed the fixed height */
-  margin-bottom: 10px;    /* Space below tags */
+  margin-bottom: 0;
 }
 
 .regular-tag {
@@ -115,16 +80,17 @@
   border-color: #91d5ff;
 }
 
-/* --- Featured Card Specific Tags Styles --- */
-.featured-tags-container {
-  --featured-tag-line-height: 30px; /* Define custom property for featured tag line height */
-  --tag-row-gap: 30px; /* Define custom property for gap between featured tag rows */
-  height: calc(2 * var(--featured-tag-line-height) + var(--tag-row-gap)); /* Calculated height for 2 lines of featured tags */
+.tags-wrapper {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 5px;
   overflow: hidden;
-  order: -1;              /* Pushes tags to the top in the featured card's flex order */
-  margin-bottom: 10px;
-  margin-top: 0;
   flex-shrink: 0;
+  margin-bottom: 10px;
+}
+
+.regular-tags-wrapper {
+  height: 75px;
 }
 
 .featured-tag {
@@ -135,49 +101,53 @@
   border-color: #1890ff;
 }
 
-/* Article title styling */
+.featured-tags-wrapper {
+  height: 75px;
+  order: -1;
+  margin-bottom: 5px;
+}
+
 .title {
-  font-size: 1.8em;
+  font-size: 1.2em;
   font-weight: 700;
   margin-bottom: 0;
   color: #262626;
   text-decoration: none;
-  display: -webkit-box;    /* Enable Webkit-specific line clamping */
-  -webkit-line-clamp: 2;   /* Limit title to 2 lines */
-  line-clamp: 2;           /* Standard property for line clamping */
-  -webkit-box-orient: vertical; /* Essential for -webkit-line-clamp */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  line-clamp: 2;
+  -webkit-box-orient: vertical;
   overflow: hidden;
-  line-height: 1.3em;
-  word-break: break-word;  /* Allows long words to break */
-  min-height: calc(2 * 1.3em); /* Ensures a consistent height for 2 lines */
-  flex-shrink: 0;          /* Prevents title from shrinking */
+  line-height: 1em;
+  word-break: break-word;
+  min-height: calc(2 * 1.05em);
+  flex-shrink: 0;
+  margin-top: 0;
 }
 
 .title:hover {
-  color: #1890ff;          /* Hover effect for title */
+  color: #1890ff;
 }
 
-/* Brief description styling */
 .brief {
   font-size: 0.9em;
-  line-height: 1.1em;
+  line-height: 1.05em;
   color: #595959;
-  margin-top: 10px;
+  margin-top: 5px;
   margin-bottom: 5px;
   overflow: hidden;
   position: relative;
-  display: -webkit-box;    /* Enable Webkit-specific line clamping */
-  -webkit-line-clamp: 3;   /* Limit brief to 3 lines */
-  line-clamp: 3;           /* Standard property for line clamping */
-  -webkit-box-orient: vertical; /* Essential for -webkit-line-clamp */
-  text-overflow: ellipsis; /* Adds "..." for truncated text */
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  line-clamp: 3;
+  -webkit-box-orient: vertical;
+  text-overflow: ellipsis;
   word-break: break-word;
   white-space: normal;
-  min-height: calc(3 * 1.1em); /* Ensures a consistent height for 3 lines */
-  flex-grow: 1;            /* IMPORTANT: Allows brief to take up remaining vertical space within .content */
+  min-height: calc(3 * 1.39em);
+  flex-grow: 1;
 }
 
-/* Gradient overlay for brief description truncation effect */
 .brief::after {
   content: "";
   position: absolute;
@@ -189,18 +159,17 @@
       rgba(255, 255, 255, 1) 0%,
       rgba(255, 255, 255, 1) 70%,
       rgba(255, 255, 255, 0) 100%);
-  pointer-events: none; /* Allows text selection underneath */
+  pointer-events: none;
 }
 
-/* Meta information row (author, date, featured icon) */
 .meta-row {
   display: flex;
-  justify-content: space-between; /* Pushes elements to opposite ends */
+  justify-content: space-between;
   align-items: center;
-  margin-top: auto;        /* IMPORTANT: Pushes this row to the bottom of the card content */
+  margin-top: auto;
   padding-top: 15px;
-  border-top: 1px solid #f0f0f0; /* Separator line */
-  flex-shrink: 0;          /* Prevents this row from shrinking */
+  border-top: 1px solid #f0f0f0;
+  flex-shrink: 0;
 }
 
 .author-info {
@@ -220,27 +189,25 @@
 }
 
 .author-details {
-  white-space: nowrap;     /* Prevents author details from wrapping */
+  white-space: nowrap;
 }
 
 .featured-icon {
   color: #ffc107;
   font-size: 1.5em;
-  margin-left: auto;       /* Pushes icon to the right */
+  margin-left: auto;
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
-/* --- Featured Card Specific Styles --- */
 .featured-card {
-  flex-direction: row;     /* Featured card stacks content horizontally */
-  /* Re-declare core sizing properties for featured card if needed, though :host takes care of it */
+  flex-direction: row;
   width: 100%;
   height: 100%;
   flex-grow: 1;
   flex-shrink: 0;
   background-color: #fff;
   border-radius: 8px;
-  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15); /* More prominent shadow */
+  box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
   transition: transform 0.2s ease-in-out, box-shadow 0.2s ease-in-out;
   overflow: hidden;
 }
@@ -252,26 +219,28 @@
 
 .featured-content {
   display: flex;
-  flex-direction: row;     /* Internal content is also a row (text content + image) */
+  flex-direction: row;
   width: 100%;
   height: 100%;
 }
 
 .text-content {
-  width: 50%;              /* Text content takes 50% width */
+  width: 50%;
   display: flex;
-  flex-direction: column;  /* Stack text content vertically */
+  flex-direction: column;
   padding: 20px;
   box-sizing: border-box;
   overflow: hidden;
-  min-width: 0;            /* Allows text content to shrink without overflow if necessary */
-  flex-grow: 1;            /* Allows text content to grow */
-  justify-content: space-between; /* Distributes space within text content */
+  min-width: 0;
+  flex-grow: 1;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 5px;
 }
 
 .featured-image-container {
-  width: 50%;              /* Image container takes 50% width */
-  height: 100%;            /* Image container takes full height */
+  width: 50%;
+  height: 100%;
   overflow: hidden;
   flex-shrink: 0;
 }
@@ -288,8 +257,8 @@
 }
 
 .featured-card .title {
-  font-size: 1.8em;
-  min-height: calc(2 * 1.3em);
+  font-size: 1.5em;
+  min-height: calc(2 * 1.07em);
   max-height: calc(2 * 1.3em);
   flex-shrink: 0;
 }
@@ -343,7 +312,6 @@
   white-space: nowrap;
 }
 
-/* Ensure text content inside featured card handles overflow */
 .text-content>* {
   overflow: hidden;
   text-overflow: ellipsis;
@@ -351,100 +319,84 @@
   word-break: break-word;
 }
 
-
-/* --- Responsive Adjustments --- */
-
-/* For screens up to 992px wide (e.g., tablets in portrait) */
 @media (max-width: 992px) {
   .featured-card {
-    flex-direction: column; /* Featured card stacks vertically on smaller screens */
-    height: auto;             /* Allow height to adjust based on content */
+    flex-direction: column;
+    height: auto;
     max-height: none;
   }
-
   .text-content,
   .featured-image-container {
-    width: 100%;            /* Both text and image take full width */
+    width: 100%;
     height: auto;
   }
-
   .featured-image-container {
-    height: 250px;          /* Fixed height for image on smaller screens */
+    height: 250px;
   }
-
   .featured-card .title {
-    font-size: 1.5em;       /* Adjust title font size */
+    font-size: 1.5em;
   }
-
   .featured-card .brief {
     font-size: 1em;
-    -webkit-line-clamp: 4; /* Allow more lines for brief on tablets */
+    -webkit-line-clamp: 4;
     line-clamp: 4;
-    min-height: unset;      /* Remove fixed height for more flexibility */
+    min-height: unset;
     max-height: unset;
   }
-
   .featured-card .brief::after {
-    height: 1.2em;          /* Adjust gradient height */
+    height: 1.2em;
     background: linear-gradient(to bottom,
         rgba(255, 255, 255, 0),
         rgba(255, 255, 255, 1) 50%);
   }
 }
 
-/* For screens up to 576px wide (e.g., mobile phones) */
 @media (max-width: 576px) {
-  /* Adjustments for regular card */
   .thumbnail-container {
-    height: 150px;          /* Smaller thumbnail height on mobile */
+    height: 150px;
   }
-
   .content {
-    padding: 10px 15px;     /* Reduced padding on mobile */
+    padding: 10px 15px;
   }
-
   .title {
-    font-size: 1.3em;       /* Smaller title font size on mobile */
+    font-size: 1.3em;
   }
-
   .brief {
     font-size: 0.95em;
-    -webkit-line-clamp: 5; /* Allow even more lines for brief on mobile */
+    -webkit-line-clamp: 5;
     line-clamp: 5;
-    min-height: unset;      /* Ensure flexibility on mobile */
+    min-height: unset;
     max-height: unset;
   }
-
   .meta-row {
-    flex-direction: column; /* Stack meta-row items vertically on mobile */
+    flex-direction: column;
     align-items: flex-start;
     gap: 8px;
   }
-
   .featured-icon {
     margin-left: 0;
   }
-
-  /* Adjustments for featured card on mobile */
   .featured-card {
-    margin: 10px;           /* Add some margin around featured card on mobile */
+    margin: 10px;
   }
-
   .featured-image-container {
-    height: 180px;          /* Smaller image height for featured on mobile */
+    height: 180px;
   }
-
   .text-content {
-    padding: 15px;          /* Reduced padding for text content on mobile */
+    padding: 15px;
   }
-
   .featured-card .title {
-    font-size: 1.3em;       /* Smaller title font size for featured on mobile */
+    font-size: 1.3em;
   }
-
   .featured-card .brief {
     font-size: 0.95em;
     -webkit-line-clamp: 5;
     line-clamp: 5;
+  }
+  .regular-tags-wrapper {
+    height: 75px;
+  }
+  .featured-tags-wrapper {
+    height: 70px;
   }
 }
