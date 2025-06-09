@@ -127,19 +127,19 @@ Visit: http://localhost:4200
 
 7. User Credentials
 Admin:
-Email: admin@penpals.com
+Email: admin@nagarro.com
 
-Password: Admin@123
+Password: nagarro@@1234
 
 Author:
-Email: author@penpals.com
+Email: author@nagarro.com
 
-Password: Author@123
+Password: Password: nagarro@@1234
 
 Regular User:
-Email: reader@penpals.com
+Email: user@nagarro.com
 
-Password: Reader@123
+Password: Password: nagarro@@1234
 
 8. Unit Tests
 Jest setup in setup-jest.ts
