@@ -1,15 +1,13 @@
-// src/app/features/articles/comments/comments.component.ts
 import { Component, Input, OnInit, OnDestroy } from '@angular/core';
 import { CommentService } from '../../../core/services/comment.service';
 import { Comment } from '../../../shared/models/comment.model';
 import { Timestamp } from 'firebase/firestore';
 import { CommonModule } from '@angular/common';
 import { FormsModule } from '@angular/forms';
-import { User } from 'firebase/auth'; // Keep User for Firebase original type
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
 import { Subscription, combineLatest } from 'rxjs';
-import { map, filter } from 'rxjs/operators';
-import { AuthService, AppUser } from '../../../core/services/auth.service'; // Import AppUser
+import { filter } from 'rxjs/operators';
+import { AuthService, AppUser } from '../../../core/services/auth.service';
 
 @Component({
   selector: 'app-comments',
@@ -21,8 +19,8 @@ import { AuthService, AppUser } from '../../../core/services/auth.service'; // I
 export class CommentsComponent implements OnInit, OnDestroy {
   @Input() articleId!: string;
 
-  allComments: Comment[] = []; // Stores ALL comments from the real-time listener (top-level and replies)
-  displayedTopLevelComments: Comment[] = []; // Stores only top-level comments for current view (filtered, sorted, paginated)
+  allComments: Comment[] = [];
+  displayedTopLevelComments: Comment[] = [];
   newComment = '';
   replyingTo: string | null = null;
   replyText: { [key: string]: string } = {};
@@ -38,11 +36,11 @@ export class CommentsComponent implements OnInit, OnDestroy {
   hasMore = true;
   pageSize = 5;
   loadingAuthAndComments = true;
-  currentSort: 'newest' | 'oldest' | 'mostLiked' = 'newest'; // Default sort
+  currentSort: 'newest' | 'oldest' | 'mostLiked' = 'newest';
 
   private realTimeCommentsSubscription: Subscription | undefined;
   private authSubscription: Subscription | undefined;
-  private currentDisplayedCount = 0; // Tracks how many top-level comments are currently shown
+  private currentDisplayedCount = 0;
 
   constructor(
     private commentService: CommentService,
@@ -69,7 +67,7 @@ export class CommentsComponent implements OnInit, OnDestroy {
       if (!this.realTimeCommentsSubscription) {
         this.setupRealTimeCommentsListener();
       }
-      this.loadingAuthAndComments = false; // Auth is ready, comments can now attempt to load
+      this.loadingAuthAndComments = false;
     }, (error) => {
       console.error("CommentsComponent: Auth subscription error:", error);
       this.loadingAuthAndComments = false;
@@ -90,7 +88,7 @@ export class CommentsComponent implements OnInit, OnDestroy {
       .subscribe(
         (fetchedComments: Comment[]) => {
           this.allComments = fetchedComments;
-          this.updateDisplayedComments(); // Update the view based on all comments
+          this.updateDisplayedComments();
         },
         (error) => {
           console.error("CommentsComponent: Error fetching real-time comments:", error);
@@ -99,35 +97,29 @@ export class CommentsComponent implements OnInit, OnDestroy {
   }
 
   private updateDisplayedComments() {
-    // 1. Filter for top-level comments
     let topLevelComments = this.allComments.filter(comment => comment.parentId === null);
 
-    // 2. Sort them based on current sort order
     topLevelComments.sort((a, b) => {
       if (this.currentSort === 'newest') {
         const timeA = (a.createdAt instanceof Timestamp) ? a.createdAt.toMillis() : 0;
         const timeB = (b.createdAt instanceof Timestamp) ? b.createdAt.toMillis() : 0;
-        return timeB - timeA; // Newest first
+        return timeB - timeA;
       } else if (this.currentSort === 'oldest') {
         const timeA = (a.createdAt instanceof Timestamp) ? a.createdAt.toMillis() : 0;
         const timeB = (b.createdAt instanceof Timestamp) ? b.createdAt.toMillis() : 0;
-        return timeA - timeB; // Oldest first
+        return timeA - timeB;
       } else if (this.currentSort === 'mostLiked') {
-        return b.likes - a.likes; // Most liked first
+        return b.likes - a.likes;
       }
       return 0;
     });
 
-    // 3. Apply client-side pagination
-    // Initialize currentDisplayedCount if it's the first load or after a sort change
     if (this.currentDisplayedCount === 0 || this.currentDisplayedCount < this.pageSize) {
       this.currentDisplayedCount = this.pageSize;
     }
-    // If comments are deleted, ensure currentDisplayedCount doesn't exceed total top-level comments
     if (this.currentDisplayedCount > topLevelComments.length) {
       this.currentDisplayedCount = topLevelComments.length;
     }
-
 
     this.displayedTopLevelComments = topLevelComments.slice(0, this.currentDisplayedCount);
     this.hasMore = topLevelComments.length > this.displayedTopLevelComments.length;
@@ -135,16 +127,15 @@ export class CommentsComponent implements OnInit, OnDestroy {
 
   loadMore() {
     this.currentDisplayedCount += this.pageSize;
-    this.updateDisplayedComments(); // Re-calculate based on increased count
+    this.updateDisplayedComments();
   }
 
   sortComments(sortBy: 'newest' | 'oldest' | 'mostLiked') {
     this.currentSort = sortBy;
-    this.currentDisplayedCount = this.pageSize; // Reset display count for new sort
-    this.updateDisplayedComments(); // Re-calculate and display
+    this.currentDisplayedCount = this.pageSize;
+    this.updateDisplayedComments();
   }
 
-  // Helper function to determine if a comment can be edited/deleted
   canModifyComment(comment: Comment): boolean {
     return this.isAdmin || comment.userId === this.userId;
   }
@@ -166,7 +157,6 @@ export class CommentsComponent implements OnInit, OnDestroy {
     }
     await this.commentService.editComment(commentId, this.editContent);
     this.editingCommentId = null;
-    // Real-time listener will update displayed comments
   }
 
   async deleteComment(commentId: string) {
@@ -179,7 +169,6 @@ export class CommentsComponent implements OnInit, OnDestroy {
     if (confirm('Are you sure you want to delete this comment and all its replies?')) {
       try {
         await this.commentService.deleteComment(commentId);
-        // Real-time listener will update displayed comments
       } catch (error) {
         console.error('CommentsComponent: Error deleting comment:', error);
       }
@@ -199,7 +188,6 @@ export class CommentsComponent implements OnInit, OnDestroy {
       try {
         await this.commentService.addComment(this.articleId, this.newComment, this.userId, this.userName, this.userAvatarUrl);
         this.newComment = '';
-        // Real-time listener will trigger updateDisplayedComments
       } catch (error) {
         console.error('CommentsComponent: Error posting comment:', error);
       }
@@ -217,8 +205,7 @@ export class CommentsComponent implements OnInit, OnDestroy {
         await this.commentService.addReply(this.articleId, parentId, content, this.userId, this.userName, this.userAvatarUrl);
         this.replyText[parentId] = '';
         this.replyingTo = null;
-        this.showReplies[parentId] = true; // Automatically open replies after posting
-        // Real-time listener will trigger updateDisplayedComments
+        this.showReplies[parentId] = true;
       } catch (error) {
         console.error('CommentsComponent: Error posting reply:', error);
       }
@@ -235,7 +222,6 @@ export class CommentsComponent implements OnInit, OnDestroy {
       return;
     }
     await this.commentService.toggleLikeComment(comment.id, this.userId);
-    // Real-time listener will update the likes
   }
 
   hasUserLiked(comment: Comment): boolean {
@@ -243,7 +229,6 @@ export class CommentsComponent implements OnInit, OnDestroy {
   }
 
   getReplies(parentId: string) {
-    // Replies are always sorted oldest first, directly from allComments
     return this.allComments.filter(c => c.parentId === parentId)
       .sort((a, b) => {
         const timeA = (a.createdAt instanceof Timestamp) ? a.createdAt.toMillis() : 0;
@@ -260,6 +245,6 @@ export class CommentsComponent implements OnInit, OnDestroy {
     if (seconds < 60) return 'just now';
     if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;
     if (seconds < 86400) return `${Math.floor(seconds / 3600)}h ago`;
-    return `${Math.floor(seconds / 86400)}d ago`; // Corrected 'd ago'
+    return `${Math.floor(seconds / 86400)}d ago`;
   }
 }

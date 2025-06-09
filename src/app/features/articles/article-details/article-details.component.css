@@ -1,26 +1,24 @@
-/* General Layout and Structure */
 .article-page-layout {
   display: flex;
   gap: 2rem;
   max-width: 1200px;
   margin: 2rem auto;
   padding: 1rem;
-  align-items: flex-start; /* Aligns items to the top of the flex container */
+  align-items: flex-start;
 }
 
-/* Author Sidebar Styles */
 .author-sidebar {
-  flex: 0 0 25%; /* Takes up 25% of the available space, doesn't grow or shrink */
-  min-width: 200px; /* Ensures a minimum width for the sidebar */
+  flex: 0 0 25%;
+  min-width: 200px;
   background: #fff;
   padding: 1.5rem;
   border-radius: 16px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
   text-align: center;
-  position: sticky; /* Makes the sidebar sticky as you scroll */
-  top: 2rem; /* Sticks 2rem from the top of the viewport */
-  align-self: flex-start; /* Aligns itself to the start within the flex container */
-  overflow-y: visible; /* Allows content to overflow vertically if needed */
+  position: sticky;
+  top: 2rem;
+  align-self: flex-start;
+  overflow-y: visible;
 }
 
 .author-profile-card h3 {
@@ -33,11 +31,11 @@
 .author-avatar-large {
   width: 200px;
   height: 200px;
-  border-radius: 50%; /* Makes the image circular */
-  object-fit: cover; /* Ensures the image covers the area without distortion */
-  border: 0 solid #00796b; /* No border, but often used for visual accents */
-  margin: 0 auto 0; /* Centers the image horizontally */
-  display: block; /* Ensures it takes up its own line for centering */
+  border-radius: 50%;
+  object-fit: cover;
+  border: 0 solid #00796b;
+  margin: 0 auto 0;
+  display: block;
 }
 
 .following-button {
@@ -78,11 +76,10 @@
   color: #555;
   text-align: left;
   margin-bottom: 1.5rem;
-  /* Crucial for text wrapping */
-  word-wrap: break-word; /* Older browsers */
-  overflow-wrap: break-word; /* Modern browsers */
-  word-break: normal; /* Allows normal word breaking, but breaks excessively long words if needed */
-  white-space: normal; /* Ensures text wraps normally and doesn't get squished onto one line */
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: normal;
+  white-space: normal;
 }
 
 .author-social-links {
@@ -99,21 +96,19 @@
   transition: fill 0.3s ease;
 }
 
-/* Specific social icon colors for branding */
 .author-social-links a[aria-label="Twitter"] .social-icon {
-  fill: #1DA1F2; /* Twitter blue */
+  fill: #1DA1F2;
 }
 .author-social-links a[aria-label="LinkedIn"] .social-icon {
-  fill: #0077B5; /* LinkedIn blue */
+  fill: #0077B5;
 }
 .author-social-links a[aria-label="Facebook"] .social-icon {
-  fill: #1877F2; /* Facebook blue */
+  fill: #1877F2;
 }
 
-/* Article Details Content Styles */
 .article-details-content {
-  flex: 1; /* Allows the article content to take up remaining space */
-  min-width: 0; /* Prevents flex item from overflowing due to content */
+  flex: 1;
+  min-width: 0;
 }
 
 .article-card {
@@ -121,8 +116,8 @@
   padding: 2rem;
   border-radius: 16px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  overflow-wrap: break-word; /* Ensures long words break within the card */
-  word-break: break-word; /* More aggressive word breaking */
+  overflow-wrap: break-word;
+  word-break: break-word;
   position: relative;
   display: flex;
   flex-direction: column;
@@ -132,7 +127,7 @@
   width: 100%;
   border-radius: 12px;
   margin-bottom: 1.5rem;
-  object-fit: cover; /* Ensures thumbnail fills its area without distortion */
+  object-fit: cover;
 }
 
 .article-main-title {
@@ -140,11 +135,11 @@
   margin-bottom: 1.5rem;
   text-align: center;
   color: #333;
-  overflow-wrap: break-word; /* Ensure wrapping for long titles */
+  overflow-wrap: break-word;
   word-break: break-word;
 }
 
-.article-title { /* This seems to be a redundant style if .article-main-title is primary */
+.article-title {
   font-size: 2rem;
   margin-bottom: 0.5rem;
 }
@@ -177,10 +172,9 @@
 .article-content {
   line-height: 1.7;
   color: #333;
-  /* Crucial for text wrapping */
   overflow-wrap: break-word;
-  word-break: normal; /* Normal word breaking for paragraph flow, break long words if needed */
-  white-space: normal; /* Ensures text wraps normally */
+  word-break: normal;
+  white-space: normal;
   padding-top: 1rem;
 }
 
@@ -189,11 +183,10 @@
   font-size: 1.1em;
   color: #444;
   line-height: 1.6;
-  /* Crucial for text wrapping */
-  word-wrap: break-word; /* Older browsers */
-  overflow-wrap: break-word; /* Modern browsers */
-  word-break: normal; /* Allows normal word breaking, but breaks excessively long words if needed */
-  white-space: normal; /* Ensures text wraps normally */
+  word-wrap: break-word;
+  overflow-wrap: break-word;
+  word-break: normal;
+  white-space: normal;
 }
 
 .article-card-footer {
@@ -217,15 +210,11 @@
   background-color: #004d40;
 }
 
-/* Small components/utility classes */
 .author-info {
   display: flex;
   align-items: center;
   font-size: 0.8em;
   color: #888;
-  /* Removed white-space: nowrap; and overflow: hidden; text-overflow: ellipsis;
-     from here if this is used for multi-line bios/descriptions, as they prevent wrapping.
-     If this is for a single line name, ensure it only applies there. */
 }
 
 .author-avatar {
@@ -236,11 +225,10 @@
   margin-right: 6px;
 }
 
-.author-details-tab { /* This block is likely unused if you're using `selectedTab` */
+.author-details-tab {
   display: none;
 }
 
-/* Pagination / Meta-row related styles (might be from article-card context) */
 .meta-row {
   display: flex;
   justify-content: space-between;
@@ -263,7 +251,6 @@
   z-index: 100;
 }
 
-/* Tab Navigation Styles */
 .tabs {
   display: flex;
   justify-content: center;
@@ -296,7 +283,6 @@
   padding: 1.5rem 0;
 }
 
-/* Social Field Icons Styling */
 .social-field {
   display: flex;
   align-items: center;
@@ -309,7 +295,6 @@
   cursor: pointer;
 }
 
-/* Specific social icon colors for branding */
 .social-field.twitter svg {
   color: #1DA1F2;
 }
@@ -320,36 +305,34 @@
   color: #1877F2;
 }
 
-/* Clickable Author Name Styles */
 .author-name-clickable {
   cursor: pointer;
-  color: #00796b; /* Or any color that indicates it's a link */
-  text-decoration: underline; /* Emphasize it's a link */
+  color: #00796b;
+  text-decoration: underline;
 }
 
 .author-name-clickable:hover {
-  color: #004d40; /* Darker shade on hover */
+  color: #004d40;
 }
 
-/* Responsive Design for Mobile */
 @media (max-width: 768px) {
   .article-page-layout {
-    flex-direction: column; /* Stacks layout items vertically on small screens */
-    gap: 1.5rem; /* Reduces the gap between stacked items */
+    flex-direction: column;
+    gap: 1.5rem;
   }
 
   .author-sidebar {
-    position: static; /* Removes sticky position on mobile */
-    width: 100%; /* Makes sidebar take full width */
-    order: -1; /* Places the sidebar at the top of the stacked layout */
+    position: static;
+    width: 100%;
+    order: -1;
     margin-bottom: 1.5rem;
-    max-height: none; /* Removes any fixed height constraints */
-    overflow-y: visible; /* Ensures vertical content flows normally */
-    flex: 0 0 auto; /* Adjusts flex properties for non-sticky mobile layout */
+    max-height: none;
+    overflow-y: visible;
+    flex: 0 0 auto;
   }
 
   .article-details-content {
-    width: 100%; /* Makes article content take full width */
-    box-sizing: border-box; /* Ensures padding/border are included in the width */
+    width: 100%;
+    box-sizing: border-box;
   }
 }

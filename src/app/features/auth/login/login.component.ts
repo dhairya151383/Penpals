@@ -4,7 +4,7 @@ import { ReactiveFormsModule, FormGroup, FormBuilder, Validators } from '@angula
 import { AuthService } from '../../../core/services/auth.service';
 import { Router, RouterLink } from '@angular/router';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
-import { finalize } from 'rxjs/operators'; // Import finalize for consistent loading state management
+import { finalize } from 'rxjs/operators';
 
 @Component({
   selector: 'app-login',
@@ -32,13 +32,12 @@ export class LoginComponent implements OnInit {
   }
 
   async onLogin(): Promise<void> {
-    this.errorMessage = null; // Clear previous errors
+    this.errorMessage = null;
 
-    // Mark all fields as touched to display immediate validation feedback
     this.loginForm.markAllAsTouched();
 
     if (!this.loginForm.valid) {
-      this.errorMessage = 'Please enter valid email and password.'; // More specific error message
+      this.errorMessage = 'Please enter valid email and password.';
       return;
     }
 
@@ -47,10 +46,8 @@ export class LoginComponent implements OnInit {
 
     try {
       await this.authService.signInWithEmail(email, password);
-      // Navigate to dashboard after successful login
       await this.router.navigate(['/dashboard']);
     } catch (error: any) {
-      // Provide user-friendly error messages based on common Firebase errors
       if (error.code === 'auth/user-not-found' || error.code === 'auth/wrong-password') {
         this.errorMessage = 'Invalid email or password. Please check your credentials.';
       } else if (error.code === 'auth/invalid-email') {
@@ -60,22 +57,20 @@ export class LoginComponent implements OnInit {
       } else {
         this.errorMessage = error.message || 'Login failed. An unexpected error occurred.';
       }
-      console.error('Email/Password Login Error:', error); // Log the full error for debugging
+      console.error('Email/Password Login Error:', error);
     } finally {
-      this.isLoading = false; // Ensure loading state is reset
+      this.isLoading = false;
     }
   }
 
   async signInWithGoogle(): Promise<void> {
     this.isLoading = true;
-    this.errorMessage = null; // Clear previous errors
+    this.errorMessage = null;
 
     try {
       await this.authService.signInWithGoogle();
-      // Navigate to dashboard after successful Google login
       await this.router.navigate(['/dashboard']);
     } catch (error: any) {
-      // Specific error handling for Google sign-in
       if (error.code === 'auth/popup-closed-by-user') {
         this.errorMessage = 'Google login was cancelled.';
       } else if (error.code === 'auth/cancelled-popup-request') {
@@ -83,9 +78,9 @@ export class LoginComponent implements OnInit {
       } else {
         this.errorMessage = error.message || 'Google login failed. An unexpected error occurred.';
       }
-      console.error('Google Sign-in Error:', error); // Log the full error for debugging
+      console.error('Google Sign-in Error:', error);
     } finally {
-      this.isLoading = false; // Ensure loading state is reset
+      this.isLoading = false;
     }
   }
 }

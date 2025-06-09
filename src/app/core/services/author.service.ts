@@ -2,12 +2,10 @@ import { Injectable } from '@angular/core';
 import { collection, doc, getDoc, getDocs, setDoc, updateDoc } from 'firebase/firestore';
 import { Author } from '../../shared/models/author.model';
 import { FirebaseService } from './firebase.service';
-import { Users } from '../../shared/models/user.model';
 
 @Injectable({ providedIn: 'root' })
 export class AuthorService {
   constructor(private firebase: FirebaseService) {}
-
   private get authorCollection() {
     return collection(this.firebase.firestore, 'authors');
   }
@@ -30,8 +28,6 @@ export class AuthorService {
   async update(id: string, data: Partial<Author>) {
     const authorRef = doc(this.authorCollection, id);
     await updateDoc(authorRef, data);
-
-    // Sync to user profile if avatarUrl is present
     if (data.avatarUrl) {
       const userRef = doc(this.userCollection, id); // Assuming authorId == userId
       await updateDoc(userRef, {

@@ -12,30 +12,25 @@ import { AuthService } from '../../../core/services/auth.service';
 import { Router, RouterLink } from '@angular/router';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
 
-// Custom validator for password matching
 export function passwordMatchValidator(control: AbstractControl): ValidationErrors | null {
   const password = control.get('password');
   const confirmPassword = control.get('confirmPassword');
 
-  // Return null if controls aren't initialized yet or values are null/undefined
   if (!password || !confirmPassword) {
     return null;
   }
 
-  // Set error on confirmPassword control directly, but only if it's touched/dirty
   if (password.value !== confirmPassword.value) {
-    // Only set error on confirmPassword if values are present to avoid initial error
     if (confirmPassword.touched || confirmPassword.dirty) {
       confirmPassword.setErrors({ passwordMismatch: true });
     }
-    return { passwordMismatch: true }; // This error is for the form group
+    return { passwordMismatch: true };
   } else {
-    // Clear the error if they match, crucial when user corrects input
     if (confirmPassword.hasError('passwordMismatch')) {
       confirmPassword.setErrors(null);
     }
   }
-  return null; // Passwords match
+  return null;
 }
 
 @Component({
@@ -51,8 +46,6 @@ export class RegisterComponent implements OnInit {
   errorMessage: string | null = null;
   successMessage: string | null = null;
 
-  // `submitted` flag can be removed if relying on `markAllAsTouched` and `touched` for initial validation display
-
   constructor(
     private fb: FormBuilder,
     private authService: AuthService,
@@ -62,35 +55,33 @@ export class RegisterComponent implements OnInit {
   ngOnInit(): void {
     this.registerForm = this.fb.group(
       {
-        title: ['Mr', Validators.required], // Add title with default 'Mr' and required
+        title: ['Mr', Validators.required],
         firstName: ['', Validators.required],
-        lastName: [''], // lastName is optional, so no Validators.required here
+        lastName: [''],
         email: ['', [Validators.required, Validators.email]],
         password: ['', [Validators.required, Validators.minLength(6)]],
         confirmPassword: ['', Validators.required],
-        role: ['', Validators.required] // Role is required
+        role: ['', Validators.required]
       },
       {
-        validators: passwordMatchValidator // Apply custom validator at the form group level
+        validators: passwordMatchValidator
       }
     );
   }
 
-  // Helper getter for easier template access to form controls
   get f() { return this.registerForm.controls; }
 
   async onRegister() {
-    // No need for `this.submitted = true;` if using `markAllAsTouched()`
-    this.registerForm.markAllAsTouched(); // Show validation errors on all fields immediately
-    this.errorMessage = null; // Clear previous errors
-    this.successMessage = null; // Clear previous success messages
+    this.registerForm.markAllAsTouched();
+    this.errorMessage = null;
+    this.successMessage = null;
 
     if (this.registerForm.invalid) {
       this.errorMessage = 'Please fix the errors in the form before submitting.';
-      return; // Stop if form is invalid
+      return;
     }
 
-    this.isLoading = true; // Start loading spinner
+    this.isLoading = true;
     const {
       title,
       firstName,
@@ -102,17 +93,15 @@ export class RegisterComponent implements OnInit {
 
     const gender = title === 'Mr' ? 'male' : 'female';
     const displayName = (firstName.trim() + (lastName ? ' ' + lastName.trim() : '')).trim();
-    // It seems 'username' here is essentially 'firstName', confirm if this is the desired behavior
-    const username = firstName.trim(); // Renamed from original for clarity, confirm if this is needed or displayName is enough
+    const username = firstName.trim();
 
     try {
       await this.authService.registerWithEmail(email, password, username, role, displayName, gender);
       this.successMessage = 'Registration successful! You will be redirected to the dashboard shortly.';
       setTimeout(() => {
         this.router.navigate(['/dashboard']);
-      }, 2000); // Redirect after 2 seconds to allow user to read success message
+      }, 2000);
     } catch (error: any) {
-      // Provide more specific error messages for common Firebase auth issues
       if (error.code === 'auth/email-already-in-use') {
         this.errorMessage = 'This email address is already in use. Please log in or use a different email.';
       } else if (error.code === 'auth/weak-password') {
@@ -122,9 +111,9 @@ export class RegisterComponent implements OnInit {
       } else {
         this.errorMessage = error.message || 'Registration failed. An unexpected error occurred. Please try again.';
       }
-      console.error('Registration error:', error); // Log the detailed error for debugging
+      console.error('Registration error:', error);
     } finally {
-      this.isLoading = false; // Stop loading spinner
+      this.isLoading = false;
     }
   }
 

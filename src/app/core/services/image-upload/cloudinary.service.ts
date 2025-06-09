@@ -12,10 +12,6 @@ export class CloudinaryService {
   private readonly uploadPreset = environment.uploadPreset;
 
   constructor(private readonly http: HttpClient) {}
-
-  /**
-   * Uploads an image file to Cloudinary and returns the secure_url.
-   */
   uploadImage(file: File): Observable<string> {
     const url = `https://api.cloudinary.com/v1_1/${this.cloudName}/image/upload`;
     const formData = new FormData();

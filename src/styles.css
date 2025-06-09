@@ -18,7 +18,6 @@
   overflow: hidden;
 }
 
-/* Add the responsive media query here as well */
 @media (max-width: 768px) {
   .article-creation-container {
     flex-direction: column;

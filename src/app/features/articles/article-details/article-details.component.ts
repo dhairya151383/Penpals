@@ -1,6 +1,5 @@
-// src/app/pages/article-details/article-details.component.ts
 import { Component, OnInit, OnDestroy } from '@angular/core';
-import { ActivatedRoute, Router, NavigationEnd } from '@angular/router'; // Import NavigationEnd
+import { ActivatedRoute, Router } from '@angular/router';
 import { Article } from '../../../shared/models/article.model';
 import { ArticleService } from '../../../core/services/article.service';
 import { AuthorService } from '../../../core/services/author.service';
@@ -12,8 +11,8 @@ import { LoadingSpinnerComponent } from '../../../shared/components/loading-spin
 import { ArticleDatePipe } from '../../../shared/pipes/article-date.pipe';
 import { CommentPanelComponent } from '../comment-panel/comment-panel.component';
 import { ArticleListCarouselComponent } from '../article-list-carousel/article-list-carousel.component';
-import { Subscription } from 'rxjs'; // Import Subscription
-import { filter, switchMap } from 'rxjs/operators'; // Import operators
+import { Subscription } from 'rxjs';
+import { filter, switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-article-details',
@@ -38,7 +37,7 @@ export class ArticleDetailsComponent implements OnInit, OnDestroy {
   selectedTab: 'overview' | 'content' = 'overview';
 
   private authSubscription: Subscription | undefined;
-  private routeSubscription: Subscription | undefined; // New subscription for route params
+  private routeSubscription: Subscription | undefined;
 
   constructor(
     private route: ActivatedRoute,
@@ -49,15 +48,13 @@ export class ArticleDetailsComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit(): void {
-    // Subscribe to route parameter changes
     this.routeSubscription = this.route.paramMap.pipe(
-      // Use switchMap to cancel previous article fetches if params change rapidly
       switchMap(params => {
-        this.loading = true; // Set loading to true when new article fetch starts
+        this.loading = true;
         const id = params.get('id');
         if (!id) {
           this.loading = false;
-          return Promise.resolve(null); // Return a resolved promise with null if no ID
+          return Promise.resolve(null);
         }
         return this.articleService.getById(id);
       })
@@ -66,18 +63,17 @@ export class ArticleDetailsComponent implements OnInit, OnDestroy {
         if (!article) {
           console.warn('Article not found');
           this.loading = false;
-          this.article = null; // Clear article if not found
-          this.author = null; // Clear author as well
+          this.article = null;
+          this.author = null;
           return;
         }
         this.article = article;
-        this.selectedTab = 'overview'; // Reset tab on new article load
+        this.selectedTab = 'overview';
 
-        // Fetch author only after article is loaded
         if (article.authorId) {
           this.authorService.getById(article.authorId).then(author => {
             this.author = author;
-            this.checkEditPermissions(); // Check permissions after author and article are loaded
+            this.checkEditPermissions();
           }).catch(err => {
             console.error('Error loading author:', err);
             this.author = null;
@@ -87,7 +83,6 @@ export class ArticleDetailsComponent implements OnInit, OnDestroy {
           this.author = null;
           this.checkEditPermissions();
         }
-        // Loading is set to false in checkEditPermissions after all async ops
       },
       error: (err) => {
         console.error('Error loading article details:', err);
@@ -96,13 +91,9 @@ export class ArticleDetailsComponent implements OnInit, OnDestroy {
         this.author = null;
       }
     });
-
-    // Initial check for edit permissions, also handled in the paramMap subscription chain
-    // (Moved the actual permission check into a separate method for clarity)
   }
 
   private checkEditPermissions(): void {
-    // This is called after article and author are potentially loaded
     this.authSubscription = this.authService.user$.subscribe((user: AppUser | null) => {
       if (user) {
         if (user.roles?.admin) {
@@ -115,16 +106,15 @@ export class ArticleDetailsComponent implements OnInit, OnDestroy {
       } else {
         this.canEdit = false;
       }
-      this.loading = false; // Finally set loading to false here
+      this.loading = false;
     });
   }
-
 
   ngOnDestroy(): void {
     if (this.authSubscription) {
       this.authSubscription.unsubscribe();
     }
-    if (this.routeSubscription) { // Unsubscribe from route params
+    if (this.routeSubscription) {
       this.routeSubscription.unsubscribe();
     }
   }

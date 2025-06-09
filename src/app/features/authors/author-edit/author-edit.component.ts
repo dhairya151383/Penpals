@@ -8,8 +8,8 @@ import { Tag } from '../../../shared/models/tag.model';
 import { TagSelectorComponent } from '../../../shared/components/tag-selector/tag-selector.component';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
 import { UploadImageComponent } from '../../../shared/components/upload-image/upload-image.component';
-import { catchError, finalize } from 'rxjs/operators'; // Import operators
-import { of } from 'rxjs'; // Import 'of' for error handling
+import { catchError, finalize } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 @Component({
   selector: 'app-author-edit',
@@ -21,11 +21,11 @@ import { of } from 'rxjs'; // Import 'of' for error handling
 export class AuthorEditComponent implements OnInit {
   form!: FormGroup;
   tags: Tag[] = [];
-  avatarUrl: string = 'assets/images/defaultAvatar.jpg'; // Initialize with a default placeholder
+  avatarUrl: string = 'assets/images/defaultAvatar.jpg';
   authorId!: string;
-  loading = true; // Set to true initially to show spinner while fetching data
+  loading = true;
   error: string | null = null;
-  formSubmitted = false; // Flag to indicate if form has been submitted
+  formSubmitted = false;
   bioCharacterCount: number = 0;
   readonly bioCharacterLimit: number = 1200;
 
@@ -37,9 +37,8 @@ export class AuthorEditComponent implements OnInit {
   ) { }
 
   ngOnInit() {
-    this.initializeForm(); // Call a method to initialize form
+    this.initializeForm();
 
-    // Subscribe to bio value changes for character count
     this.bio.valueChanges.subscribe((value: string) => {
       this.bioCharacterCount = value ? value.length : 0;
     });
@@ -49,12 +48,9 @@ export class AuthorEditComponent implements OnInit {
       this.authorId = id;
       this.loadAuthorData(id);
     } else {
-      // This scenario (editing an author without an ID) implies a new author creation flow
-      // or an error in routing. For 'edit' component, an ID should always be present.
       this.error = 'Invalid author ID provided.';
       this.loading = false;
-      // Optionally redirect to a list or dashboard if ID is missing
-      this.router.navigate(['/dashboard']); // Or '/authors'
+      this.router.navigate(['/dashboard']);
     }
   }
 
@@ -63,7 +59,7 @@ export class AuthorEditComponent implements OnInit {
       name: ['', [Validators.required, Validators.minLength(2), Validators.maxLength(50)]],
       bio: ['', [Validators.required, Validators.maxLength(this.bioCharacterLimit)]],
       avatarUrl: ['', [
-        Validators.pattern(/^(https?:\/\/.*\.(?:png|jpg|jpeg|gif|webp)(\?.*)?|assets\/images\/.*\.jpg)$/i) // More robust URL pattern
+        Validators.pattern(/^(https?:\/\/.*\.(?:png|jpg|jpeg|gif|webp)(\?.*)?|assets\/images\/.*\.jpg)$/i)
       ]],
       socialLinks: this.fb.group({
         twitter: ['', [Validators.pattern(/^(https?:\/\/)?(www\.)?twitter\.com\/[A-Za-z0-9_]{1,15}\/?$/i)]],
@@ -74,18 +70,18 @@ export class AuthorEditComponent implements OnInit {
   }
 
   private async loadAuthorData(id: string) {
-    this.loading = true; // Ensure loading is true
-    this.error = null; // Clear previous errors
+    this.loading = true;
+    this.error = null;
 
     try {
       const author = await this.authorService.getById(id);
       if (author) {
         this.tags = (author.tags || []).map(name => ({ name, type: 'author' }));
-        this.avatarUrl = author.avatarUrl || 'assets/images/defaultAvatar.jpg'; // Ensure avatarUrl is set for display
+        this.avatarUrl = author.avatarUrl || 'assets/images/defaultAvatar.jpg';
         this.form.patchValue({
           name: author.name || '',
           bio: author.bio || '',
-          avatarUrl: author.avatarUrl || '', // Patch the actual URL to the form control
+          avatarUrl: author.avatarUrl || '',
           socialLinks: {
             twitter: author.socialLinks?.twitter || '',
             linkedin: author.socialLinks?.linkedin || '',
@@ -93,20 +89,19 @@ export class AuthorEditComponent implements OnInit {
           },
         });
         this.bioCharacterCount = author.bio ? author.bio.length : 0;
-        this.form.updateValueAndValidity(); // Recalculate validation status
+        this.form.updateValueAndValidity();
       } else {
         this.error = 'Author not found.';
-        this.router.navigate(['/authors']); // Or a 404 page
+        this.router.navigate(['/authors']);
       }
     } catch (err) {
       console.error('Failed to load author data:', err);
       this.error = 'Failed to load author data. Please try again.';
     } finally {
-      this.loading = false; // Set loading to false once operation is complete
+      this.loading = false;
     }
   }
 
-  // Helper getters for easier template access and type safety
   get name(): AbstractControl { return this.form.get('name')!; }
   get bio(): AbstractControl { return this.form.get('bio')!; }
   get avatarUrlControl(): AbstractControl { return this.form.get('avatarUrl')!; }
@@ -120,25 +115,20 @@ export class AuthorEditComponent implements OnInit {
   }
 
   onImageChange(newImageUrl: string | null) {
-    this.avatarUrl = newImageUrl || 'assets/images/defaultAvatar.jpg'; // Update for display
-    // Update the form control value directly to trigger its validation
+    this.avatarUrl = newImageUrl || 'assets/images/defaultAvatar.jpg';
     this.avatarUrlControl.setValue(newImageUrl);
-    this.avatarUrlControl.markAsDirty(); // Mark as dirty since user interaction changed it
-    this.avatarUrlControl.updateValueAndValidity(); // Ensure validation runs immediately
+    this.avatarUrlControl.markAsDirty();
+    this.avatarUrlControl.updateValueAndValidity();
   }
 
-  // onBioChanged is no longer strictly necessary if using valueChanges for character count
-  // and direct form control binding for input. Keeping for explicit touch.
   onBioChanged(event: Event) {
-    this.bio.markAsTouched(); // Explicitly mark touched on user input
-    // The character count is handled by bio.valueChanges subscription
+    this.bio.markAsTouched();
   }
 
   async save() {
-    this.formSubmitted = true; // Indicate form submission attempt
-    this.form.markAllAsTouched(); // Mark all controls as touched to display errors immediately
+    this.formSubmitted = true;
+    this.form.markAllAsTouched();
 
-    // Log current form state for debugging before preventing save
     console.log('Attempting to save - Form valid:', this.form.valid);
     Object.keys(this.form.controls).forEach(key => {
       const control = this.form.get(key);
@@ -155,33 +145,32 @@ export class AuthorEditComponent implements OnInit {
       });
     }
 
-
     if (this.form.invalid) {
       this.error = 'Please correct the highlighted errors before saving.';
-      this.loading = false; // Ensure loading is off if form is invalid
+      this.loading = false;
       return;
     }
 
-    this.loading = true; // Show loading spinner
-    this.error = null; // Clear previous errors
+    this.loading = true;
+    this.error = null;
 
     const updated: Partial<Author> = {
       name: this.form.value.name,
       bio: this.form.value.bio,
-      avatarUrl: this.avatarUrl, // Use the this.avatarUrl which comes from UploadImageComponent
+      avatarUrl: this.avatarUrl,
       tags: this.tags.map(t => t.name),
       socialLinks: this.form.value.socialLinks,
-      updatedAt: new Date().toISOString(), // Ensure updatedAt is set
+      updatedAt: new Date().toISOString(),
     };
 
     try {
       await this.authorService.update(this.authorId, updated);
-      this.router.navigate(['/author', this.authorId]); // Navigate back to author details
+      this.router.navigate(['/author', this.authorId]);
     } catch (err) {
       console.error('Failed to update author:', err);
       this.error = 'Failed to save changes. An unexpected error occurred.';
     } finally {
-      this.loading = false; // Hide loading spinner
+      this.loading = false;
     }
   }
 }

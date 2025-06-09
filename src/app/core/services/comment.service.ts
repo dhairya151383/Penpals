@@ -1,4 +1,3 @@
-// src/app/core/services/comment.service.ts
 import { Injectable } from '@angular/core';
 import {
   collection,
@@ -18,8 +17,8 @@ import {
   updateDoc,
   increment,
   deleteDoc,
-  arrayUnion, // Import arrayUnion
-  arrayRemove // Import arrayRemove
+  arrayUnion, 
+  arrayRemove 
 } from 'firebase/firestore';
 import { BehaviorSubject } from 'rxjs';
 import { Comment } from '../../shared/models/comment.model';
@@ -45,10 +44,7 @@ export class CommentService {
 
   private listenToComments(articleId: string, subject: BehaviorSubject<Comment[]>) {
     const commentRef = collection(this.firebase.firestore, 'comments');
-    // Listen to all comments for the article, both top-level and replies
-    // No specific order is applied here as component will sort based on user preference
     const q = query(commentRef, where('articleId', '==', articleId));
-
     onSnapshot(q, (snapshot) => {
       const comments: Comment[] = [];
       snapshot.forEach((doc) => {
@@ -88,25 +84,19 @@ export class CommentService {
     const commentDocRef = doc(this.firebase.firestore, 'comments', commentId);
 
     try {
-      // Use getDoc instead of getDocs with a query for a single document
       const commentSnapshot = await getDocs(query(collection(this.firebase.firestore, 'comments'), where('id', '==', commentId)));
-
       if (commentSnapshot.empty) {
         console.warn('CommentService: Comment not found for liking:', commentId);
         return;
       }
-
       const commentData = commentSnapshot.docs[0].data() as Comment;
       const likedBy = commentData.likedBy || []; // Ensure likedBy array exists
-
       if (likedBy.includes(userId)) {
-        // User has already liked, so unlike it
         await updateDoc(commentDocRef, {
           likes: increment(-1),
           likedBy: arrayRemove(userId)
         });
       } else {
-        // User has not liked, so like it
         await updateDoc(commentDocRef, {
           likes: increment(1),
           likedBy: arrayUnion(userId)
@@ -148,23 +138,17 @@ export class CommentService {
       throw error;
     }
   }
-
-  // This method is now effectively not used by CommentsComponent for its main display,
-  // as the component handles client-side filtering/sorting/pagination from allComments.
-  // It remains available if other parts of the app require server-side paginated top-level comments.
   async loadMoreComments(articleId: string, pageSize = 5, lastVisibleCommentId: string | null = null, sortBy: 'newest' | 'oldest' | 'mostLiked' = 'newest'): Promise<Comment[]> {
     const commentRef = collection(this.firebase.firestore, 'comments');
     let q;
     let orderField: string = 'createdAt';
     let orderDirection: 'asc' | 'desc' = 'desc';
-
     if (sortBy === 'oldest') {
       orderDirection = 'asc';
     } else if (sortBy === 'mostLiked') {
       orderField = 'likes';
       orderDirection = 'desc';
     }
-
     q = query(
       commentRef,
       where('articleId', '==', articleId),
@@ -198,17 +182,12 @@ export class CommentService {
   async deleteComment(commentId: string) {
     const commentRef = collection(this.firebase.firestore, 'comments');
     const commentDocRef = doc(commentRef, commentId);
-
     try {
-      // Delete the comment itself
       await deleteDoc(commentDocRef);
-
-      // Delete all replies associated with this comment
       const repliesQuery = query(commentRef, where('parentId', '==', commentId));
       const replySnapshot = await getDocs(repliesQuery);
       const deletePromises = replySnapshot.docs.map(replyDoc => deleteDoc(replyDoc.ref));
       await Promise.all(deletePromises);
-
     } catch (error) {
       console.error('CommentService: Error deleting comment and its replies:', error);
       throw error;

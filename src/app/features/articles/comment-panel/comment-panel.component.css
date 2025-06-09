@@ -1,19 +1,19 @@
 .comment-panel {
   position: fixed;
   top: 0;
-  right: -400px; /* Initially off-screen to the right */
-  width: 400px; /* Adjust width as needed */
+  right: -400px;
+  width: 400px; 
   height: 100%;
   background-color: #fff;
   box-shadow: -2px 0 5px rgba(0, 0, 0, 0.2);
   transition: right 0.3s ease-in-out;
-  z-index: 1000; /* Ensure it's above other content */
+  z-index: 1000;
   display: flex;
   flex-direction: column;
 }
 
 .comment-panel.open {
-  right: 0; /* Slide in when 'open' class is applied */
+  right: 0;
 }
 
 .header {
@@ -42,10 +42,8 @@
 .header button:hover {
   color: #333;
 }
-
-/* Allow comments component to take remaining space and be scrollable */
 app-comments {
   flex-grow: 1;
   overflow-y: auto;
-  padding: 20px; /* Add padding inside the panel */
+  padding: 20px;
 }

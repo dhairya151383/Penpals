@@ -1,4 +1,3 @@
-/* --- Reset and base styles --- */
 * {
   box-sizing: border-box;
 }
@@ -23,7 +22,6 @@ html {
   margin: 2rem auto;
 }
 
-/* --- Left Column: Branding/Image --- */
 .left-column {
   flex: 1 1 50%;
   background: linear-gradient(135deg, #a8d5ba 0%, #5fbc7e 100%);
@@ -53,7 +51,6 @@ html {
   margin: 0 auto;
 }
 
-/* --- Right Column: Form --- */
 .right-column {
   flex: 1 1 50%;
   padding: 3rem 3rem;
@@ -91,7 +88,6 @@ html {
   text-decoration: underline;
 }
 
-/* --- Form Inputs --- */
 input[type="text"],
 input[type="email"],
 input[type="password"],
@@ -115,10 +111,9 @@ select:focus {
 }
 
 .input-error {
-  border-color: #e74c3c !important; /* Specific error border color */
+  border-color: #e74c3c !important;
 }
 
-/* --- Input Row: Mr/Mrs/Miss + First Name side by side --- */
 .input-row {
   display: flex;
   gap: 1rem;
@@ -126,8 +121,8 @@ select:focus {
 }
 
 .input-row select {
-  flex: 0 35%; /* Title dropdown takes 20% width */
-  margin-bottom: 0; /* Remove default margin for elements within this flex row */
+  flex: 0 35%;
+  margin-bottom: 0;
   -webkit-appearance: none;
   -moz-appearance: none;
   appearance: none;
@@ -135,25 +130,22 @@ select:focus {
   background-repeat: no-repeat;
   background-position: right 0.7em top 50%;
   background-size: 0.65em auto;
-  padding-right: 2.5em; /* Space for the custom arrow */
+  padding-right: 2.5em;
 }
 
 .input-row input[formcontrolname="firstName"] {
-  flex: 0 0 65%; /* First Name input takes 80% width */
-  margin-bottom: 0; /* Remove default margin for elements within this flex row */
+  flex: 0 0 65%;
+  margin-bottom: 0;
 }
 
-
-/* --- Error Text --- */
 .error-text {
   color: #e74c3c;
   font-size: 0.85rem;
-  margin-top: -1rem; /* Adjust to pull error text closer to the field */
+  margin-top: -1rem;
   margin-bottom: 1rem;
-  min-height: 18px; /* Ensure consistent spacing even if no error is present */
+  min-height: 18px;
 }
 
-/* --- Error and Success Boxes --- */
 .error-box,
 .success-box {
   padding: 1rem;
@@ -175,7 +167,6 @@ select:focus {
   border: 1.5px solid #5fbc7e;
 }
 
-/* --- Submit Button --- */
 .submit-button {
   width: 100%;
   background-color: #5fbc7e;
@@ -202,7 +193,6 @@ select:focus {
   cursor: not-allowed;
 }
 
-/* --- Divider --- */
 .divider {
   display: flex;
   align-items: center;
@@ -223,7 +213,6 @@ select:focus {
   font-weight: 600;
 }
 
-/* --- Social Buttons --- */
 .social-buttons {
   display: flex;
   justify-content: center;
@@ -254,7 +243,6 @@ select:focus {
   height: 20px;
 }
 
-/* --- Responsive Adjustments --- */
 @media (max-width: 900px) {
   .register-container {
     flex-direction: column;
@@ -274,19 +262,17 @@ select:focus {
     max-width: 100%;
   }
 
-  /* Stack Mr/Mrs/Miss dropdown and First Name input on small screens */
   .input-row {
     flex-direction: column;
   }
 
   .input-row select,
   .input-row input[formcontrolname="firstName"] {
-    flex: 0 0 100%; /* Full width when stacked */
-    margin-bottom: 1.2rem; /* Add spacing between stacked elements */
+    flex: 0 0 100%;
+    margin-bottom: 1.2rem;
   }
 
-  /* Restore margin-top for error text after stacked inputs */
   .error-text {
-    margin-top: 4px; /* Default margin for error text when fields are not in input-row or stacked */
+    margin-top: 4px;
   }
 }

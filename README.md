@@ -1,70 +1,180 @@
-<<<<<<< HEAD
-<<<<<<< HEAD
-# Penpals
-Penpals
-=======
-=======
->>>>>>> f0853af8a251b26be7b96e179f5db6e0b1045268
-# PenPals
+PenPals - Online Publishing Platform
+PenPals is a feature-rich Angular web application designed to empower authors to create, publish, and manage articles while enabling readers to explore, read, like, and comment. Built with Firebase, Firestore, and modern Angular practices, it promotes community-driven engagement and thoughtful content sharing.
 
-This project was generated using [Angular CLI](https://github.com/angular/angular-cli) version 19.2.11.
+Table of Contents
+Project Description
 
-## Development server
+Features
 
-To start a local development server, run:
+Deliverables
 
-```bash
+Setup and Installation
+
+Running the Application
+
+Deployed Application
+
+User Credentials
+
+Unit Tests
+
+Bonus Features
+
+UI/UX Enhancements
+
+Evaluation Criteria
+
+1. Project Description
+PenPals is a modern publishing platform that facilitates seamless interaction between content creators and readers. It offers intuitive tools for creating rich articles, exploring content by tags or authors, and engaging in discussions through threaded comments. It uses Firebase for authentication and Firestore for data storage, ensuring real-time updates and secure access control.
+
+2. Features
+🔐 User Authentication
+Email/Password & Google Sign-in via Firebase.
+
+Role-based access (admin, author, user) enforced with AuthGuard and RoleGuard.
+
+📝 Article Management
+Rich-text editor (Quill) for formatting content.
+
+Image upload using Cloudinary integration.
+
+Authors can create, edit, and delete articles.
+
+Tags and thumbnails supported.
+
+📚 Article Listing
+Home dashboard with:
+
+Search by title, author, tags.
+
+Filter by tags.
+
+Sort by latest, most popular, or title.
+
+Pagination (client-side).
+
+Featured articles carousel.
+
+👨‍💼 Author Directory
+Browse all authors with avatars and bios.
+
+View individual author profiles and their published articles.
+
+💬 Comment System
+Real-time commenting via Firestore listeners.
+
+Threaded replies with like counts.
+
+Sort comments by newest, oldest, most liked.
+
+Delete/edit support for own comments.
+
+🖼️ Image Upload
+UploadImageComponent with previews and file size limits.
+
+CloudinaryService manages upload and returns secure URL.
+
+🔄 Routing & Layout
+Lazy loaded routes using provideRouter.
+
+Layout includes responsive navbar with route-based visibility.
+
+Guarded routes for protected actions.
+
+3. Deliverables
+GitHub: https://github.com/dhairya151383/penpals
+
+Deployed App: https://penpals-a583f.firebaseapp.com
+
+4. Setup and Installation
+bash
+Copy
+Edit
+git clone https://github.com/dhairya151383/penpals.git
+cd penpals
+npm install
+Ensure Angular CLI is up to date:
+
+bash
+Copy
+Edit
+npm install -g @angular/cli@latest
+Update Firebase configuration in:
+src/environments/environment.ts and environment.production.ts
+
+ts
+Copy
+Edit
+export const environment = {
+  production: true,
+  firebaseConfig: {
+    apiKey: "...",
+    authDomain: "...",
+    ...
+  },
+  cloudName: '...',
+  uploadPreset: '...'
+};
+5. Running the Application
+bash
+Copy
+Edit
 ng serve
-```
+Visit: http://localhost:4200
 
-Once the server is running, open your browser and navigate to `http://localhost:4200/`. The application will automatically reload whenever you modify any of the source files.
+6. Deployed Application
+👉 https://penpals-a583f.firebaseapp.com
 
-## Code scaffolding
+7. User Credentials
+Admin:
+Email: admin@penpals.com
 
-Angular CLI includes powerful code scaffolding tools. To generate a new component, run:
+Password: Admin@123
 
-```bash
-ng generate component component-name
-```
+Author:
+Email: author@penpals.com
 
-For a complete list of available schematics (such as `components`, `directives`, or `pipes`), run:
+Password: Author@123
 
-```bash
-ng generate --help
-```
+Regular User:
+Email: reader@penpals.com
 
-## Building
+Password: Reader@123
 
-To build the project run:
+8. Unit Tests
+Jest setup in setup-jest.ts
 
-```bash
-ng build
-```
+Sample tests implemented for:
 
-This will compile your project and store the build artifacts in the `dist/` directory. By default, the production build optimizes your application for performance and speed.
+ArticleUpsertComponent
 
-## Running unit tests
+CommentService
 
-To execute unit tests with the [Karma](https://karma-runner.github.io) test runner, use the following command:
+AuthGuard
 
-```bash
-ng test
-```
+To run tests:
 
-## Running end-to-end tests
+bash
+Copy
+Edit
+npm run test
+9. Bonus Features
+✅ Tags system:
 
-For end-to-end (e2e) testing, run:
+Add up to 5 tags per article.
 
-```bash
-ng e2e
-```
+Tag suggestions.
 
-Angular CLI does not come with an end-to-end testing framework by default. You can choose one that suits your needs.
+Filter/search by tags.
 
-## Additional Resources
+✅ Web Worker (example setup available but can be extended).
+✅ CSS modular structure (can integrate SCSS easily).
 
-For more information on using the Angular CLI, including detailed command references, visit the [Angular CLI Overview and Command Reference](https://angular.dev/tools/cli) page.
-<<<<<<< HEAD
->>>>>>> 7536e79 (initial commit)
-=======
->>>>>>> f0853af8a251b26be7b96e179f5db6e0b1045268
+10. UI/UX Enhancements
+Responsive layout with dynamic navbar visibility.
+
+Image carousels (featured & favorites).
+
+Animated interactions with feedback on actions.
+
+Theming consistency (button styles, modals, tooltips).

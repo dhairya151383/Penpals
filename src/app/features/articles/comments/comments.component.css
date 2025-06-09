@@ -1,10 +1,6 @@
-/* src/app/features/articles/comments/comments.component.css */
-
 .comments-container {
-  padding: 0px; /* Removed initial padding, as comment-panel provides it */
-  padding-bottom: 20px; /* Keep bottom padding for overall look */
-  /* Remove width and max-width if they were set, as the parent panel controls this */
-  /* Remove position: relative or absolute if they were set, as the parent panel controls this */
+  padding: 0px;
+  padding-bottom: 20px;
 }
 
 .comment-input {
@@ -154,13 +150,12 @@
   cursor: not-allowed;
 }
 
-
 .reply {
   background-color: #f0f2f5;
   border-left: 3px solid #ccc;
   padding: 10px;
   margin-top: 10px;
-  margin-left: 20px; /* Indent replies */
+  margin-left: 20px;
   border-radius: 4px;
 }
 
@@ -172,14 +167,13 @@
   font-size: 0.9em;
 }
 
-/* Edit form styling */
 textarea {
   width: 100%;
   padding: 10px;
   border: 1px solid #ddd;
   border-radius: 4px;
   margin-bottom: 10px;
-  box-sizing: border-box; /* Include padding in element's total width and height */
+  box-sizing: border-box;
 }
 
 button {
@@ -194,23 +188,21 @@ button {
 button:last-child {
   margin-right: 0;
 }
-/* src/app/features/articles/comments/comments.component.css */
 
 .comment-actions span {
   cursor: pointer;
   margin-right: 10px;
-  color: #555; /* Default color */
+  color: #555;
   transition: color 0.2s ease-in-out;
 }
 
 .comment-actions span.liked {
-  color: #007bff; /* Blue color for liked state */
+  color: #007bff;
   font-weight: bold;
 }
 
 .comment-actions span.liked-icon {
-  /* You can add more styling here, e.g., for a different icon or glow */
-  filter: grayscale(0%); /* Example: make emoji full color if it was grayscale */
+  filter: grayscale(0%);
 }
 
 .comment-actions span.disabled-like {

@@ -5,8 +5,8 @@ import { Author } from '../../../shared/models/author.model';
 import { AuthorService } from '../../../core/services/author.service';
 import { FormsModule } from '@angular/forms';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
-import { catchError } from 'rxjs/operators'; // Import catchError
-import { of } from 'rxjs'; // Import of to return an observable
+import { catchError } from 'rxjs/operators';
+import { of } from 'rxjs';
 
 @Component({
   selector: 'app-author-list',
@@ -21,52 +21,41 @@ export class AuthorListComponent implements OnInit {
   filterTerm = '';
   sortOption = 'name-asc';
   loading = false;
-  error: string | null = null; // Add an error property
+  error: string | null = null;
 
   constructor(private authorService: AuthorService) {}
 
   async ngOnInit() {
     this.loading = true;
-    this.error = null; // Clear any previous error
+    this.error = null;
 
     try {
       this.authors = await this.authorService.getAll();
-      this.applyFilters(); // Apply filters immediately after loading authors
+      this.applyFilters();
     } catch (err) {
       console.error('Error fetching authors:', err);
       this.error = 'Failed to load authors. Please try again later.';
-      this.authors = []; // Ensure authors array is empty on error
+      this.authors = [];
     } finally {
       this.loading = false;
     }
   }
 
-  /**
-   * Truncates the author bio for display, adding an ellipsis if it exceeds the limit.
-   * @param bio The author's biography string.
-   * @returns The truncated bio or an empty string if bio is null/undefined.
-   */
   getTruncatedBio(bio?: string): string {
     if (!bio) return '';
-    const limit = 150; // Define limit as a constant or class property
+    const limit = 150;
     return bio.length > limit ? bio.slice(0, limit) + '...' : bio;
   }
 
-  /**
-   * Applies the current filter term and sort option to the list of authors.
-   * This method is called on input changes to the filter term and select changes to the sort option.
-   */
   applyFilters() {
-    let tempAuthors = [...this.authors]; // Create a mutable copy
+    let tempAuthors = [...this.authors];
 
-    // 1. Filter
     if (this.filterTerm) {
       tempAuthors = tempAuthors.filter(author =>
         author.name.toLowerCase().includes(this.filterTerm.toLowerCase())
       );
     }
 
-    // 2. Sort
     tempAuthors.sort((a, b) => {
       switch (this.sortOption) {
         case 'name-asc':
@@ -74,7 +63,6 @@ export class AuthorListComponent implements OnInit {
         case 'name-desc':
           return b.name.localeCompare(a.name);
         case 'date-newest':
-          // Ensure createdAt exists before comparing, provide fallback if not
           const dateA = a.createdAt ? new Date(a.createdAt).getTime() : 0;
           const dateB = b.createdAt ? new Date(b.createdAt).getTime() : 0;
           return dateB - dateA;
@@ -83,7 +71,7 @@ export class AuthorListComponent implements OnInit {
           const dateBOld = b.createdAt ? new Date(b.createdAt).getTime() : 0;
           return dateAOld - dateBOld;
         default:
-          return 0; // No sort or unknown option
+          return 0;
       }
     });
 

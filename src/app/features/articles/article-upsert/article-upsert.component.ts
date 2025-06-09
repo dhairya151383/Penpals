@@ -1,4 +1,4 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, OnDestroy } from '@angular/core'; // Import OnDestroy
 import {
   FormBuilder,
   FormGroup,
@@ -8,7 +8,7 @@ import {
   ValidatorFn,
   ReactiveFormsModule,
 } from '@angular/forms';
-import { ActivatedRoute, Router } from '@angular/router'; // Import ActivatedRoute
+import { ActivatedRoute, Router } from '@angular/router';
 import { CommonModule } from '@angular/common';
 import { QuillModule } from 'ngx-quill';
 
@@ -18,7 +18,8 @@ import { Article } from '../../../shared/models/article.model';
 import { Tag } from '../../../shared/models/tag.model';
 import { TagSelectorComponent } from '../../../shared/components/tag-selector/tag-selector.component';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
-import { UploadImageComponent } from '../../../shared/components/upload-image/upload-image.component'; // Import the upload image component
+import { UploadImageComponent } from '../../../shared/components/upload-image/upload-image.component';
+import { Subscription } from 'rxjs'; // Import Subscription
 
 export function quillRequired(control: AbstractControl): ValidationErrors | null {
   const value = control.value || '';
@@ -26,7 +27,6 @@ export function quillRequired(control: AbstractControl): ValidationErrors | null
   return text.length === 0 ? { required: true } : null;
 }
 
-// Custom validator to require at least `min` tags selected
 export function minTagsSelected(min = 1): ValidatorFn {
   return (control: AbstractControl): ValidationErrors | null => {
     const val = control.value;
@@ -51,31 +51,32 @@ export function minTagsSelected(min = 1): ValidatorFn {
   templateUrl: './article-upsert.component.html',
   styleUrls: ['./article-upsert.component.css'],
 })
-export class ArticleUpsertComponent implements OnInit {
+export class ArticleUpsertComponent implements OnInit, OnDestroy { // Implement OnDestroy
   form!: FormGroup;
   error: string | null = null;
   selectedTags: Tag[] = [];
   formSubmitted = false;
   loading = true;
-  avatarUrl: string | null = null; // For the thumbnail image
-  articleId: string | null = null; // To store article ID in edit mode
-  isEditMode = false; // Flag to determine if we are in edit mode
-  originalArticle: Article | null = null; // Store original article for comparison/reset
+  avatarUrl: string | null = null;
+  articleId: string | null = null;
+  isEditMode = false;
+  originalArticle: Article | null = null;
 
   private readonly draftStorageKeyPrefix = 'article-upsert-draft-';
   private draftStorageKey!: string;
+  private formChangesSubscription: Subscription | undefined; // Declare a subscription variable
 
   constructor(
     private fb: FormBuilder,
     private router: Router,
-    private route: ActivatedRoute, // Inject ActivatedRoute
+    private route: ActivatedRoute,
     private articleService: ArticleService,
     private firebaseService: FirebaseService
   ) {}
 
   async ngOnInit() {
     this.articleId = this.route.snapshot.paramMap.get('id');
-    this.isEditMode = !!this.articleId; // Set edit mode flag
+    this.isEditMode = !!this.articleId;
 
     this.draftStorageKey = this.draftStorageKeyPrefix + (this.articleId || 'new');
 
@@ -96,7 +97,6 @@ export class ArticleUpsertComponent implements OnInit {
           this.selectedTags = (article.tags || []).map((name) => ({ name, type: 'article' }));
           this.avatarUrl = article.thumbnailUrl || null;
 
-          // Try to load draft
           const draft = localStorage.getItem(this.draftStorageKey);
           if (draft) {
             const draftData = JSON.parse(draft);
@@ -110,7 +110,6 @@ export class ArticleUpsertComponent implements OnInit {
             this.selectedTags = draftData.selectedTags || this.selectedTags;
             this.avatarUrl = draftData.thumbnailUrl || this.avatarUrl;
           } else {
-            // No draft, populate from fetched article
             this.form.patchValue({
               title: article.title,
               briefDescription: article.briefDescription,
@@ -119,7 +118,6 @@ export class ArticleUpsertComponent implements OnInit {
               isPublished: article.isPublished ?? false,
             });
           }
-          // Set tags separately as setValue is not ideal for form controls bound to arrays
           this.form.get('tags')?.setValue(this.selectedTags);
 
         } else {
@@ -129,8 +127,8 @@ export class ArticleUpsertComponent implements OnInit {
         }
       }
 
-      // Subscribe to form changes to save draft
-      this.form.valueChanges.subscribe(() => {
+      // Assign the subscription to the class property
+      this.formChangesSubscription = this.form.valueChanges.subscribe(() => {
         this.saveDraft();
       });
 
@@ -139,6 +137,13 @@ export class ArticleUpsertComponent implements OnInit {
       this.error = 'Failed to load article. Please try again.';
     } finally {
       this.loading = false;
+    }
+  }
+
+  ngOnDestroy(): void {
+    // Unsubscribe from the formChangesSubscription to prevent memory leaks
+    if (this.formChangesSubscription) {
+      this.formChangesSubscription.unsubscribe();
     }
   }
 
@@ -169,21 +174,19 @@ export class ArticleUpsertComponent implements OnInit {
       this.avatarUrl = this.originalArticle.thumbnailUrl || null;
       this.form.get('tags')?.setValue(this.selectedTags);
     } else {
-        // If it's a new article and we discard draft, reset the form completely
-        this.form.reset({
-          title: '',
-          briefDescription: '',
-          content: '',
-          tags: [],
-          isFeatured: false,
-          isPublished: false,
-        });
-        this.selectedTags = [];
-        this.avatarUrl = null;
+      this.form.reset({
+        title: '',
+        briefDescription: '',
+        content: '',
+        tags: [],
+        isFeatured: false,
+        isPublished: false,
+      });
+      this.selectedTags = [];
+      this.avatarUrl = null;
     }
   }
 
-  // Getters for easier template access
   get title() {
     return this.form.get('title')!;
   }
@@ -254,11 +257,9 @@ export class ArticleUpsertComponent implements OnInit {
 
       if (formValue.isPublished) {
         articleData.isPublished = true;
-        // Only set publishDate if it's being published for the first time or explicitly set
         if (!this.originalArticle?.isPublished || !this.originalArticle?.publishDate) {
           articleData.publishDate = new Date();
         } else if (this.isEditMode) {
-          // In edit mode, if already published, retain original publish date unless explicitly changing
           articleData.publishDate = this.originalArticle.publishDate;
         }
       } else {
@@ -266,23 +267,20 @@ export class ArticleUpsertComponent implements OnInit {
         articleData.publishDate = null;
       }
 
-
       if (this.isEditMode && this.articleId) {
-        // Update existing article
         await this.articleService.update(this.articleId, articleData);
-        localStorage.removeItem(this.draftStorageKey); // clear draft on successful save
+        localStorage.removeItem(this.draftStorageKey);
         this.router.navigate(['/articles', this.articleId]);
       } else {
-        // Create new article
         const newArticle: Article = {
-          ...articleData as Article, // Cast to Article as it's a new creation
+          ...articleData as Article,
           authorId: currentUser.uid,
           authorName: currentUser.displayName || 'Anonymous',
-          publishDate: articleData.publishDate || null, // Ensure publishDate is handled for new article
-          isPublished: articleData.isPublished || false, // Ensure isPublished is handled for new article
+          publishDate: articleData.publishDate || null,
+          isPublished: articleData.isPublished || false,
         };
         const createdId = await this.articleService.create(newArticle);
-        localStorage.removeItem(this.draftStorageKey); // clear draft on successful save
+        localStorage.removeItem(this.draftStorageKey);
         this.router.navigate(['/articles', createdId]);
       }
     } catch (err) {
