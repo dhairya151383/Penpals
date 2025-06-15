@@ -5,8 +5,6 @@ import { Author } from '../../../shared/models/author.model';
 import { AuthorService } from '../../../core/services/author.service';
 import { FormsModule } from '@angular/forms';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
-import { catchError } from 'rxjs/operators';
-import { of } from 'rxjs';
 
 @Component({
   selector: 'app-author-list',

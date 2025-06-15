@@ -8,8 +8,6 @@ import { Tag } from '../../../shared/models/tag.model';
 import { TagSelectorComponent } from '../../../shared/components/tag-selector/tag-selector.component';
 import { LoadingSpinnerComponent } from '../../../shared/components/loading-spinner/loading-spinner.component';
 import { UploadImageComponent } from '../../../shared/components/upload-image/upload-image.component';
-import { catchError, finalize } from 'rxjs/operators';
-import { of } from 'rxjs';
 
 @Component({
   selector: 'app-author-edit',
