@@ -13,7 +13,7 @@
   background-size: cover;
   background-position: center;
   color: white;
-  padding: 80px 20px 120px 20px;
+  padding: 20px 20px 20px 20px;
   text-align: center;
   position: relative;
   overflow: visible;
@@ -261,7 +261,7 @@
 .featured-articles-section {
   max-width: 1200px;
   width: 90%;
-  margin: 30px auto;
+  margin: 20px auto;
   padding: 20px;
   background-color: #fff;
   border-radius: 10px;
