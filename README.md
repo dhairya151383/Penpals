@@ -84,7 +84,7 @@ Guarded routes for protected actions.
 3. Deliverables
 GitHub: https://github.com/dhairya151383/penpals
 
-Deployed App: https://penpals-a583f.firebaseapp.com
+Deployed App: https://dhairya151383.github.io/Penpals/login
 
 4. Setup and Installation
 bash

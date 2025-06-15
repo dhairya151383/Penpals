@@ -8,6 +8,7 @@ import { LoadingSpinnerComponent } from '../../../shared/components/loading-spin
 import { Subscription, combineLatest } from 'rxjs';
 import { filter } from 'rxjs/operators';
 import { AuthService, AppUser } from '../../../core/services/auth.service';
+import { ArticleService } from '../../../core/services/article.service';
 
 @Component({
   selector: 'app-comments',
@@ -44,34 +45,38 @@ export class CommentsComponent implements OnInit, OnDestroy {
 
   constructor(
     private commentService: CommentService,
-    private authService: AuthService
-  ) { }
+    private authService: AuthService,
+    private articleService: ArticleService
+  ) {}
 
   async ngOnInit() {
     this.authSubscription = combineLatest([
-      this.authService.authReady$.pipe(filter(isReady => isReady)),
-      this.authService.user$
-    ]).subscribe(([authReady, user]) => {
-      if (user) {
-        this.userId = user.uid;
-        this.userName = user.displayName ?? 'Anonymous';
-        this.userAvatarUrl = user.photoURL ?? '';
-        this.isAdmin = (user as AppUser).roles?.admin === true;
-      } else {
-        this.userId = null;
-        this.userName = 'Anonymous';
-        this.userAvatarUrl = '';
-        this.isAdmin = false;
-      }
+      this.authService.authReady$.pipe(filter((isReady) => isReady)),
+      this.authService.user$,
+    ]).subscribe(
+      ([authReady, user]) => {
+        if (user) {
+          this.userId = user.uid;
+          this.userName = user.displayName ?? 'Anonymous';
+          this.userAvatarUrl = user.photoURL ?? '';
+          this.isAdmin = (user as AppUser).roles?.admin === true;
+        } else {
+          this.userId = null;
+          this.userName = 'Anonymous';
+          this.userAvatarUrl = '';
+          this.isAdmin = false;
+        }
 
-      if (!this.realTimeCommentsSubscription) {
-        this.setupRealTimeCommentsListener();
+        if (!this.realTimeCommentsSubscription) {
+          this.setupRealTimeCommentsListener();
+        }
+        this.loadingAuthAndComments = false;
+      },
+      (error) => {
+        console.error('CommentsComponent: Auth subscription error:', error);
+        this.loadingAuthAndComments = false;
       }
-      this.loadingAuthAndComments = false;
-    }, (error) => {
-      console.error("CommentsComponent: Auth subscription error:", error);
-      this.loadingAuthAndComments = false;
-    });
+    );
   }
 
   ngOnDestroy(): void {
@@ -84,55 +89,136 @@ export class CommentsComponent implements OnInit, OnDestroy {
   }
 
   private setupRealTimeCommentsListener() {
-    this.realTimeCommentsSubscription = this.commentService.getComments(this.articleId)
+    this.realTimeCommentsSubscription = this.commentService
+      .getComments(this.articleId)
       .subscribe(
         (fetchedComments: Comment[]) => {
           this.allComments = fetchedComments;
           this.updateDisplayedComments();
         },
         (error) => {
-          console.error("CommentsComponent: Error fetching real-time comments:", error);
+          console.error(
+            'CommentsComponent: Error fetching real-time comments:',
+            error
+          );
         }
       );
   }
 
   private updateDisplayedComments() {
-    let topLevelComments = this.allComments.filter(comment => comment.parentId === null);
+    let topLevelComments = this.allComments.filter(
+      (comment) => comment.parentId === null
+    );
 
     topLevelComments.sort((a, b) => {
-      if (this.currentSort === 'newest') {
-        const timeA = (a.createdAt instanceof Timestamp) ? a.createdAt.toMillis() : 0;
-        const timeB = (b.createdAt instanceof Timestamp) ? b.createdAt.toMillis() : 0;
-        return timeB - timeA;
-      } else if (this.currentSort === 'oldest') {
-        const timeA = (a.createdAt instanceof Timestamp) ? a.createdAt.toMillis() : 0;
-        const timeB = (b.createdAt instanceof Timestamp) ? b.createdAt.toMillis() : 0;
-        return timeA - timeB;
-      } else if (this.currentSort === 'mostLiked') {
-        return b.likes - a.likes;
-      }
+      const getTime = (c: Comment) =>
+        c.createdAt instanceof Timestamp ? c.createdAt.toMillis() : 0;
+      if (this.currentSort === 'newest') return getTime(b) - getTime(a);
+      if (this.currentSort === 'oldest') return getTime(a) - getTime(b);
+      if (this.currentSort === 'mostLiked') return b.likes - a.likes;
       return 0;
     });
 
-    if (this.currentDisplayedCount === 0 || this.currentDisplayedCount < this.pageSize) {
-      this.currentDisplayedCount = this.pageSize;
-    }
-    if (this.currentDisplayedCount > topLevelComments.length) {
-      this.currentDisplayedCount = topLevelComments.length;
-    }
-
-    this.displayedTopLevelComments = topLevelComments.slice(0, this.currentDisplayedCount);
-    this.hasMore = topLevelComments.length > this.displayedTopLevelComments.length;
+    this.currentDisplayedCount = Math.min(
+      this.pageSize,
+      topLevelComments.length
+    );
+    this.displayedTopLevelComments = topLevelComments.slice(
+      0,
+      this.currentDisplayedCount
+    );
+    this.hasMore =
+      topLevelComments.length > this.displayedTopLevelComments.length;
   }
 
-  loadMore() {
-    this.currentDisplayedCount += this.pageSize;
-    this.updateDisplayedComments();
+  async postComment() {
+    if (!this.userId || !this.newComment.trim()) return;
+    try {
+      await this.commentService.addComment(
+        this.articleId,
+        this.newComment,
+        this.userId,
+        this.userName,
+        this.userAvatarUrl
+      );
+      this.newComment = '';
+      await this.triggerCommentCountWorker();
+    } catch (error) {
+      console.error('CommentsComponent: Error posting comment:', error);
+    }
+  }
+
+  async postReply(parentId: string) {
+    if (!this.userId) return;
+    const content = this.replyText[parentId];
+    if (!content?.trim()) return;
+    try {
+      await this.commentService.addReply(
+        this.articleId,
+        parentId,
+        content,
+        this.userId,
+        this.userName,
+        this.userAvatarUrl
+      );
+      this.replyText[parentId] = '';
+      this.replyingTo = null;
+      this.showReplies[parentId] = true;
+      await this.triggerCommentCountWorker();
+    } catch (error) {
+      console.error('CommentsComponent: Error posting reply:', error);
+    }
+  }
+
+  async deleteComment(commentId: string) {
+    const commentToDelete = this.allComments.find((c) => c.id === commentId);
+    if (!commentToDelete || !this.canModifyComment(commentToDelete)) return;
+    if (
+      confirm(
+        'Are you sure you want to delete this comment and all its replies?'
+      )
+    ) {
+      try {
+        await this.commentService.deleteComment(commentId);
+        await this.triggerCommentCountWorker();
+      } catch (error) {
+        console.error('CommentsComponent: Error deleting comment:', error);
+      }
+    }
+  }
+
+  private async triggerCommentCountWorker() {
+    if (typeof Worker === 'undefined') return;
+
+    const comments = await this.commentService.getAllCommentMetadata();
+
+    const worker = new Worker(
+      new URL(
+        '../../../../app/core/webworker/comment-counter.worker',
+        import.meta.url
+      ),
+      { type: 'module' }
+    );
+
+    worker.onmessage = async ({ data }) => {
+      const counts = data as Record<string, number>;
+      const count = counts[this.articleId] || 0;
+      await this.articleService.update(this.articleId, {
+        commentsCount: count,
+      });
+    };
+
+    worker.postMessage(comments);
   }
 
   sortComments(sortBy: 'newest' | 'oldest' | 'mostLiked') {
     this.currentSort = sortBy;
     this.currentDisplayedCount = this.pageSize;
+    this.updateDisplayedComments();
+  }
+
+  loadMore() {
+    this.currentDisplayedCount += this.pageSize;
     this.updateDisplayedComments();
   }
 
@@ -144,72 +230,18 @@ export class CommentsComponent implements OnInit, OnDestroy {
     if (this.canModifyComment(comment)) {
       this.editingCommentId = comment.id;
       this.editContent = comment.content;
-    } else {
-      console.warn('User not authorized to edit this comment.');
     }
   }
 
   async saveEdit(commentId: string) {
-    const commentToEdit = this.allComments.find(c => c.id === commentId);
-    if (!commentToEdit || !this.canModifyComment(commentToEdit)) {
-      console.error('CommentsComponent: Unauthorized attempt to save edit or comment not found.');
-      return;
-    }
+    const comment = this.allComments.find((c) => c.id === commentId);
+    if (!comment || !this.canModifyComment(comment)) return;
     await this.commentService.editComment(commentId, this.editContent);
     this.editingCommentId = null;
   }
 
-  async deleteComment(commentId: string) {
-    const commentToDelete = this.allComments.find(c => c.id === commentId);
-    if (!commentToDelete || !this.canModifyComment(commentToDelete)) {
-      console.error('CommentsComponent: Unauthorized attempt to delete comment or comment not found.');
-      return;
-    }
-
-    if (confirm('Are you sure you want to delete this comment and all its replies?')) {
-      try {
-        await this.commentService.deleteComment(commentId);
-      } catch (error) {
-        console.error('CommentsComponent: Error deleting comment:', error);
-      }
-    }
-  }
-
   toggleReplies(commentId: string) {
     this.showReplies[commentId] = !this.showReplies[commentId];
-  }
-
-  async postComment() {
-    if (!this.userId) {
-      console.warn('CommentsComponent: User not logged in to post comments.');
-      return;
-    }
-    if (this.newComment.trim()) {
-      try {
-        await this.commentService.addComment(this.articleId, this.newComment, this.userId, this.userName, this.userAvatarUrl);
-        this.newComment = '';
-      } catch (error) {
-        console.error('CommentsComponent: Error posting comment:', error);
-      }
-    }
-  }
-
-  async postReply(parentId: string) {
-    if (!this.userId) {
-      console.warn('CommentsComponent: User not logged in to post replies.');
-      return;
-    }
-    const content = this.replyText[parentId];
-    if (content?.trim()) {
-      try {
-        await this.commentService.addReply(this.articleId, parentId, content, this.userId, this.userName, this.userAvatarUrl);
-        this.replyText[parentId] = '';
-        this.replyingTo = null;
-        this.showReplies[parentId] = true;
-      } catch (error) {
-        console.error('CommentsComponent: Error posting reply:', error);
-      }
-    }
   }
 
   toggleReply(commentId: string) {
@@ -217,30 +249,30 @@ export class CommentsComponent implements OnInit, OnDestroy {
   }
 
   async likeComment(comment: Comment) {
-    if (!this.userId) {
-      console.warn('CommentsComponent: User not logged in to like comments.');
-      return;
-    }
+    if (!this.userId) return;
     await this.commentService.toggleLikeComment(comment.id, this.userId);
   }
 
   hasUserLiked(comment: Comment): boolean {
-    return this.userId ? (comment.likedBy?.includes(this.userId) || false) : false;
+    return this.userId
+      ? comment.likedBy?.includes(this.userId) || false
+      : false;
   }
 
   getReplies(parentId: string) {
-    return this.allComments.filter(c => c.parentId === parentId)
+    return this.allComments
+      .filter((c) => c.parentId === parentId)
       .sort((a, b) => {
-        const timeA = (a.createdAt instanceof Timestamp) ? a.createdAt.toMillis() : 0;
-        const timeB = (b.createdAt instanceof Timestamp) ? b.createdAt.toMillis() : 0;
+        const timeA =
+          a.createdAt instanceof Timestamp ? a.createdAt.toMillis() : 0;
+        const timeB =
+          b.createdAt instanceof Timestamp ? b.createdAt.toMillis() : 0;
         return timeA - timeB;
       });
   }
 
   timeAgo(timestamp: Timestamp): string {
-    if (!timestamp || !(timestamp instanceof Timestamp)) {
-      return 'Invalid date';
-    }
+    if (!timestamp || !(timestamp instanceof Timestamp)) return 'Invalid date';
     const seconds = (Date.now() - timestamp.toMillis()) / 1000;
     if (seconds < 60) return 'just now';
     if (seconds < 3600) return `${Math.floor(seconds / 60)}m ago`;

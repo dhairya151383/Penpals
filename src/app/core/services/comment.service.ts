@@ -17,8 +17,8 @@ import {
   updateDoc,
   increment,
   deleteDoc,
-  arrayUnion, 
-  arrayRemove 
+  arrayUnion,
+  arrayRemove,
 } from 'firebase/firestore';
 import { BehaviorSubject } from 'rxjs';
 import { Comment } from '../../shared/models/comment.model';
@@ -31,7 +31,7 @@ import { v4 as uuidv4 } from 'uuid';
 export class CommentService {
   private commentSubjects = new Map<string, BehaviorSubject<Comment[]>>();
 
-  constructor(private firebase: FirebaseService) { }
+  constructor(private firebase: FirebaseService) {}
 
   getComments(articleId: string) {
     if (!this.commentSubjects.has(articleId)) {
@@ -42,21 +42,34 @@ export class CommentService {
     return this.commentSubjects.get(articleId)!.asObservable();
   }
 
-  private listenToComments(articleId: string, subject: BehaviorSubject<Comment[]>) {
+  private listenToComments(
+    articleId: string,
+    subject: BehaviorSubject<Comment[]>
+  ) {
     const commentRef = collection(this.firebase.firestore, 'comments');
     const q = query(commentRef, where('articleId', '==', articleId));
-    onSnapshot(q, (snapshot) => {
-      const comments: Comment[] = [];
-      snapshot.forEach((doc) => {
-        comments.push(doc.data() as Comment);
-      });
-      subject.next(comments);
-    }, (error) => {
-      console.error('CommentService: Real-time listener error:', error);
-    });
+    onSnapshot(
+      q,
+      (snapshot) => {
+        const comments: Comment[] = [];
+        snapshot.forEach((doc) => {
+          comments.push(doc.data() as Comment);
+        });
+        subject.next(comments);
+      },
+      (error) => {
+        console.error('CommentService: Real-time listener error:', error);
+      }
+    );
   }
 
-  async addComment(articleId: string, content: string, userId: string, userName: string, userAvatarUrl: string) {
+  async addComment(
+    articleId: string,
+    content: string,
+    userId: string,
+    userName: string,
+    userAvatarUrl: string
+  ) {
     const id = uuidv4();
     const newComment: Comment = {
       id,
@@ -68,7 +81,7 @@ export class CommentService {
       createdAt: serverTimestamp() as Timestamp,
       likes: 0,
       parentId: null,
-      likedBy: []
+      likedBy: [],
     };
 
     const commentDoc = doc(this.firebase.firestore, 'comments', id);
@@ -84,9 +97,17 @@ export class CommentService {
     const commentDocRef = doc(this.firebase.firestore, 'comments', commentId);
 
     try {
-      const commentSnapshot = await getDocs(query(collection(this.firebase.firestore, 'comments'), where('id', '==', commentId)));
+      const commentSnapshot = await getDocs(
+        query(
+          collection(this.firebase.firestore, 'comments'),
+          where('id', '==', commentId)
+        )
+      );
       if (commentSnapshot.empty) {
-        console.warn('CommentService: Comment not found for liking:', commentId);
+        console.warn(
+          'CommentService: Comment not found for liking:',
+          commentId
+        );
         return;
       }
       const commentData = commentSnapshot.docs[0].data() as Comment;
@@ -94,12 +115,12 @@ export class CommentService {
       if (likedBy.includes(userId)) {
         await updateDoc(commentDocRef, {
           likes: increment(-1),
-          likedBy: arrayRemove(userId)
+          likedBy: arrayRemove(userId),
         });
       } else {
         await updateDoc(commentDocRef, {
           likes: increment(1),
-          likedBy: arrayUnion(userId)
+          likedBy: arrayUnion(userId),
         });
       }
     } catch (error) {
@@ -127,7 +148,7 @@ export class CommentService {
       userAvatarUrl,
       createdAt: serverTimestamp() as Timestamp,
       likes: 0,
-      likedBy: []
+      likedBy: [],
     };
 
     const commentDoc = doc(this.firebase.firestore, 'comments', id);
@@ -138,7 +159,12 @@ export class CommentService {
       throw error;
     }
   }
-  async loadMoreComments(articleId: string, pageSize = 5, lastVisibleCommentId: string | null = null, sortBy: 'newest' | 'oldest' | 'mostLiked' = 'newest'): Promise<Comment[]> {
+  async loadMoreComments(
+    articleId: string,
+    pageSize = 5,
+    lastVisibleCommentId: string | null = null,
+    sortBy: 'newest' | 'oldest' | 'mostLiked' = 'newest'
+  ): Promise<Comment[]> {
     const commentRef = collection(this.firebase.firestore, 'comments');
     let q;
     let orderField: string = 'createdAt';
@@ -159,19 +185,25 @@ export class CommentService {
 
     let lastVisibleDoc: QueryDocumentSnapshot<DocumentData> | null = null;
     if (lastVisibleCommentId) {
-      const lastDocQuery = query(commentRef, where('id', '==', lastVisibleCommentId), limit(1));
+      const lastDocQuery = query(
+        commentRef,
+        where('id', '==', lastVisibleCommentId),
+        limit(1)
+      );
       const docSnapshot = await getDocs(lastDocQuery);
       if (!docSnapshot.empty) {
         lastVisibleDoc = docSnapshot.docs[0];
         q = query(q, startAfter(lastVisibleDoc));
       } else {
-        console.warn('CommentService: loadMoreComments: lastVisibleCommentId provided but document not found. Ignoring startAfter.');
+        console.warn(
+          'CommentService: loadMoreComments: lastVisibleCommentId provided but document not found. Ignoring startAfter.'
+        );
       }
     }
 
     try {
       const snapshot = await getDocs(q);
-      const fetchedComments = snapshot.docs.map(doc => doc.data() as Comment);
+      const fetchedComments = snapshot.docs.map((doc) => doc.data() as Comment);
       return fetchedComments;
     } catch (error) {
       console.error('CommentService: Error in loadMoreComments:', error);
@@ -184,14 +216,30 @@ export class CommentService {
     const commentDocRef = doc(commentRef, commentId);
     try {
       await deleteDoc(commentDocRef);
-      const repliesQuery = query(commentRef, where('parentId', '==', commentId));
+      const repliesQuery = query(
+        commentRef,
+        where('parentId', '==', commentId)
+      );
       const replySnapshot = await getDocs(repliesQuery);
-      const deletePromises = replySnapshot.docs.map(replyDoc => deleteDoc(replyDoc.ref));
+      const deletePromises = replySnapshot.docs.map((replyDoc) =>
+        deleteDoc(replyDoc.ref)
+      );
       await Promise.all(deletePromises);
     } catch (error) {
-      console.error('CommentService: Error deleting comment and its replies:', error);
+      console.error(
+        'CommentService: Error deleting comment and its replies:',
+        error
+      );
       throw error;
     }
+  }
+  async getAllCommentMetadata(): Promise<{ articleId: string }[]> {
+    const commentRef = collection(this.firebase.firestore, 'comments');
+    const snapshot = await getDocs(commentRef);
+    return snapshot.docs.map((doc) => {
+      const data = doc.data();
+      return { articleId: data['articleId'] };
+    });
   }
 
   async editComment(commentId: string, content: string) {
